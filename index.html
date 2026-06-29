@@ -925,10 +925,10 @@ function prospectTableCard(){
  const f=state.dpStage||'all';const order=STAGES.map(s=>s.key);
  const pills='<div class="filters"><button class="fpill '+(f==='all'?'on':'')+'" onclick="state.dpStage=\'all\';render()">All ('+base.length+')</button>'+order.map(k=>{const o=stageObj(k);const n=base.filter(c=>c.stage===k).length;return '<button class="fpill '+(f===k?'on':'')+'" onclick="state.dpStage=\''+k+'\';render()">'+o.name+' ('+n+')</button>';}).join('')+'</div>';
  let rows=base;if(f!=='all')rows=rows.filter(c=>c.stage===f);
- return '<div class="card"><div class="card-h"><b>'+(mine?'My prospects':'Active prospects')+'</b><span class="muted">'+rows.length+' of '+base.length+'</span></div>'
+ return '<div class="card" style="overflow:visible"><div class="card-h"><b>'+(mine?'My prospects':'Active prospects')+'</b><span class="muted">'+rows.length+' of '+base.length+'</span></div>'
   +'<div class="card-b" style="padding-bottom:0">'+pills+'</div>'
   +'<table><thead><tr><th>Prospect</th><th>Stage</th><th class="r">Ask</th><th>Focus</th><th>Officer</th><th class="r">Action</th></tr></thead><tbody>'
-  +(rows.length?rows.map(c=>{const s=stageObj(c.stage);return '<tr class="clk" onclick="openRecord(\''+c.id+'\')"><td class="t-name">'+esc(c.name)+'<div class="t-sub">'+esc(c.title)+'</div></td><td><span class="badge" style="background:'+s.color+'22;color:'+s.color+'">'+s.name+'</span></td><td class="r tnum">'+usd(c.ask)+'</td><td>'+esc(c.fundInterest||'—')+'</td><td>'+esc((c.officer||'—').split(' ')[0])+'</td><td class="r" style="white-space:nowrap"><button class="btn btn-sec btn-sm" onclick="event.stopPropagation();aiEmail(\''+c.id+'\')">'+ic('mail',14)+'Email</button><button class="btn btn-pri btn-sm" onclick="event.stopPropagation();openRecord(\''+c.id+'\')">Open</button></td></tr>';}).join(''):'<tr><td colspan="6"><div class="t-sub" style="padding:8px">No prospects in this stage.</div></td></tr>')
+  +(rows.length?rows.map(c=>{const s=stageObj(c.stage);return '<tr class="clk" onclick="openRecord(\''+c.id+'\')"><td class="t-name">'+esc(c.name)+'<div class="t-sub">'+esc(c.title)+'</div></td><td><span class="badge" style="background:'+s.color+'22;color:'+s.color+'">'+s.name+'</span></td><td class="r tnum">'+usd(c.ask)+'</td><td>'+esc(c.fundInterest||'—')+'</td><td>'+esc((c.officer||'—').split(' ')[0])+'</td><td class="r" style="white-space:nowrap">'+rowMenu([{l:'Pre-meeting prep',ic:'spark',fn:'openPrep(\''+c.id+'\')'},{l:'Email',ic:'mail',fn:'aiEmail(\''+c.id+'\')'},{l:'Open record',ic:'user',fn:'openRecord(\''+c.id+'\')'}])+'</td></tr>';}).join(''):'<tr><td colspan="6"><div class="t-sub" style="padding:8px">No prospects in this stage.</div></td></tr>')
   +'</tbody></table></div>';
 }
 function pledgeTableCard(){
@@ -936,18 +936,18 @@ function pledgeTableCard(){
  const f=state.dplStatus||'all';const opts=[['all','All'],['Due soon','Due soon'],['Overdue','Overdue']];
  const pills='<div class="filters">'+opts.map(o=>{const n=o[0]==='all'?base.length:base.filter(p=>p.status===o[0]).length;return '<button class="fpill '+(f===o[0]?'on':'')+'" onclick="state.dplStatus=\''+o[0]+'\';render()">'+o[1]+' ('+n+')</button>';}).join('')+'</div>';
  let rows=base;if(f!=='all')rows=rows.filter(p=>p.status===f);
- return '<div class="card"><div class="card-h"><b>Upcoming pledges</b><span class="muted">'+rows.length+' of '+base.length+'</span></div>'
+ return '<div class="card" style="overflow:visible"><div class="card-h"><b>Upcoming pledges</b><span class="muted">'+rows.length+' of '+base.length+'</span></div>'
   +'<div class="card-b" style="padding-bottom:0">'+pills+'</div>'
   +'<table><thead><tr><th>Donor</th><th>Fund</th><th class="r">Amount due</th><th>Due</th><th>Status</th><th class="r">Action</th></tr></thead><tbody>'
-  +rows.map(p=>'<tr class="clk" onclick="openRecord(\''+p.did+'\')"><td class="t-name">'+esc(p.donor)+'</td><td>'+esc(p.fund)+'</td><td class="r tnum">'+usd(p.amount)+'</td><td>'+esc(p.due)+'</td><td><span class="badge '+(p.status==='Overdue'?'b-amber':'b-blue')+'">'+esc(p.status)+'</span></td><td class="r" style="white-space:nowrap"><button class="btn btn-sec btn-sm" onclick="event.stopPropagation();aiEmail(\''+p.did+'\')">'+ic('mail',14)+'Remind</button><button class="btn btn-pri btn-sm" onclick="event.stopPropagation();openRecord(\''+p.did+'\')">Open</button></td></tr>').join('')
+  +rows.map(p=>'<tr class="clk" onclick="openRecord(\''+p.did+'\')"><td class="t-name">'+esc(p.donor)+'</td><td>'+esc(p.fund)+'</td><td class="r tnum">'+usd(p.amount)+'</td><td>'+esc(p.due)+'</td><td><span class="badge '+(p.status==='Overdue'?'b-amber':'b-blue')+'">'+esc(p.status)+'</span></td><td class="r" style="white-space:nowrap">'+rowMenu([{l:'Send reminder',ic:'mail',fn:'aiEmail(\''+p.did+'\')'},{l:'Pre-meeting prep',ic:'spark',fn:'openPrep(\''+p.did+'\')'},{l:'Open record',ic:'user',fn:'openRecord(\''+p.did+'\')'}])+'</td></tr>').join('')
   +'</tbody></table></div>';
 }
 function askTableCard(){
  const me=memberByPersona(state.persona);const mine=state.persona==='officer';
  let rows=C.filter(c=>c.stage==='solicitation'&&(!mine||c.officer===me.name));
- return '<div class="card"><div class="card-h"><b>Asks pending</b><span class="muted">'+rows.length+' in solicitation</span></div>'
+ return '<div class="card" style="overflow:visible"><div class="card-h"><b>Asks pending</b><span class="muted">'+rows.length+' in solicitation</span></div>'
   +'<table><thead><tr><th>Prospect</th><th>Fund</th><th class="r">Ask</th><th>Officer</th><th class="r">Action</th></tr></thead><tbody>'
-  +(rows.length?rows.map(c=>'<tr class="clk" onclick="openRecord(\''+c.id+'\')"><td class="t-name">'+esc(c.name)+'</td><td>'+esc(c.fundInterest||'—')+'</td><td class="r tnum">'+usd(c.ask)+'</td><td>'+esc((c.officer||'—').split(' ')[0])+'</td><td class="r" style="white-space:nowrap"><button class="btn btn-sec btn-sm" onclick="event.stopPropagation();aiEmail(\''+c.id+'\')">'+ic('mail',14)+'Email</button><button class="btn btn-pri btn-sm" onclick="event.stopPropagation();openRecord(\''+c.id+'\')">Open</button></td></tr>').join(''):'<tr><td colspan="5"><div class="t-sub" style="padding:8px">No asks pending.</div></td></tr>')
+  +(rows.length?rows.map(c=>'<tr class="clk" onclick="openRecord(\''+c.id+'\')"><td class="t-name">'+esc(c.name)+'</td><td>'+esc(c.fundInterest||'—')+'</td><td class="r tnum">'+usd(c.ask)+'</td><td>'+esc((c.officer||'—').split(' ')[0])+'</td><td class="r" style="white-space:nowrap">'+rowMenu([{l:'Pre-meeting prep',ic:'spark',fn:'openPrep(\''+c.id+'\')'},{l:'Email',ic:'mail',fn:'aiEmail(\''+c.id+'\')'},{l:'Open record',ic:'user',fn:'openRecord(\''+c.id+'\')'}])+'</td></tr>').join(''):'<tr><td colspan="5"><div class="t-sub" style="padding:8px">No asks pending.</div></td></tr>')
   +'</tbody></table></div>';
 }
 function giftRangeCard(range){
@@ -957,17 +957,17 @@ function giftRangeCard(range){
  const pills='<div class="filters">'+funds.map(fd=>'<button class="fpill '+(f===fd?'on':'')+'" onclick="state.dgFund=\''+fd+'\';render()">'+(fd==='all'?'All funds ('+base.length+')':esc(fd))+'</button>').join('')+'</div>';
  let rows=base;if(f!=='all')rows=rows.filter(g=>g.fund===f);
  const total=rows.reduce((s,g)=>s+g.amount,0);
- return '<div class="card"><div class="card-h"><b>Gifts closed '+(range==='qtd'?'QTD':'YTD')+'</b><span class="muted">'+rows.length+' gifts · '+usd(total)+'</span></div>'
+ return '<div class="card" style="overflow:visible"><div class="card-h"><b>Gifts closed '+(range==='qtd'?'QTD':'YTD')+'</b><span class="muted">'+rows.length+' gifts · '+usd(total)+'</span></div>'
   +'<div class="card-b" style="padding-bottom:0">'+pills+'</div>'
   +'<table><thead><tr><th>Donor</th><th>Date</th><th>Fund</th><th class="r">Amount</th><th>Status</th><th class="r">Action</th></tr></thead><tbody>'
-  +(rows.length?rows.map(g=>'<tr class="clk" onclick="openRecord(\''+g.did+'\')"><td class="t-name">'+esc(g.donor)+'</td><td>'+esc(g.date)+'</td><td>'+esc(g.fund)+'</td><td class="r tnum">'+usd(g.amount)+'</td><td>'+statusBadge(g.status)+'</td><td class="r"><button class="btn btn-sec btn-sm" onclick="event.stopPropagation();openRecord(\''+g.did+'\')">Open</button></td></tr>').join(''):'<tr><td colspan="6"><div class="t-sub" style="padding:8px">No gifts in range.</div></td></tr>')
+  +(rows.length?rows.map(g=>'<tr class="clk" onclick="openRecord(\''+g.did+'\')"><td class="t-name">'+esc(g.donor)+'</td><td>'+esc(g.date)+'</td><td>'+esc(g.fund)+'</td><td class="r tnum">'+usd(g.amount)+'</td><td>'+statusBadge(g.status)+'</td><td class="r">'+rowMenu([{l:'Open record',ic:'user',fn:'openRecord(\''+g.did+'\')'},{l:'Pre-meeting prep',ic:'spark',fn:'openPrep(\''+g.did+'\')'}])+'</td></tr>').join(''):'<tr><td colspan="6"><div class="t-sub" style="padding:8px">No gifts in range.</div></td></tr>')
   +'</tbody></table></div>';
 }
 function giftsTableCard(title,rows,canReceipt){
  return '<div class="card"><div class="card-h"><b>'+title+'</b><span class="muted">'+rows.length+' gifts</span></div>'
  +'<table><thead><tr><th>Donor</th><th>Date</th><th>Fund</th><th class="r">Amount</th><th>Credit</th><th>Status</th><th class="r">Action</th></tr></thead><tbody>'
  +rows.map(g=>'<tr class="clk" onclick="openRecord(\''+g.did+'\')"><td class="t-name">'+esc(g.donor)+'</td><td>'+g.date+'</td><td>'+esc(g.fund)+'</td><td class="r tnum">'+usd(g.amount)+'</td><td>'+creditBadge(g.credit)+'</td><td>'+statusBadge(g.status)+'</td>'
-   +'<td class="r"><button class="btn btn-sec btn-sm" onclick="event.stopPropagation();openRecord(\''+g.did+'\')">Open</button></td></tr>').join('')
+   +'<td class="r">'+rowMenu([{l:'Open record',ic:'user',fn:'openRecord(\''+g.did+'\')'},{l:'Pre-meeting prep',ic:'spark',fn:'openPrep(\''+g.did+'\')'}])+'</td></tr>').join('')
  +'</tbody></table></div>';
 }
 function portfolioCard(){
@@ -980,10 +980,10 @@ function portfolioCard(){
  +'</tbody></table></div>';
 }
 function listsReadyCard(){
- return '<div class="card"><div class="card-h"><b>Lists ready to sync</b><button class="btn btn-pri btn-sm" onclick="go(\'lists\')">'+ic('plus',14)+'Build list</button></div>'
+ return '<div class="card" style="overflow:visible"><div class="card-h"><b>Lists ready to sync</b><button class="btn btn-pri btn-sm" onclick="go(\'lists\')">'+ic('plus',14)+'Build list</button></div>'
  +'<table><thead><tr><th>List</th><th>Definition</th><th class="r">Members</th><th>Status</th><th class="r">Action</th></tr></thead><tbody>'
  +SAVED_LISTS.map((l,i)=>'<tr><td class="t-name">'+esc(l.name)+'</td><td>'+esc(l.desc)+'</td><td class="r tnum">'+l.count+'</td><td>'+(l.sync.startsWith('Synced')?'<span class="badge b-green">'+esc(l.sync)+'</span>':'<span class="badge b-slate">'+esc(l.sync)+'</span>')+'</td>'
-   +'<td class="r"><button class="btn btn-pri btn-sm" onclick="downloadList(\''+esc(l.name)+'\')">'+ic('download',14)+'Mailchimp CSV</button></td></tr>').join('')
+   +'<td class="r">'+rowMenu([{l:'Download Mailchimp CSV',ic:'download',fn:'downloadList(\''+esc(l.name)+'\')'},{l:'Open in Lists',ic:'list',fn:'go(\'lists\')'}])+'</td></tr>').join('')
  +'</tbody></table></div>';
 }
 
@@ -1453,7 +1453,7 @@ function pledgeBadge(s){if(s==='Overdue')return '<span class="badge" style="back
 function pledgesDueCard(){
  return '<div class="card" style="overflow:visible"><div class="card-h"><b>Pledges coming due</b><span class="muted">'+PLEDGES.length+' open pledges</span></div>'
  +'<table><thead><tr><th>Donor</th><th>Fund</th><th class="r">Balance</th><th>Next payment</th><th class="r">Amount due</th><th>Status</th><th class="r">Action</th></tr></thead><tbody>'
- +PLEDGES.map((p,i)=>'<tr class="clk" onclick="openRecord(\''+p.did+'\')"><td class="t-name">'+esc(p.donor)+'</td><td>'+esc(p.fund)+'</td><td class="r tnum">'+usd(p.balance)+'</td><td>'+esc(p.due)+'</td><td class="r tnum">'+usd(p.amount)+'</td><td>'+pledgeBadge(p.status)+'</td><td class="r" style="white-space:nowrap" onclick="event.stopPropagation()"><button class="btn btn-pri btn-sm" onclick="pledgeReminder('+i+')">'+ic('mail',14)+'Send reminder</button> '+moreMenu([{label:'Record payment',icon:'gift',onclick:'recordPayment('+i+')'},{label:'Email donor',icon:'mail',onclick:'openEmail(\''+p.did+'\')'},{label:'Open record',icon:'user',onclick:'openRecord(\''+p.did+'\')'}])+'</td></tr>').join('')
+ +PLEDGES.map((p,i)=>'<tr class="clk" onclick="openRecord(\''+p.did+'\')"><td class="t-name">'+esc(p.donor)+'</td><td>'+esc(p.fund)+'</td><td class="r tnum">'+usd(p.balance)+'</td><td>'+esc(p.due)+'</td><td class="r tnum">'+usd(p.amount)+'</td><td>'+pledgeBadge(p.status)+'</td><td class="r" style="white-space:nowrap">'+rowMenu([{l:'Send reminder',ic:'mail',fn:'pledgeReminder('+i+')'},{l:'Record payment',ic:'gift',fn:'recordPayment('+i+')'},{l:'Pre-meeting prep',ic:'spark',fn:'openPrep(\''+p.did+'\')'},{l:'Open record',ic:'user',fn:'openRecord(\''+p.did+'\')'}])+'</td></tr>').join('')
  +'</tbody></table></div>';
 }
 function pledgeReminder(i){const p=PLEDGES[i];if(!p)return;toast('Pledge reminder sent to '+p.donor+' · '+usd(p.amount)+' due '+p.due,'mail');}
@@ -1506,8 +1506,8 @@ function renderPayments(){
  const pills='<div class="filters">'+payMenu('Source',state.pSource||'all',srcOpts,'setPSource')+payMenu('Date',state.pRange||'all',rngOpts,'setPRange')+payMenu('Amount',state.pSize||0,szOpts,'setPSize')+'</div>';
  setHTML('#view',header('Payments','Incoming gift payments across processors')
   +'<div class="tiles">'+tiles.map(tile).join('')+'</div>'+recoveryCard()+pills
-  +'<div class="card"><div class="card-h"><b>Payments</b><span class="muted">'+rows.length+' of '+PAYMENTS.length+'</span></div><div style="overflow-x:auto"><table><thead><tr><th>Donor</th><th>Transaction date</th><th class="r">Amount</th><th>Source</th><th class="r">Action</th></tr></thead><tbody>'
-  +(rows.length?rows.map(function(p){return '<tr class="clk" onclick="openRecord(\''+p.did+'\')"><td class="t-name">'+esc(p.donor)+'</td><td>'+esc(p.date)+'</td><td class="r tnum">'+usd(p.amount)+'</td><td>'+sourceBadge(p.source)+'</td><td class="r"><button class="btn btn-sec btn-sm" onclick="event.stopPropagation();openRecord(\''+p.did+'\')">Open</button></td></tr>';}).join(''):'<tr><td colspan="5"><div class="t-sub" style="padding:8px">No payments match these filters.</div></td></tr>')
+  +'<div class="card" style="overflow:visible"><div class="card-h"><b>Payments</b><span class="muted">'+rows.length+' of '+PAYMENTS.length+'</span></div><div><table><thead><tr><th>Donor</th><th>Transaction date</th><th class="r">Amount</th><th>Source</th><th class="r">Action</th></tr></thead><tbody>'
+  +(rows.length?rows.map(function(p){return '<tr class="clk" onclick="openRecord(\''+p.did+'\')"><td class="t-name">'+esc(p.donor)+'</td><td>'+esc(p.date)+'</td><td class="r tnum">'+usd(p.amount)+'</td><td>'+sourceBadge(p.source)+'</td><td class="r">'+rowMenu([{l:'Open record',ic:'user',fn:'openRecord(\''+p.did+'\')'},{l:'Pre-meeting prep',ic:'spark',fn:'openPrep(\''+p.did+'\')'}])+'</td></tr>';}).join(''):'<tr><td colspan="5"><div class="t-sub" style="padding:8px">No payments match these filters.</div></td></tr>')
   +'</tbody></table></div></div>');
 }
 const REC={active:1180,mrr:49500,newM:42,churnedM:18,annual:594000,trend:[44,45.5,46.2,47.8,48.6,49.5],trendM:['Dec','Jan','Feb','Mar','Apr','May']};
@@ -1596,7 +1596,7 @@ function renderLists(){
   +(res.length?res.map(c=>{const cf=state.listConf[c.id]||c.confidence||0;return '<tr><td class="t-name">'+esc(c.name)+'</td><td>'+esc(c.email)+'</td><td>'+esc(c.city)+'</td><td>'+esc(c.zip)+'</td><td class="r tnum">'+usd(c.lifetime)+'</td><td class="r" style="white-space:nowrap"><details class="menu"><summary class="btn btn-sec btn-sm" style="display:inline-flex;align-items:center;gap:6px">Actions<span style="display:inline-flex;transform:rotate(90deg)">'+ic('chev',12)+'</span></summary><div class="menu-pop" style="right:0;left:auto;min-width:210px">'+[{l:'Open record',ic:'grid',fn:'openRecord(\''+c.id+'\')'},{l:'Pre-meeting prep',ic:'spark',fn:'openPrep(\''+c.id+'\')'}].concat(can('email')?[{l:'Send email',ic:'mail',fn:'openEmail(\''+c.id+'\')'}]:[]).map(it=>'<div class="menu-item" onclick="this.closest(\'details\').open=false;'+it.fn+'">'+ic(it.ic,15)+it.l+'</div>').join('')+'<div class="menu-lbl">'+(c.stage?('In pipeline'+(cf?' · '+cf+'%':'')):'Add to pipeline')+'</div>'+[[10,'Low · 10%'],[30,'Medium · 30%'],[60,'Likely · 60%'],[85,'Strong · 85%'],[100,'Committed · 100%']].map(o=>'<div class="menu-item" onclick="this.closest(\'details\').open=false;addListToPipeline(\''+c.id+'\','+o[0]+')">'+(cf===o[0]?ic('check',14):'<span style="display:inline-block;width:14px"></span>')+o[1]+'</div>').join('')+'</div></details></td></tr>';}).join(''):'<tr><td colspan="6"><div class="t-sub" style="padding:8px">No matches — loosen the filters.</div></td></tr>')
   +'</tbody></table></div>';
  const saved='<div class="card" style="overflow:visible"><div class="card-h"><b>Saved lists</b></div><table><thead><tr><th>List</th><th>Definition</th><th class="r">Members</th><th>Mailchimp</th><th class="r">Action</th></tr></thead><tbody>'
-  +SAVED_LISTS.map((l,i)=>'<tr><td class="t-name">'+esc(l.name)+'</td><td>'+esc(l.desc)+'</td><td class="r tnum">'+l.count+'</td><td>'+(l.sync.startsWith('Synced')?'<span class="badge b-green">'+esc(l.sync)+'</span>':'<span class="badge b-slate">'+esc(l.sync)+'</span>')+'</td><td class="r" style="white-space:nowrap">'+(can('bulk')?'<button class="btn btn-sec btn-sm" onclick="bulkSaved('+i+')">'+ic('send',14)+'Message</button> ':'')+moreMenu([{label:'Download to CSV',icon:'download',onclick:'csvSaved('+i+')'},{label:'Push to Mailchimp',icon:'mail',onclick:'pushSavedMC('+i+')'}])+'</td></tr>').join('')
+  +SAVED_LISTS.map((l,i)=>'<tr><td class="t-name">'+esc(l.name)+'</td><td>'+esc(l.desc)+'</td><td class="r tnum">'+l.count+'</td><td>'+(l.sync.startsWith('Synced')?'<span class="badge b-green">'+esc(l.sync)+'</span>':'<span class="badge b-slate">'+esc(l.sync)+'</span>')+'</td><td class="r" style="white-space:nowrap">'+rowMenu((can('bulk')?[{l:'Send message',ic:'send',fn:'bulkSaved('+i+')'}]:[]).concat([{l:'Download to CSV',ic:'download',fn:'csvSaved('+i+')'},{l:'Push to Mailchimp',ic:'mail',fn:'pushSavedMC('+i+')'}]))+'</td></tr>').join('')
   +'</tbody></table></div>';
  setHTML('#view',header('Lists','Build a custom list, then send a bulk message or export it to Mailchimp')+aiCard+builder+result+saved);
 }
@@ -1607,6 +1607,7 @@ function downloadBlob(fn,content,mime){const b=new Blob([content],{type:mime||'t
 function downloadCSVrows(){const list=listFiltered();if(!list.length){toast('No constituents match — adjust filters');return;}downloadBlob('Risely_Mailchimp_Segment.csv',rowsToCSV(mcRows(list)),'text/csv');toast(list.length+' contacts exported — ready to import into Mailchimp','download');}
 function downloadList(name){downloadBlob('Risely_'+name.replace(/[^A-Za-z0-9]+/g,'_')+'.csv',rowsToCSV(mcRows(C.slice())),'text/csv');toast('“'+name+'” exported for Mailchimp','download');}
 function moreMenu(items){return '<details class="menu"><summary class="btn btn-sec btn-sm">More actions <span style="display:inline-flex;vertical-align:middle;transform:rotate(90deg)">'+ic('chev',13)+'</span></summary><div class="menu-pop">'+items.map(it=>'<div class="menu-item" onclick="this.closest(\'details\').open=false;'+it.onclick+'">'+ic(it.icon,15)+it.label+'</div>').join('')+'</div></details>';}
+function rowMenu(items){return '<details class="menu" onclick="event.stopPropagation()"><summary class="btn btn-sec btn-sm" style="display:inline-flex;align-items:center;gap:6px">Actions<span style="display:inline-flex;transform:rotate(90deg)">'+ic('chev',12)+'</span></summary><div class="menu-pop" style="right:0;left:auto">'+items.map(it=>'<div class="menu-item" onclick="this.closest(\'details\').open=false;'+it.fn+'">'+ic(it.ic,15)+it.l+'</div>').join('')+'</div></details>';}
 function pushMailchimp(n,name){const dest=state.settings.inbox==='Mailchimp'?'Mailchimp':'Mailchimp';toast(n+' contacts pushed to '+dest+(name?' · audience “'+name+'”':''),'mail');}
 function pushSegmentMC(){const l=listFiltered();if(!l.length){toast('No constituents match — adjust filters');return;}pushMailchimp(l.length,'Risely segment');}
 function pushSavedMC(i){const l=SAVED_LISTS[i];if(!l)return;pushMailchimp(l.count,l.name);}
