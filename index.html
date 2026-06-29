@@ -139,15 +139,16 @@ tbody tr.clk:hover{background:var(--bg);cursor:pointer}
 .dw-x:hover{background:var(--bg);color:var(--navy)}
 
 /* Modal */
-#modalRoot{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:70;padding:22px}
+#modalRoot{position:fixed;inset:0;display:none;justify-content:flex-end;z-index:70}
 #modalRoot.on{display:flex}
 .mback{position:absolute;inset:0;background:rgba(15,23,42,.5)}
-.modal{position:relative;background:#fff;border-radius:18px;box-shadow:var(--sh-lg);width:580px;max-width:96vw;max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
-.modal.wide{width:720px}
+.modal{position:relative;background:#fff;border-left:1px solid var(--line);box-shadow:var(--sh-lg);width:480px;max-width:94vw;height:100vh;max-height:100vh;display:flex;flex-direction:column;overflow:hidden;animation:mslide .22s ease}
+.modal.wide{width:640px}
+@keyframes mslide{from{transform:translateX(30px);opacity:.5}to{transform:translateX(0);opacity:1}}
 .modal-h{padding:18px 22px;border-bottom:1px solid var(--line2);display:flex;align-items:center;gap:12px}
 .modal-h b{font-size:16px;font-weight:800;color:var(--navy)}
 .modal-h .sub{font-size:12.5px;color:var(--slate5);font-weight:500}
-.modal-b{padding:22px;overflow:auto}
+.modal-b{padding:22px;overflow:auto;flex:1}
 .modal-f{padding:15px 22px;border-top:1px solid var(--line2);display:flex;justify-content:flex-end;gap:10px;background:var(--bg)}
 .mx{margin-left:auto;background:none;border:none;color:var(--slate4);width:32px;height:32px;border-radius:9px}
 .mx:hover{background:var(--bg);color:var(--navy)}
@@ -244,6 +245,47 @@ input[type=checkbox]{accent-color:var(--blue);width:16px;height:16px;cursor:poin
 .prob{height:6px;border-radius:3px;background:var(--line2);overflow:hidden;margin-top:9px}
 .prob>i{display:block;height:100%;background:var(--blue)}
 .kcard .kfoot{display:flex;align-items:center;justify-content:space-between;margin-top:9px;font-size:11.5px;color:var(--slate5)}
+.kcard .kwhy{display:flex;gap:5px;align-items:flex-start;font-size:11px;color:var(--blue-d);background:var(--blue-l);border-radius:7px;padding:6px 7px;margin-top:9px;line-height:1.35}
+.kcard .kwhy svg{flex:none;margin-top:1px}
+.kcard .kacts{display:flex;gap:6px;margin-top:8px}
+.kbtn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:4px;font-size:11.5px;font-weight:600;color:var(--slate6);background:#fff;border:1px solid var(--line);border-radius:7px;padding:5px 6px;cursor:pointer}
+.kbtn:hover{border-color:var(--blue);color:var(--blue-d);background:var(--blue-l)}
+.kcard.ai{border:1.5px dashed #C4B5FD;background:linear-gradient(180deg,#FAF5FF,#FFFFFF)}
+.kcard.ai:hover{border-color:#A78BFA}
+.ai-tag{display:inline-flex;align-items:center;gap:4px;font-size:9.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#7C3AED;background:#F3E8FF;border-radius:20px;padding:2px 8px;margin-bottom:7px}
+.ai-tag svg{flex:none}
+.ai-score{font-size:11px;font-weight:700;margin-left:6px}
+.kcard .aiadd{width:100%;margin-top:8px;justify-content:center}
+.ai-lane-h{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#7C3AED;margin:2px 0 9px}
+.ai-lane-h svg{flex:none}
+.aibrief{margin:10px 16px 4px;padding:9px 12px;background:linear-gradient(90deg,var(--blue-l),#fff);border:1px solid var(--blue-l2);border-radius:10px;font-size:12.5px;color:var(--blue-d);font-weight:600;display:flex;gap:6px;align-items:flex-start;line-height:1.4}
+.rt{display:flex;gap:14px;align-items:center;padding:12px 4px;border-bottom:1px solid var(--line2);cursor:pointer}
+.rt:last-child{border-bottom:none}
+.rt:hover{background:var(--blue-l);border-radius:10px}
+.rt-score{flex:none;width:52px;text-align:center}
+.rt-score .rs-n{font-size:21px;font-weight:800;line-height:1}
+.rt-score .rs-l{font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--slate5);margin-top:2px}
+.rt-main{flex:1;min-width:0}
+.rt-top{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.rt-top b{color:var(--navy);font-size:14px}
+.rt-why{display:flex;gap:6px;align-items:flex-start;font-size:12px;color:var(--slate6);margin-top:4px;line-height:1.4}
+.rt-why svg{flex:none;margin-top:2px;color:var(--blue)}
+.sig{font-size:10px;font-weight:700;letter-spacing:.02em;color:var(--slate6);background:var(--bg);border:1px solid var(--line);border-radius:20px;padding:2px 8px}
+.rt-right{flex:none;text-align:right;display:flex;flex-direction:column;gap:7px;align-items:flex-end}
+.rt-ask{font-size:11.5px;color:var(--slate5)}.rt-ask b{display:block;color:var(--navy);font-size:15px}
+.rt-acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.aitag{font-size:10px;font-weight:700;color:#7C3AED;background:#F3E8FF;border-radius:20px;padding:1px 7px;margin-left:6px}
+.engchk{display:flex;flex-direction:column;gap:7px;padding-top:4px}
+.engchk label{display:flex;gap:7px;align-items:center;font-size:13px;color:var(--navy);font-weight:500;cursor:pointer}
+.nba-count{margin-left:auto;background:var(--blue);color:#fff;font-weight:800;border-radius:999px;min-width:30px;height:26px;display:inline-flex;align-items:center;justify-content:center;padding:0 10px;font-size:14px}
+.rt-desc{font-size:12.5px;color:var(--slate6);margin-top:5px;line-height:1.45}
+.tchip{font-size:10.5px;font-weight:800;letter-spacing:.02em;border-radius:20px;padding:2px 9px;white-space:nowrap}
+.scorepill{display:inline-flex;align-items:center;justify-content:center;min-width:32px;height:24px;border:1.5px solid;border-radius:7px;font-weight:800;font-size:13px}
+.hstats{display:flex;gap:10px;flex-wrap:wrap}
+.hstat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 15px;box-shadow:var(--sh);text-align:left;min-width:118px}
+.hstat .hl{font-size:11px;color:var(--slate5);font-weight:600;margin-bottom:2px}
+.hstat .hv{font-size:20px;font-weight:800;color:var(--navy)}
+.hstat .hv span{font-size:12px;font-weight:600;color:var(--slate5)}
 .miniav{width:22px;height:22px;border-radius:50%;background:var(--blue-l);color:var(--blue-d);font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center}
 
 /* Analytics bars */
@@ -355,7 +397,8 @@ const IC={
  chev:'<path d="m9 18 6-6-6-6"/>',
  cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
  book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
- cap:'<path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1 2.5 2.5 6 2.5s6-1.5 6-2.5v-5"/>'
+ cap:'<path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1 2.5 2.5 6 2.5s6-1.5 6-2.5v-5"/>',
+ phone:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>'
 };
 function ic(n,s){s=s||18;return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(IC[n]||'')+'</svg>';}
 
@@ -370,11 +413,11 @@ function memberByPersona(p){return TEAM.find(t=>t.persona===p);}
 
 /* ---------- Personas ---------- */
 const PERSONAS={
- admin:{label:'Admin',sub:'Gift Entry',color:'#B07A4B',views:['dashboard','constituents','gifts','forecast','inbox'],
+ admin:{label:'Admin',sub:'Gift Entry',color:'#B07A4B',views:['dashboard','constituents','gifts','payments','forecast','inbox'],
    actions:['note','gift']},
- officer:{label:'Gift Officer',sub:'Major Gifts',color:'#2563EB',views:['dashboard','constituents','pipeline','gifts','lists','forecast','inbox'],
+ officer:{label:'Gift Officer',sub:'Major Gifts',color:'#2563EB',views:['dashboard','constituents','pipeline','nba','gifts','lists','forecast','inbox'],
    actions:['note','email','deck','voice','gift','bulk','list']},
- director:{label:'Gift Director',sub:'Advancement',color:'#2D6A4F',views:['dashboard','constituents','pipeline','gifts','lists','analytics','forecast','inbox'],
+ director:{label:'Gift Director',sub:'Advancement',color:'#2D6A4F',views:['dashboard','constituents','pipeline','nba','gifts','payments','lists','analytics','forecast','inbox'],
    actions:['note','email','deck','voice','gift','bulk','list']},
  marketing:{label:'Marketing',sub:'Engagement',color:'#9333EA',views:['dashboard','constituents','lists','events','bookstore','courses','inbox'],
    actions:['note','bulk','list']}
@@ -385,6 +428,7 @@ const NAV=[
    {k:'constituents',label:'Constituents',icon:'users'},
    {k:'pipeline',label:'Pipeline',icon:'target'},
    {k:'gifts',label:'Gifts',icon:'gift'},
+   {k:'payments',label:'Payments',icon:'receipt'},
    {k:'events',label:'Events',icon:'cal'},
    {k:'bookstore',label:'Bookstore',icon:'book'},
    {k:'courses',label:'Courses',icon:'cap'},
@@ -542,6 +586,17 @@ const C=[
  }
 ];
 C.forEach(c=>{c.rel=(c.relationships||[]).length;c.presentations=c.presentations||[];});
+/* ---- Cross-channel engagement (matched by email): events, Thinkific courses, bookstore ---- */
+const ENGAGE={
+ ahmad:{events:['Founders Dinner 2026','Rihla Spring Lecture'],courses:[],books:[{t:'Purification of the Heart',amt:21},{t:'The Prayer of the Oppressed',amt:24}]},
+ fatima:{events:['Founders Dinner 2026'],courses:['Quranic Sciences'],books:[{t:'Being Muslim: A Practical Guide',amt:18}]},
+ omar:{events:['Founders Dinner 2026'],courses:[],books:[]},
+ layla:{events:['Rihla Spring Lecture'],courses:[],books:[{t:'Agenda to Change Our Condition',amt:20}]},
+ mariam:{events:[],courses:['Foundations of Islamic Theology'],books:[{t:'Suns of Scripture',amt:20}]},
+ yusuf:{events:['Alumni Reunion — Bay Area'],courses:['Arabic I — Grammar','Logic & Critical Thinking'],books:[]},
+ aisha:{events:['Ramadan Iftar Series','Rihla Spring Lecture'],courses:['Quranic Sciences'],books:[{t:'Being Muslim: A Practical Guide',amt:18},{t:'Zaytuna Curriculum Reader',amt:38}]}
+};
+C.forEach(c=>{const e=ENGAGE[c.id]||{};c.events=e.events||[];c.courses=e.courses||[];c.books=e.books||[];});
 byId('ahmad').presentations=[{title:'Endowment naming proposal',by:'imran',date:'Jun 20, 2026 · PT',status:'Sent',ask:500000}];
 byId('omar').presentations=[{title:'Graduate Women’s Residence — naming proposal',by:'imran',date:'Jun 24, 2026 · PT',status:'Sent',ask:750000},{title:'Campus visit follow-up deck',by:'imran',date:'Jun 25, 2026 · PT',status:'Downloaded',ask:750000}];
 function byId(id){return C.find(c=>c.id===id);}
@@ -591,6 +646,8 @@ const SAVED_LISTS=[
  {name:'Berkeley Alumni',desc:'Constituents in 94703 / 94704 with alumni role',sync:'Not synced',members:['ahmad','fatima','aisha','yusuf']},
  {name:'Lapsed Annual Fund',desc:'No gift in 13+ months',sync:'Synced yesterday',members:['yusuf','aisha','mariam']}
 ];
+SAVED_LISTS.unshift({name:'Bookstore buyers — FY26',desc:'Purchased from the bookstore this year',sync:'Not synced',members:C.filter(c=>(c.books||[]).length).map(c=>c.id)});
+SAVED_LISTS.unshift({name:'Event attendees — FY26',desc:'Attended ≥1 event this year',sync:'Not synced',members:C.filter(c=>(c.events||[]).length).map(c=>c.id)});
 SAVED_LISTS.forEach(l=>{l.count=(l.members||[]).length;});
 
 /* Inbox (@mention review queue) */
@@ -607,8 +664,8 @@ let BULK_SENDS=[
 
 /* ---------- State ---------- */
 const state={persona:'admin',view:'dashboard',recordId:null,tab:'overview',drawerId:null,
- cFilter:'all',cLifetime:0,gFilter:'all',gFund:'all',gSize:0,dashFilter:'fy26',inboxFilter:'unread',selected:new Set(),bulk:null,forecastId:null,fcFilter:'all',catDraft:null,anTab:'revenue',fcExpanded:new Set(),catExpanded:new Set(),inboxCat:'mentions',settings:{tz:'America/Los_Angeles',inbox:null},
- wizard:null,voice:null,list:{type:'all',minLt:0,fund:'all',zip:'',recency:'all',result:null}};
+ cFilter:'all',cLifetime:0,gFilter:'all',gFund:'all',gSize:0,gRange:'all',pSource:'all',pRange:'all',pSize:0,nbaType:'all',dashSeg:'nba',dpStage:'all',dplStatus:'all',dgFund:'all',dashFilter:'fy26',inboxFilter:'unread',selected:new Set(),bulk:null,forecastId:null,fcFilter:'all',catDraft:null,anTab:'revenue',fcExpanded:new Set(),catExpanded:new Set(),inboxCat:'mentions',settings:{tz:'America/Los_Angeles',inbox:null},
+ wizard:null,voice:null,list:{type:'all',minLt:0,fund:'all',zip:'',recency:'all',ev:false,books:false,course:false,result:null}};
 
 /* ---------- Money helpers ---------- */
 function usd(n){return '$'+Math.round(n).toLocaleString('en-US');}
@@ -708,7 +765,9 @@ function render(){
  if(v==='dashboard')return renderDashboard();
  if(v==='constituents')return renderConstituents();
  if(v==='pipeline')return renderPipeline();
+ if(v==='nba')return renderNBA();
  if(v==='gifts')return renderGifts();
+ if(v==='payments')return renderPayments();
  if(v==='events')return renderEvents();
  if(v==='bookstore')return renderBookstore();
  if(v==='courses')return renderCourses();
@@ -739,8 +798,8 @@ function fmtMentions(t){let s=esc(t);TEAM.forEach(m=>{s=s.split('@'+m.name).join
 function renderDashboard(){
  const me=memberByPersona(state.persona);
  const P=PERSONAS[state.persona];
- let banner='',tiles=[],body='',headBtn='';
- const filters='<div class="filters">'+['This week','This month','This quarter','FY26'].map(f=>{
+ let banner='',tiles=[],body='',headBtn='',headStats='';
+ let filters='<div class="filters">'+['This week','This month','This quarter','FY26'].map(f=>{
    const k=f.toLowerCase();return '<button class="fpill '+(state.dashFilter===k?'on':'')+'" onclick="state.dashFilter=\''+k+'\';render()">'+f+'</button>';}).join('')+'</div>';
 
  if(state.persona==='admin'){
@@ -755,19 +814,11 @@ function renderDashboard(){
  }else if(state.persona==='officer'){
    const u=INBOX.filter(i=>i.to==='officer'&&!i.read).length;const pd=PLEDGES.filter(p=>p.status!=='Scheduled');
    banner='<div class="banner"><div class="bi">'+ic('inbox')+'</div><div class="btext"><b>'+u+' @mentions awaiting your review.</b> Shams asked about moving Layla to solicitation.</div><div class="bx"><button class="btn btn-pri btn-sm" onclick="go(\'inbox\')">Open Inbox</button></div></div>';
-   tiles=[{l:'Pledges due',v:pd.length,d:usd(pd.reduce((s,p)=>s+p.amount,0))+' · next 60d'},
-     {l:'My prospects',v:prospects().filter(c=>c.stage!=='stewardship').length,d:usdK(pipelineWeighted())+' weighted',sel:'pipeline'},
-     {l:'Asks out',v:C.filter(c=>c.stage==='solicitation').length,d:'In solicitation'},
-     {l:'Recurring MRR',v:usdK(REC.mrr),d:REC.active.toLocaleString()+' donors'}];
-   body=pledgesDueCard()+recurringSummaryCard();
+   tiles=dashTiles();body=dashTable();filters='';headStats=dashHeadStats();
  }else if(state.persona==='director'){
    const pd=PLEDGES.filter(p=>p.status!=='Scheduled');
    banner='<div class="banner"><div class="bi">'+ic('chart')+'</div><div class="btext"><b>Full advancement reporting lives in Analytics.</b> Board report due Jun 30 · pipeline at 92% of the FY26 goal.</div><div class="bx"><button class="btn btn-pri btn-sm" onclick="go(\'analytics\')">Open Advancement Dashboard</button></div></div>';
-   tiles=[{l:'Pledges due',v:pd.length,d:usd(pd.reduce((s,p)=>s+p.amount,0))+' · next 60d'},
-     {l:'Active prospects',v:prospects().filter(c=>c.stage!=='stewardship').length,d:usdK(pipelineWeighted())+' weighted',sel:'pipeline'},
-     {l:'Recurring MRR',v:usdK(REC.mrr),d:REC.active.toLocaleString()+' donors'},
-     {l:'Raised FY26',v:usdK(totalRaised()),d:'+18% vs FY25',up:true}];
-   body=pledgesDueCard()+recurringSummaryCard();
+   tiles=dashTiles();body=dashTable();filters='';headStats=dashHeadStats();
  }else{ // marketing
    banner='<div class="banner"><div class="bi">'+ic('mail')+'</div><div class="btext"><b>Connect Mailchimp</b> to auto-sync engagement lists — you can do this anytime in Settings.</div><div class="bx"><button class="btn btn-pri btn-sm" onclick="toast(\'Mailchimp connect is illustrative\')">Connect</button><button class="btn btn-sec btn-sm" onclick="toast(\'Snoozed\')">Snooze</button></div></div>';
    tiles=[{l:'Subscribers',v:'3,210',d:'+124 this month',up:true},
@@ -779,15 +830,101 @@ function renderDashboard(){
 
  setHTML('#view',
    '<div class="hrow"><div><div class="page-h">Good afternoon, '+me.name.split(' ')[0]+'</div>'
-   +'<div class="page-sub">'+P.label+' · '+P.sub+' workspace — Friday, Jun 26, 2026 · PT</div></div>'+headBtn+'</div>'
+   +'<div class="page-sub">'+P.label+' · '+P.sub+' workspace — Friday, Jun 26, 2026 · PT</div></div>'+headStats+headBtn+'</div>'
    +banner
    +'<div class="tiles">'+tiles.map(t=>tile(t)).join('')+'</div>'
    +filters+body);
 }
 function tile(t){
- return '<div class="tile '+(t.sel?'sel':'')+'" '+(t.sel?'onclick="go(\''+t.sel+'\')"':'')+'>'
+ const active=t.seg&&(state.dashSeg||'nba')===t.seg;
+ const click=t.seg?'onclick="state.dashSeg=\''+t.seg+'\';render()"':(t.sel?'onclick="go(\''+t.sel+'\')"':'');
+ return '<div class="tile '+((t.sel||t.seg)?'sel':'')+(active?' on':'')+'" '+click+'>'
    +'<div class="tl">'+t.l+'</div><div class="tv tnum">'+t.v+'</div>'
    +(t.d?'<div class="td '+(t.up?'up':'')+'">'+t.d+'</div>':'')+'</div>';
+}
+/* ---- Officer/Director command dashboard: stat cards drive one filterable table ---- */
+function dashTiles(){
+ const me=memberByPersona(state.persona);const mine=state.persona==='officer';
+ const prosp=prospects().filter(c=>c.stage!=='stewardship'&&(!mine||c.officer===me.name));
+ const asks=C.filter(c=>c.stage==='solicitation'&&(!mine||c.officer===me.name));
+ const pd=PLEDGES.filter(p=>p.status!=='Scheduled');
+ return [
+  {seg:'nba',l:'Next Best Action',v:NBA.length,d:'AI-prioritized'},
+  {seg:'prospects',l:mine?'My prospects':'Active prospects',v:prosp.length,d:usdK(prosp.reduce((s,c)=>s+(c.ask||0),0))+' open'},
+  {seg:'pledges',l:'Upcoming pledges',v:pd.length,d:usd(pd.reduce((s,p)=>s+p.amount,0))+' · 60d'},
+  {seg:'asks',l:'Asks pending',v:asks.length,d:'In solicitation'}
+ ];
+}
+function dashHeadStats(){const me=memberByPersona(state.persona);const mine=state.persona==='officer';
+ const gq=giftsInRange('qtd',mine?me.name:null),gy=giftsInRange('ytd',mine?me.name:null);
+ const stat=(l,n,amt)=>'<div class="hstat"><div class="hl">'+l+'</div><div class="hv tnum">'+n+'<span> · '+usdK(amt)+'</span></div></div>';
+ return '<div class="hstats">'+stat('Gifts closed QTD',gq.length,gq.reduce((s,g)=>s+g.amount,0))+stat('Gifts closed YTD',gy.length,gy.reduce((s,g)=>s+g.amount,0))+'</div>';
+}
+function dashTable(){const seg=state.dashSeg||'nba';
+ if(seg==='prospects')return prospectTableCard();
+ if(seg==='pledges')return pledgeTableCard();
+ if(seg==='asks')return askTableCard();
+ if(seg==='giftsQTD')return giftRangeCard('qtd');
+ if(seg==='giftsYTD')return giftRangeCard('ytd');
+ return nbaTableCard();
+}
+function giftDate(g){return new Date(g.date);}
+function giftsInRange(range,officerName){const start=range==='qtd'?new Date('2026-04-01'):new Date('2025-08-01');let r=GIFTS.filter(g=>giftDate(g)>=start);if(officerName)r=r.filter(g=>{const c=byId(g.did);return c&&c.officer===officerName;});return r;}
+function nbaTypeChip(t){const col=nbaTypeColor(t);return '<span class="tchip" style="color:'+col+';background:'+col+'22">'+esc(t)+'</span>';}
+function nbaTableCard(){
+ const byType={};NBA.forEach(x=>{byType[x.type]=(byType[x.type]||0)+1;});
+ const f=state.nbaType||'all';const types=['all'].concat(Object.keys(byType));
+ const pills='<div class="filters">'+types.map(t=>'<button class="fpill '+(f===t?'on':'')+'" onclick="state.nbaType=\''+t+'\';render()">'+(t==='all'?'All ('+NBA.length+')':esc(t)+' ('+byType[t]+')')+'</button>').join('')+'</div>';
+ let rows=NBA.slice().sort((a,b)=>b.score-a.score);if(f!=='all')rows=rows.filter(x=>x.type===f);
+ return '<div class="card" style="overflow:visible"><div class="card-h"><b>Next Best Action</b><span class="muted">'+rows.length+' of '+NBA.length+'</span></div>'
+  +'<div class="card-b" style="padding-bottom:0">'+pills+'</div>'
+  +'<table><thead><tr><th>Score</th><th>Donor</th><th class="r">Lifetime</th><th>Recommended action</th><th>Type</th><th>Gift type</th><th class="r">Action</th></tr></thead><tbody>'
+  +rows.map(x=>{const i=NBA.indexOf(x);return '<tr '+(x.did?'class="clk" onclick="openRecord(\''+x.did+'\')"':'')+'><td><span class="scorepill" style="color:'+scoreColor(x.score)+';border-color:'+scoreColor(x.score)+'55">'+x.score+'</span></td><td class="t-name">'+esc(x.name)+'</td><td class="r tnum">'+usdK(x.lifetime)+'</td><td style="max-width:330px"><div class="t-sub" style="white-space:normal;line-height:1.45">'+esc(x.desc)+'</div></td><td>'+nbaTypeChip(x.type)+'</td><td>'+esc(x.gift)+'</td><td class="r" style="white-space:nowrap">'+nbaActions(x,i)+'</td></tr>';}).join('')
+  +'</tbody></table></div>';
+}
+function prospectTableCard(){
+ const me=memberByPersona(state.persona);const mine=state.persona==='officer';
+ let base=prospects().filter(c=>c.stage!=='stewardship'&&(!mine||c.officer===me.name));
+ const f=state.dpStage||'all';const order=STAGES.map(s=>s.key);
+ const pills='<div class="filters"><button class="fpill '+(f==='all'?'on':'')+'" onclick="state.dpStage=\'all\';render()">All ('+base.length+')</button>'+order.map(k=>{const o=stageObj(k);const n=base.filter(c=>c.stage===k).length;return '<button class="fpill '+(f===k?'on':'')+'" onclick="state.dpStage=\''+k+'\';render()">'+o.name+' ('+n+')</button>';}).join('')+'</div>';
+ let rows=base;if(f!=='all')rows=rows.filter(c=>c.stage===f);
+ return '<div class="card"><div class="card-h"><b>'+(mine?'My prospects':'Active prospects')+'</b><span class="muted">'+rows.length+' of '+base.length+'</span></div>'
+  +'<div class="card-b" style="padding-bottom:0">'+pills+'</div>'
+  +'<table><thead><tr><th>Prospect</th><th>Stage</th><th class="r">Ask</th><th>Focus</th><th>Officer</th><th class="r">Action</th></tr></thead><tbody>'
+  +(rows.length?rows.map(c=>{const s=stageObj(c.stage);return '<tr class="clk" onclick="openRecord(\''+c.id+'\')"><td class="t-name">'+esc(c.name)+'<div class="t-sub">'+esc(c.title)+'</div></td><td><span class="badge" style="background:'+s.color+'22;color:'+s.color+'">'+s.name+'</span></td><td class="r tnum">'+usd(c.ask)+'</td><td>'+esc(c.fundInterest||'—')+'</td><td>'+esc((c.officer||'—').split(' ')[0])+'</td><td class="r" style="white-space:nowrap"><button class="btn btn-sec btn-sm" onclick="event.stopPropagation();aiEmail(\''+c.id+'\')">'+ic('mail',14)+'Email</button><button class="btn btn-pri btn-sm" onclick="event.stopPropagation();openRecord(\''+c.id+'\')">Open</button></td></tr>';}).join(''):'<tr><td colspan="6"><div class="t-sub" style="padding:8px">No prospects in this stage.</div></td></tr>')
+  +'</tbody></table></div>';
+}
+function pledgeTableCard(){
+ let base=PLEDGES.filter(p=>p.status!=='Scheduled');
+ const f=state.dplStatus||'all';const opts=[['all','All'],['Due soon','Due soon'],['Overdue','Overdue']];
+ const pills='<div class="filters">'+opts.map(o=>{const n=o[0]==='all'?base.length:base.filter(p=>p.status===o[0]).length;return '<button class="fpill '+(f===o[0]?'on':'')+'" onclick="state.dplStatus=\''+o[0]+'\';render()">'+o[1]+' ('+n+')</button>';}).join('')+'</div>';
+ let rows=base;if(f!=='all')rows=rows.filter(p=>p.status===f);
+ return '<div class="card"><div class="card-h"><b>Upcoming pledges</b><span class="muted">'+rows.length+' of '+base.length+'</span></div>'
+  +'<div class="card-b" style="padding-bottom:0">'+pills+'</div>'
+  +'<table><thead><tr><th>Donor</th><th>Fund</th><th class="r">Amount due</th><th>Due</th><th>Status</th><th class="r">Action</th></tr></thead><tbody>'
+  +rows.map(p=>'<tr class="clk" onclick="openRecord(\''+p.did+'\')"><td class="t-name">'+esc(p.donor)+'</td><td>'+esc(p.fund)+'</td><td class="r tnum">'+usd(p.amount)+'</td><td>'+esc(p.due)+'</td><td><span class="badge '+(p.status==='Overdue'?'b-amber':'b-blue')+'">'+esc(p.status)+'</span></td><td class="r" style="white-space:nowrap"><button class="btn btn-sec btn-sm" onclick="event.stopPropagation();aiEmail(\''+p.did+'\')">'+ic('mail',14)+'Remind</button><button class="btn btn-pri btn-sm" onclick="event.stopPropagation();openRecord(\''+p.did+'\')">Open</button></td></tr>').join('')
+  +'</tbody></table></div>';
+}
+function askTableCard(){
+ const me=memberByPersona(state.persona);const mine=state.persona==='officer';
+ let rows=C.filter(c=>c.stage==='solicitation'&&(!mine||c.officer===me.name));
+ return '<div class="card"><div class="card-h"><b>Asks pending</b><span class="muted">'+rows.length+' in solicitation</span></div>'
+  +'<table><thead><tr><th>Prospect</th><th>Fund</th><th class="r">Ask</th><th>Officer</th><th class="r">Action</th></tr></thead><tbody>'
+  +(rows.length?rows.map(c=>'<tr class="clk" onclick="openRecord(\''+c.id+'\')"><td class="t-name">'+esc(c.name)+'</td><td>'+esc(c.fundInterest||'—')+'</td><td class="r tnum">'+usd(c.ask)+'</td><td>'+esc((c.officer||'—').split(' ')[0])+'</td><td class="r" style="white-space:nowrap"><button class="btn btn-sec btn-sm" onclick="event.stopPropagation();aiEmail(\''+c.id+'\')">'+ic('mail',14)+'Email</button><button class="btn btn-pri btn-sm" onclick="event.stopPropagation();openRecord(\''+c.id+'\')">Open</button></td></tr>').join(''):'<tr><td colspan="5"><div class="t-sub" style="padding:8px">No asks pending.</div></td></tr>')
+  +'</tbody></table></div>';
+}
+function giftRangeCard(range){
+ const me=memberByPersona(state.persona);const mine=state.persona==='officer';
+ const base=giftsInRange(range,mine?me.name:null);
+ const f=state.dgFund||'all';const funds=['all'].concat(Array.from(new Set(base.map(g=>g.fund))));
+ const pills='<div class="filters">'+funds.map(fd=>'<button class="fpill '+(f===fd?'on':'')+'" onclick="state.dgFund=\''+fd+'\';render()">'+(fd==='all'?'All funds ('+base.length+')':esc(fd))+'</button>').join('')+'</div>';
+ let rows=base;if(f!=='all')rows=rows.filter(g=>g.fund===f);
+ const total=rows.reduce((s,g)=>s+g.amount,0);
+ return '<div class="card"><div class="card-h"><b>Gifts closed '+(range==='qtd'?'QTD':'YTD')+'</b><span class="muted">'+rows.length+' gifts · '+usd(total)+'</span></div>'
+  +'<div class="card-b" style="padding-bottom:0">'+pills+'</div>'
+  +'<table><thead><tr><th>Donor</th><th>Date</th><th>Fund</th><th class="r">Amount</th><th>Status</th><th class="r">Action</th></tr></thead><tbody>'
+  +(rows.length?rows.map(g=>'<tr class="clk" onclick="openRecord(\''+g.did+'\')"><td class="t-name">'+esc(g.donor)+'</td><td>'+esc(g.date)+'</td><td>'+esc(g.fund)+'</td><td class="r tnum">'+usd(g.amount)+'</td><td>'+statusBadge(g.status)+'</td><td class="r"><button class="btn btn-sec btn-sm" onclick="event.stopPropagation();openRecord(\''+g.did+'\')">Open</button></td></tr>').join(''):'<tr><td colspan="6"><div class="t-sub" style="padding:8px">No gifts in range.</div></td></tr>')
+  +'</tbody></table></div>';
 }
 function giftsTableCard(title,rows,canReceipt){
  return '<div class="card"><div class="card-h"><b>'+title+'</b><span class="muted">'+rows.length+' gifts</span></div>'
@@ -896,7 +1033,7 @@ function renderRecord(){
  if(can('deck'))acts.push('<button class="btn btn-pri" onclick="openWizard(\''+c.id+'\')">'+ic('slides',15)+'Create deck</button>');
  if(can('voice'))acts.push('<button class="btn btn-sec" onclick="openVoice(\''+c.id+'\')">'+ic('mic',15)+'Voice note</button>');
  if(can('gift'))acts.push('<button class="btn btn-sec" onclick="openGiftModal(\''+c.id+'\')">'+ic('gift',15)+'Add gift</button>');
- const tabs=[['overview','Overview'],['relationships','Relationships ('+c.rel+')'],['giving','Giving History'],['notes','Notes & Activity'],['presentations','Presentations'],['receipts','Receipts']];
+ const tabs=[['overview','Overview'],['relationships','Relationships ('+c.rel+')'],['giving','Giving History'],['engagement','Engagement'],['notes','Notes & Activity'],['presentations','Presentations'],['receipts','Receipts']];
  setHTML('#view',
   '<button class="backlink" onclick="go(\'constituents\')">'+ic('back',16)+'Constituents</button>'
   +'<div class="rec-top"><div class="rec-av '+avClass(c.type)+'">'+initials(c.name)+'</div>'
@@ -914,6 +1051,7 @@ function recordTab(c){
  if(state.tab==='giving')return tabGiving(c);
  if(state.tab==='notes')return tabNotes(c);
  if(state.tab==='presentations')return tabPres(c);
+ if(state.tab==='engagement')return tabEngagement(c);
  if(state.tab==='receipts')return tabReceipts(c);
  return '';
 }
@@ -948,8 +1086,25 @@ function tabOverview(c){
   +'<div class="k">FY25 giving</div><div class="v tnum">'+usd(c.fy25)+'</div>'
   +(c.stage?'<div class="k">Pipeline</div><div class="v">'+stageObj(c.stage).name+' · ask '+usd(c.ask)+' · '+esc(c.fundInterest)+'</div>':'')
   +'</div></div></div>'
-  +'<div>'+impact+(c.hierarchy?'':'<div class="card"><div class="card-h"><b>Quick stats</b></div><div class="card-b"><div class="impact"><div class="ic"><div class="l">Lifetime</div><div class="v tnum">'+usd(c.lifetime)+'</div></div><div class="ic"><div class="l">FY25</div><div class="v tnum">'+usd(c.fy25)+'</div></div><div class="ic"><div class="l">Relationships</div><div class="v">'+c.rel+'</div></div><div class="ic"><div class="l">Gifts</div><div class="v">'+(c.giving||[]).length+'</div></div></div></div></div>')+'</div></div>';
+  +'<div>'+impact+(c.hierarchy?'':'<div class="card"><div class="card-h"><b>Quick stats</b></div><div class="card-b"><div class="impact"><div class="ic"><div class="l">Lifetime</div><div class="v tnum">'+usd(c.lifetime)+'</div></div><div class="ic"><div class="l">FY25</div><div class="v tnum">'+usd(c.fy25)+'</div></div><div class="ic"><div class="l">Relationships</div><div class="v">'+c.rel+'</div></div><div class="ic"><div class="l">Gifts</div><div class="v">'+(c.giving||[]).length+'</div></div></div></div></div>')+engageMiniCard(c)+'</div></div>';
 }
+function engageScore(c){let s=0;s+=(c.events||[]).length*12;s+=(c.courses||[]).length*15;s+=(c.books||[]).length*8;s+=Math.min(40,Math.round((c.fy25||0)/2500));return Math.min(99,s);}
+function engageMiniCard(c){const ev=(c.events||[]).length,co=(c.courses||[]).length,bk=(c.books||[]).length;const sc=engageScore(c);
+ return '<div class="card"><div class="card-h"><b>Engagement</b><span class="muted">matched by email</span></div><div class="card-b">'
+  +'<div class="impact"><div class="ic"><div class="l">Events</div><div class="v">'+ev+'</div></div><div class="ic"><div class="l">Courses</div><div class="v">'+co+'</div></div><div class="ic"><div class="l">Books</div><div class="v">'+bk+'</div></div><div class="ic"><div class="l">Engagement</div><div class="v">'+sc+'</div></div></div>'
+  +'<button class="btn btn-sec btn-sm" style="margin-top:11px" onclick="setTab(\'engagement\')">'+ic('trend',14)+'View engagement</button></div></div>';}
+function tabEngagement(c){
+ const ev=c.events||[],co=c.courses||[],bk=c.books||[];
+ const evCard='<div class="card"><div class="card-h"><b>'+ic('cal',15)+' Events attended</b><span class="muted">'+ev.length+'</span></div>'
+   +(ev.length?'<table><thead><tr><th>Event</th><th>Type</th><th>Date</th></tr></thead><tbody>'+ev.map(n=>{const e=EVENTS.find(x=>x.name===n)||{};return '<tr><td class="t-name">'+esc(n)+'</td><td>'+esc(e.type||'—')+'</td><td>'+esc(e.date||'—')+'</td></tr>';}).join('')+'</tbody></table>':'<div class="card-b"><div class="t-sub">No event registrations on record.</div></div>')+'</div>';
+ const coCard='<div class="card"><div class="card-h"><b>'+ic('cap',15)+' Courses · Thinkific</b><span class="muted">'+co.length+'</span></div>'
+   +(co.length?'<table><thead><tr><th>Course</th><th>Status</th></tr></thead><tbody>'+co.map(n=>{const k=COURSES.find(x=>x[0]===n);return '<tr><td class="t-name">'+esc(n)+'</td><td>'+statusBadge(k?k[3]:'Enrolled')+'</td></tr>';}).join('')+'</tbody></table>':'<div class="card-b"><div class="t-sub">Not enrolled in any courses.</div></div>')+'</div>';
+ const bkTotal=bk.reduce((s,x)=>s+(x.amt||0),0);
+ const bkCard='<div class="card"><div class="card-h"><b>'+ic('book',15)+' Bookstore purchases</b><span class="muted">'+bk.length+' items · '+usd(bkTotal)+'</span></div>'
+   +(bk.length?'<table><thead><tr><th>Title</th><th class="r">Amount</th></tr></thead><tbody>'+bk.map(x=>'<tr><td class="t-name">'+esc(x.t)+'</td><td class="r tnum">'+usd(x.amt)+'</td></tr>').join('')+'</tbody></table>':'<div class="card-b"><div class="t-sub">No bookstore purchases.</div></div>')+'</div>';
+ const r=retargetFor(c.id);
+ const ai=r?'<div class="card" style="overflow:visible"><div class="card-h"><b>'+ic('spark',15)+' AI suggestion</b></div><div class="card-b"><div class="aibrief" style="margin:0 0 11px">'+ic('target',13)+'<span>'+esc(r.why)+'</span></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-sec btn-sm" onclick="aiEmail(\''+c.id+'\')">'+ic('mail',14)+'AI email</button><button class="btn btn-sec btn-sm" onclick="aiSMS(\''+c.id+'\')">'+ic('phone',14)+'AI text</button>'+(c.stage?'':'<button class="btn btn-pri btn-sm" onclick="addToPipeline(\''+c.id+'\')">'+ic('plus',14)+'Add to pipeline</button>')+'</div></div></div>':'';
+ return '<div class="note-banner" style="margin-bottom:14px">'+ic('link',14)+' Cross-channel engagement is matched to this constituent by email ('+esc(c.email)+') — events, Thinkific courses and bookstore orders unify on one record.</div>'+ai+evCard+coCard+bkCard;}
 function tnodeHTML(name,meta,amount,cls,icon,color,rid){
  return '<div class="tnode '+(cls||'')+'" '+(rid?'onclick="openRecord(\''+rid+'\')" style="cursor:pointer"':'')+'>'
   +'<div class="tic" style="background:'+color+'">'+ic(icon,16)+'</div>'
@@ -1025,20 +1180,137 @@ function renderPipeline(){
  ];
  const cols=STAGES.map(s=>{
    const items=prospects().filter(c=>c.stage===s.key);
+   let ai='';
+   if(s.key==='identification'){const sug=aiSuggestProspects();if(sug.length)ai='<div class="ai-lane-h">'+ic('spark',12)+'AI suggested · '+sug.length+'</div>'+sug.map(r=>aiKcard(r)).join('');}
    return '<div class="kcol"><div class="kcol-h"><span class="kdot" style="background:'+s.color+'"></span>'+s.name+' · '+s.prob+'%<span class="kn">'+items.length+'</span></div>'
-    +items.map(c=>'<div class="kcard" onclick="openRecord(\''+c.id+'\')"><div class="kt">'+esc(c.name)+'</div><div class="kf">'+esc(c.fundInterest||c.title)+'</div><div class="kamt tnum">'+usd(c.ask)+'</div><div class="prob"><i style="width:'+s.prob+'%;background:'+s.color+'"></i></div><div class="kfoot"><span>'+esc((c.officer||'').split(' ')[0])+'</span><span class="miniav">'+initials(c.officer||'')+'</span></div></div>').join('')
-    +(items.length?'':'<div class="t-sub" style="padding:10px;text-align:center">—</div>')+'</div>';
+    +ai
+    +items.map(c=>'<div class="kcard" onclick="openRecord(\''+c.id+'\')"><div class="kt">'+esc(c.name)+'</div><div class="kf">'+esc(c.fundInterest||c.title)+'</div><div class="kamt tnum">'+usd(c.ask)+'</div><div class="prob"><i style="width:'+s.prob+'%;background:'+s.color+'"></i></div>'+(retargetFor(c.id)?'<div class="kwhy">'+ic('target',12)+'<span>'+esc(retargetFor(c.id).why)+'</span></div>':'')+'<div class="kacts"><button class="kbtn" onclick="event.stopPropagation();aiEmail(\''+c.id+'\')">'+ic('mail',13)+'Email</button><button class="kbtn" onclick="event.stopPropagation();aiSMS(\''+c.id+'\')">'+ic('phone',13)+'SMS</button></div><div class="kfoot"><span>'+esc((c.officer||'').split(' ')[0])+'</span><span class="miniav">'+initials(c.officer||'')+'</span></div></div>').join('')
+    +((items.length||ai)?'':'<div class="t-sub" style="padding:10px;text-align:center">—</div>')+'</div>';
  }).join('');
- setHTML('#view',header('Pipeline','Major-gift cultivation across five stages — click a card to open the prospect')
+ setHTML('#view',header('Pipeline','Major-gift cultivation across five stages — click a card to open the prospect. AI-suggested retargets surface in the Identification lane.')
   +'<div class="tiles">'+tiles.map(tile).join('')+'</div>'
   +'<div class="card"><div class="card-b"><div class="kanban">'+cols+'</div></div></div>');
 }
 
+/* ============================ AI · RETARGETING ============================ */
+const RETARGET=[
+ {did:'layla',score:88,ask:150000,why:'Capacity $250K but only $60K lifetime · attended Rihla lecture · pledge overdue — re-engage now',sig:['Capacity gap','Event','Overdue']},
+ {did:'aisha',score:84,ask:5000,why:'Attended 2 events + bought books, but annual gift is lapsing (last gift Apr, $1.2K)',sig:['Event','Bookstore','Lapsing']},
+ {did:'yusuf',score:72,ask:25000,why:'Alumnus ’16 · 2 Thinkific courses + reunion RSVP · never received a major-gift ask',sig:['Alumni','Courses','Untapped']},
+ {did:'mariam',score:68,ask:400000,why:'Planned-giving signals + theology course · strong bequest candidate, only $30K lifetime',sig:['Planned giving','Course']},
+ {did:'fatima',score:74,ask:25000,why:'Spouse of a $640K lead donor; gave $5K solo to scholarships and volunteers at events — strong standalone cultivation candidate',sig:['Household','Event','Untapped']}
+];
+function retargetFor(did){return RETARGET.find(r=>r.did===did);}
+function scoreColor(s){return s>=80?'#2D6A4F':s>=70?'#2563EB':'#B07A4B';}
+function aiSuggestProspects(){return RETARGET.filter(r=>{const c=byId(r.did);return c&&!c.stage;});}
+function aiKcard(r){const c=byId(r.did);if(!c)return '';
+ return '<div class="kcard ai" onclick="openRecord(\''+r.did+'\')">'
+  +'<div class="ai-tag">'+ic('spark',11)+'AI retarget</div>'
+  +'<div class="kt">'+esc(c.name)+'</div>'
+  +'<div class="kf" style="white-space:normal;line-height:1.35">'+esc(r.why)+'</div>'
+  +'<div class="kamt tnum">'+usd(r.ask)+'<span class="ai-score" style="color:'+scoreColor(r.score)+'">'+r.score+' match</span></div>'
+  +'<div class="kacts"><button class="kbtn" onclick="event.stopPropagation();aiEmail(\''+r.did+'\')">'+ic('mail',13)+'Email</button><button class="kbtn" onclick="event.stopPropagation();aiSMS(\''+r.did+'\')">'+ic('phone',13)+'SMS</button></div>'
+  +'<button class="btn btn-pri btn-sm aiadd" onclick="event.stopPropagation();addToPipeline(\''+r.did+'\')">'+ic('plus',13)+'Add to pipeline</button></div>';
+}
+function aiBriefLine(){const warm=RETARGET.length;const lapsing=RETARGET.filter(r=>r.sig.indexOf('Lapsing')>=0||r.sig.indexOf('Overdue')>=0).length;const pot=RETARGET.reduce((s,r)=>s+r.ask,0);return ic('spark',13)+'<span>'+warm+' warm prospects surfaced from engagement signals · '+lapsing+' lapsing or overdue · '+usdK(pot)+' in suggested asks — grow the portfolio without new hires.</span>';}
+function aiRetargetCard(){
+ const rows=RETARGET.slice().sort((a,b)=>b.score-a.score).map(r=>{const c=byId(r.did);if(!c)return '';const inPipe=!!c.stage;
+   const sig=r.sig.map(s=>'<span class="sig">'+esc(s)+'</span>').join('');
+   const acts='<button class="btn btn-sec btn-sm" onclick="event.stopPropagation();aiEmail(\''+r.did+'\')">'+ic('mail',14)+'Email</button>'
+     +'<button class="btn btn-sec btn-sm" onclick="event.stopPropagation();aiSMS(\''+r.did+'\')">'+ic('phone',14)+'SMS</button>'
+     +(inPipe?'<span class="badge b-slate">In pipeline · '+stageObj(c.stage).name+'</span>':'<button class="btn btn-pri btn-sm" onclick="event.stopPropagation();addToPipeline(\''+r.did+'\')">'+ic('plus',14)+'Add to pipeline</button>');
+   return '<div class="rt" onclick="openRecord(\''+r.did+'\')">'
+     +'<div class="rt-score" style="color:'+scoreColor(r.score)+'"><div class="rs-n">'+r.score+'</div><div class="rs-l">match</div></div>'
+     +'<div class="rt-main"><div class="rt-top"><b>'+esc(c.name)+'</b>'+sig+'</div>'
+     +'<div class="rt-why">'+ic('target',13)+'<span>'+esc(r.why)+'</span></div></div>'
+     +'<div class="rt-right"><div class="rt-ask">Suggested ask<b class="tnum">'+usd(r.ask)+'</b></div><div class="rt-acts">'+acts+'</div></div></div>';
+ }).join('');
+ return '<div class="card" style="overflow:visible"><div class="card-h"><b>'+ic('spark',16)+' AI · who to prospect next</b><span class="muted">retargeting from engagement signals</span></div>'
+   +'<div class="aibrief">'+aiBriefLine()+'</div>'
+   +'<div class="card-b" style="padding-top:2px">'+rows+'</div></div>';
+}
+function addToPipeline(did){const c=byId(did);const r=retargetFor(did);if(!c)return;if(!c.stage){c.stage='identification';c.ask=c.ask||(r?r.ask:0);c.fundInterest=c.fundInterest||'Annual Fund';c.officer=c.officer||'Imran Patel';}toast(c.name+' added to pipeline · Identification','target');go('pipeline');}
+function aiDraftEmail(c,r){const first=esc(c.name.split(' ')[0]);const me=memberByPersona(state.persona);
+ let hook='your continued partnership with Zaytuna College';
+ if(r){if(r.sig.indexOf('Event')>=0)hook='seeing you at a recent Zaytuna event';else if(r.sig.indexOf('Courses')>=0||r.sig.indexOf('Course')>=0)hook='your engagement with our courses';else if(r.sig.indexOf('Bookstore')>=0)hook='your support through our bookstore';}
+ const line=r?(r.ask>=100000?'I would love to share an opportunity for a leadership gift toward a project I think will resonate deeply with you.':'I would love to share a meaningful way to extend your support this year.'):'I would love to find time to share an opportunity I think will resonate with you.';
+ return 'Dear '+first+',\n\nIt was a pleasure '+hook+'. Your engagement with Zaytuna means a great deal, and I wanted to reach out personally.\n\n'+line+'\n\nMight you have 20 minutes in the coming days?\n\nWarm regards,\n'+esc(me.name)+'\n'+esc(me.role);}
+function aiEmail(did){const c=byId(did);const r=retargetFor(did);
+ openModal('<div class="modal"><div class="modal-h">'+ic('spark',20)+'<div><b>AI-drafted email</b><div class="sub">To '+esc(c.name)+' · personalized from engagement</div></div><button class="mx" onclick="closeModal()">'+ic('x',18)+'</button></div>'
+  +'<div class="modal-b">'+(r?'<div class="aibrief" style="margin:0 0 12px">'+ic('target',13)+'<span>'+esc(r.why)+'</span></div>':'')
+  +'<label class="fld"><span class="lk">To</span><input class="input" id="emTo" value="'+esc(c.email)+'"></label>'
+  +'<label class="fld"><span class="lk">Subject</span><input class="input" id="emSub" value="A note from Zaytuna College"></label>'
+  +'<label class="fld"><span class="lk">Message <span class="aitag">AI draft · editable</span></span><textarea id="emBody" style="min-height:178px">'+aiDraftEmail(c,r)+'</textarea></label></div>'
+  +'<div class="modal-f"><button class="btn btn-sec" onclick="closeModal()">Cancel</button><button class="btn btn-pri" onclick="sendEmail(\''+did+'\')">'+ic('send',15)+'Send email</button></div></div>');}
+function aiDraftSMS(c,r){const first=esc(c.name.split(' ')[0]);const me=memberByPersona(state.persona);return 'Hi '+first+', '+esc(me.name.split(' ')[0])+' from Zaytuna College here. '+(r&&r.sig.indexOf('Event')>=0?'So glad you joined us recently! ':'Thinking of you. ')+'Would love to catch up briefly this week — do you have a few minutes?';}
+function aiSMS(did){const c=byId(did);const r=retargetFor(did);
+ openModal('<div class="modal"><div class="modal-h">'+ic('phone',20)+'<div><b>AI-drafted text</b><div class="sub">To '+esc(c.name)+'</div></div><button class="mx" onclick="closeModal()">'+ic('x',18)+'</button></div>'
+  +'<div class="modal-b"><label class="fld"><span class="lk">Mobile</span><input class="input" value="(415) 555-0148"></label>'
+  +'<label class="fld"><span class="lk">Message <span class="aitag">AI draft · editable</span></span><textarea id="smsBody" style="min-height:92px">'+aiDraftSMS(c,r)+'</textarea></label>'
+  +'<div class="t-sub">Sends via the Risely texting integration (Twilio in production).</div></div>'
+  +'<div class="modal-f"><button class="btn btn-sec" onclick="closeModal()">Cancel</button><button class="btn btn-pri" onclick="sendSMS(\''+did+'\')">'+ic('send',15)+'Send text</button></div></div>');}
+function sendSMS(did){const c=byId(did);const me=memberByPersona(state.persona);c.notes=c.notes||[];c.notes.push({by:me.id,text:'Sent SMS to '+c.name.split(' ')[0]+' — AI-drafted retargeting outreach',time:'Just now · PT'});closeModal();toast('Text sent to '+c.name,'phone');if(state.view==='record'&&state.tab==='notes')renderRecord();}
+
+/* ============================ NEXT BEST ACTION ============================ */
+const NBA=[
+ {name:'Layla Hassan',did:'layla',lifetime:60000,score:88,type:'Upgrade',gift:'Major Gift',desc:'Capacity $250K but only $60K to date. Attended the Rihla lecture and her pledge is overdue — move her to solicitation with a $150K ask.'},
+ {name:'Nizam Ali',lifetime:50000,score:86,type:'Re-target',gift:'Capital Campaign',desc:'Engaged 24 months ago around funding the residence (he saw the deck), then we lost touch. Strong prior intent — revive the conversation.'},
+ {name:'Dr. Omar Siddiqui',did:'omar',lifetime:250000,score:84,type:'Advance',gift:'Capital Campaign',desc:'The $750K ask is out for the Graduate Women’s Residence. Send floor plans and the naming agreement before the next meeting.'},
+ {name:'Ahmad Al-Rashid',did:'ahmad',lifetime:640000,score:80,type:'Pledge reminder',gift:'Endowment',desc:'$50K pledge installment due Jul 1. Confirm the wire and steward the foundation grant before year-end statements run.'},
+ {name:'Aisha Rahman',did:'aisha',lifetime:8000,score:78,type:'Re-engage',gift:'Annual Fund',desc:'Attended two events and bought books, but her annual gift is lapsing. Re-engage with a modest, warm ask.'},
+ {name:'Hana Yusuf',lifetime:5000,score:75,type:'Recover',gift:'Recurring',desc:'Monthly sustainer for three years; her card expired and the last recurring gift failed. Recover the lapsed recurring gift.'},
+ {name:'Yusuf Karim',did:'yusuf',lifetime:12000,score:72,type:'First ask',gift:'Major Gift',desc:'Alumnus ’16 with two Thinkific courses and a reunion RSVP, but never received a major-gift ask. Qualify him this quarter.'},
+ {name:'Mariam Farouk',did:'mariam',lifetime:30000,score:71,type:'Planned giving',gift:'Planned Giving',desc:'Planned-giving signals plus a theology course. A strong bequest candidate — introduce the legacy society.'},
+ {name:'Crescent Charitable Foundation',did:'crescent',lifetime:300000,score:69,type:'Re-target',gift:'Endowment',desc:'Grant cycle opens in August and the last gift was January. Submit a letter of inquiry for the endowment match.'}
+];
+function nbaTypeColor(t){return {'Re-target':'#7C3AED','Upgrade':'#2563EB','Advance':'#1D4ED8','Re-engage':'#B07A4B','First ask':'#0EA5E9','Planned giving':'#2D6A4F','Pledge reminder':'#D97706','Recover':'#DC2626','Steward':'#0E7490'}[t]||'#475569';}
+function nbaActions(x,i){
+ if(x.did)return '<button class="btn btn-sec btn-sm" onclick="event.stopPropagation();aiEmail(\''+x.did+'\')">'+ic('mail',14)+'Email</button><button class="btn btn-sec btn-sm" onclick="event.stopPropagation();aiSMS(\''+x.did+'\')">'+ic('phone',14)+'SMS</button><button class="btn btn-pri btn-sm" onclick="event.stopPropagation();openRecord(\''+x.did+'\')">Open</button>';
+ return '<button class="btn btn-sec btn-sm" onclick="event.stopPropagation();nbaDraft('+i+')">'+ic('mail',14)+'Draft outreach</button><button class="btn btn-pri btn-sm" onclick="event.stopPropagation();toast(\'Constituent record created — illustrative\',\'check\')">'+ic('plus',14)+'Create record</button>';
+}
+function nbaRow(x,i,withActions){const col=nbaTypeColor(x.type);
+ return '<div class="rt" '+(x.did?'onclick="openRecord(\''+x.did+'\')"':'')+'>'
+  +'<div class="rt-score" style="color:'+scoreColor(x.score)+'"><div class="rs-n">'+x.score+'</div><div class="rs-l">match</div></div>'
+  +'<div class="rt-main"><div class="rt-top"><b>'+esc(x.name)+'</b><span class="muted">'+usdK(x.lifetime)+' lifetime</span><span class="tchip" style="color:'+col+';background:'+col+'22">'+esc(x.type)+'</span><span class="sig">'+esc(x.gift)+'</span></div>'
+  +'<div class="rt-desc">'+esc(x.desc)+'</div></div>'
+  +(withActions?'<div class="rt-right"><div class="rt-acts">'+nbaActions(x,i)+'</div></div>':'')+'</div>';
+}
+function nbaDraft(i){const x=NBA[i];const me=memberByPersona(state.persona);const first=esc(x.name.split(' ')[0]);
+ const body='Dear '+first+',\n\nIt has been too long since we last connected'+(x.type==='Re-target'?' about the '+esc(x.gift.toLowerCase()):'')+'. Your past support of Zaytuna College meant a great deal, and I wanted to reach out personally to reconnect.\n\nI would love to find 20 minutes to share where things stand and an opportunity I think will resonate with you.\n\nWarm regards,\n'+esc(me.name)+'\n'+esc(me.role);
+ openModal('<div class="modal"><div class="modal-h">'+ic('spark',20)+'<div><b>AI-drafted outreach</b><div class="sub">To '+esc(x.name)+' · '+esc(x.type)+' · '+esc(x.gift)+'</div></div><button class="mx" onclick="closeModal()">'+ic('x',18)+'</button></div>'
+  +'<div class="modal-b"><div class="aibrief" style="margin:0 0 12px">'+ic('target',13)+'<span>'+esc(x.desc)+'</span></div>'
+  +'<label class="fld"><span class="lk">To</span><input class="input" value="'+x.name.toLowerCase().replace(/[^a-z]+/g,'.')+'@example.com"></label>'
+  +'<label class="fld"><span class="lk">Subject</span><input class="input" value="Reconnecting — Zaytuna College"></label>'
+  +'<label class="fld"><span class="lk">Message <span class="aitag">AI draft · editable</span></span><textarea style="min-height:170px">'+body+'</textarea></label></div>'
+  +'<div class="modal-f"><button class="btn btn-sec" onclick="closeModal()">Cancel</button><button class="btn btn-pri" onclick="nbaSend('+i+')">'+ic('send',15)+'Send</button></div></div>');
+}
+function nbaSend(i){closeModal();toast('Outreach sent to '+NBA[i].name,'mail');}
+function nbaCard(){const n=NBA.length;const top=NBA.slice().sort((a,b)=>b.score-a.score).slice(0,3).map(x=>nbaRow(x,NBA.indexOf(x),false)).join('');
+ return '<div class="card" style="overflow:visible"><div class="card-h" style="cursor:pointer" onclick="go(\'nba\')"><b>'+ic('spark',16)+' Next Best Action</b><span class="nba-count">'+n+'</span></div>'
+  +'<div class="aibrief">'+ic('target',13)+'<span>AI-prioritized actions across your portfolio — re-targets, upgrades, lapsed recovers and pledges due. Work the highest-impact donors first, no new hires needed.</span></div>'
+  +'<div class="card-b" style="padding-top:2px">'+top+'</div>'
+  +'<div class="card-b" style="border-top:1px solid var(--line2);padding-top:12px"><button class="btn btn-pri btn-sm" onclick="go(\'nba\')">'+ic('list',14)+'Review all '+n+' actions</button></div></div>';
+}
+function renderNBA(){
+ const byType={};NBA.forEach(x=>{byType[x.type]=(byType[x.type]||0)+1;});
+ const ret=NBA.filter(x=>x.type==='Re-target').length;
+ const laps=NBA.filter(x=>x.type==='Recover'||x.type==='Re-engage').length;
+ const pled=NBA.filter(x=>x.type==='Pledge reminder').length;
+ const tiles=[{l:'Recommended actions',v:NBA.length,d:'AI-prioritized'},{l:'Re-targets',v:ret,d:'Lost-touch revivals'},{l:'Lapsed / recover',v:laps,d:'Win-backs'},{l:'Pledges due',v:pled,d:'Reminders'}];
+ setHTML('#view','<button class="backlink" onclick="go(\'dashboard\')">'+ic('back',16)+'Dashboard</button>'
+  +header('Next Best Action','AI-prioritized actions across your portfolio — work the highest-impact donors first, no new hires needed')
+  +'<div class="tiles">'+tiles.map(tile).join('')+'</div>'+nbaTableCard());
+}
+
 /* ============================ GIFTS ============================ */
-function giftRows(){let r=GIFTS.slice();if(state.gFilter==='pending')r=r.filter(g=>g.status==='Pending');else if(state.gFilter==='receipted')r=r.filter(g=>g.status==='Receipted');if(state.gFund&&state.gFund!=='all')r=r.filter(g=>g.fund===state.gFund);if(state.gSize)r=r.filter(g=>g.amount>=state.gSize);return r;}
+/* Shared date-range filter model — Date dropdown reused across tables (Gifts, Payments, …) */
+const RNG_OPTS=[['all','Any time'],['7','Last 7 days'],['30','Last 30 days'],['q','This quarter'],['fy','FY26']];
+function inRange(d,rg){if(!rg||rg==='all')return true;const now=new Date('2026-06-26');const days=(now-d)/86400000;if(rg==='7')return days<=7;if(rg==='30')return days<=30;if(rg==='q')return days<=92;if(rg==='fy')return d>=new Date('2025-08-01');return true;}
+function giftRows(){let r=GIFTS.slice();if(state.gFilter==='pending')r=r.filter(g=>g.status==='Pending');else if(state.gFilter==='receipted')r=r.filter(g=>g.status==='Receipted');if(state.gRange&&state.gRange!=='all')r=r.filter(g=>inRange(new Date(g.date),state.gRange));if(state.gFund&&state.gFund!=='all')r=r.filter(g=>g.fund===state.gFund);if(state.gSize)r=r.filter(g=>g.amount>=state.gSize);return r;}
 function setGiftStatus(v){state.gFilter=v;render();}
 function setGiftFund(v){state.gFund=v;render();}
 function setGiftSize(v){state.gSize=v;render();}
+function setGiftRange(v){state.gRange=v;render();}
 function giftFundMenu(){const opts=[['all','All funds']].concat(FUNDS.map(f=>[f.name,f.name]));const a=state.gFund||'all';const cur=opts.find(o=>o[0]===a)||opts[0];return '<details class="menu"><summary class="fpill '+(a!=='all'?'on':'')+'" style="display:inline-flex;align-items:center;gap:6px">'+(a==='all'?'Fund type':esc(cur[1]))+'<span style="display:inline-flex;transform:rotate(90deg)">'+ic('chev',13)+'</span></summary><div class="menu-pop" style="left:0;right:auto">'+opts.map(o=>'<div class="menu-item" onclick="this.closest(\'details\').open=false;setGiftFund(\''+o[0]+'\')">'+(a===o[0]?ic('check',14):'<span style="display:inline-block;width:14px"></span>')+esc(o[1])+'</div>').join('')+'</div></details>';}
 function giftSizeMenu(){const opts=[[0,'Any size'],[1000,'≥ $1K'],[25000,'≥ $25K'],[50000,'≥ $50K'],[100000,'≥ $100K']];const a=state.gSize||0;const cur=opts.find(o=>o[0]===a)||opts[0];return '<details class="menu"><summary class="fpill '+(a?'on':'')+'" style="display:inline-flex;align-items:center;gap:6px">'+(a?'Gift '+cur[1]:'Gift size')+'<span style="display:inline-flex;transform:rotate(90deg)">'+ic('chev',13)+'</span></summary><div class="menu-pop" style="left:0;right:auto">'+opts.map(o=>'<div class="menu-item" onclick="this.closest(\'details\').open=false;setGiftSize('+o[0]+')">'+(a===o[0]?ic('check',14):'<span style="display:inline-block;width:14px"></span>')+o[1]+'</div>').join('')+'</div></details>';}
 function renderGifts(){
@@ -1046,7 +1318,7 @@ function renderGifts(){
  const tiles=[{l:'Gifts this month',v:GIFTS.length,d:'Posted'},{l:'Pending receipts',v:pendingCount(),d:'Awaiting send'},{l:'Processed FY26',v:usdK(totalRaised()),d:'All funds'},{l:'Avg gift',v:usdK(totalRaised()/GIFTS.length),d:'FY26'}];
  const btn=can('gift')?'<button class="btn btn-pri" onclick="openGiftModal(null)">'+ic('plus',16)+'New gift</button>':'';
  const sp=[['all','All'],['pending','Pending receipt'],['receipted','Receipted']];
- const pills='<div class="filters">'+sp.map(x=>'<button class="fpill '+(state.gFilter===x[0]?'on':'')+'" onclick="setGiftStatus(\''+x[0]+'\')">'+x[1]+'</button>').join('')+giftFundMenu()+giftSizeMenu()+'</div>';
+ const pills='<div class="filters">'+sp.map(x=>'<button class="fpill '+(state.gFilter===x[0]?'on':'')+'" onclick="setGiftStatus(\''+x[0]+'\')">'+x[1]+'</button>').join('')+payMenu('Date',state.gRange||'all',RNG_OPTS,'setGiftRange')+giftFundMenu()+giftSizeMenu()+'</div>';
  setHTML('#view',header('Gifts','Gift entry, credit allocation and receipt routing',btn)
   +'<div class="tiles">'+tiles.map(tile).join('')+'</div>'+pills
   +'<div class="card"><div class="card-h"><b>All gifts</b><span class="muted">'+rows.length+' of '+GIFTS.length+'</span></div>'
@@ -1104,6 +1376,38 @@ function pledgesDueCard(){
 }
 function pledgeReminder(i){const p=PLEDGES[i];if(!p)return;toast('Pledge reminder sent to '+p.donor+' · '+usd(p.amount)+' due '+p.due,'mail');}
 function recordPayment(i){const p=PLEDGES[i];if(!p)return;p.balance=Math.max(0,p.balance-p.amount);if(p.balance===0)p.status='Scheduled';toast('Payment recorded · '+usd(p.amount)+' to '+p.fund,'gift');render();}
+/* ============================ PAYMENTS (Admin · Director) ============================ */
+const PAYMENTS=[
+ {donor:'Ahmad Al-Rashid',did:'ahmad',date:'Jun 24, 2026',iso:'2026-06-24',amount:50000,source:'BBMS'},
+ {donor:'Aisha Rahman',did:'aisha',date:'Jun 22, 2026',iso:'2026-06-22',amount:1200,source:'Stripe'},
+ {donor:'Yusuf Karim',did:'yusuf',date:'Jun 20, 2026',iso:'2026-06-20',amount:250,source:'PayPal'},
+ {donor:'Layla Hassan',did:'layla',date:'Jun 15, 2026',iso:'2026-06-15',amount:15000,source:'Stripe'},
+ {donor:'Dr. Omar Siddiqui',did:'omar',date:'Jun 2, 2026',iso:'2026-06-02',amount:40000,source:'BBMS'},
+ {donor:'Aisha Rahman',did:'aisha',date:'May 28, 2026',iso:'2026-05-28',amount:75,source:'Venmo'},
+ {donor:'Crescent Charitable Foundation',did:'crescent',date:'May 12, 2026',iso:'2026-05-12',amount:75000,source:'BBMS'},
+ {donor:'Mariam Farouk',did:'mariam',date:'Apr 30, 2026',iso:'2026-04-30',amount:3000,source:'PayPal'},
+ {donor:'Fatima Al-Rashid',did:'fatima',date:'Apr 18, 2026',iso:'2026-04-18',amount:5000,source:'Stripe'},
+ {donor:'Yusuf Karim',did:'yusuf',date:'Feb 2, 2026',iso:'2026-02-02',amount:250,source:'PayPal'}
+];
+function payRows(){let r=PAYMENTS.slice();if(state.pSource&&state.pSource!=='all')r=r.filter(p=>p.source===state.pSource);if(state.pSize)r=r.filter(p=>p.amount>=state.pSize);if(state.pRange&&state.pRange!=='all')r=r.filter(p=>inRange(new Date(p.iso),state.pRange));return r;}
+function setPSource(v){state.pSource=v;render();}
+function setPRange(v){state.pRange=v;render();}
+function setPSize(v){state.pSize=v;render();}
+function payMenu(label,active,opts,fn){const on=active&&active!=='all'&&active!==0;const cur=opts.find(o=>o[0]===active)||opts[0];return '<details class="menu"><summary class="fpill '+(on?'on':'')+'" style="display:inline-flex;align-items:center;gap:6px">'+(on?esc(cur[1]):label)+'<span style="display:inline-flex;transform:rotate(90deg)">'+ic('chev',13)+'</span></summary><div class="menu-pop" style="left:0;right:auto">'+opts.map(o=>'<div class="menu-item" onclick="this.closest(\'details\').open=false;'+fn+'('+(typeof o[0]==='number'?o[0]:'\''+o[0]+'\'')+')">'+(active===o[0]?ic('check',14):'<span style="display:inline-block;width:14px"></span>')+esc(o[1])+'</div>').join('')+'</div></details>';}
+function sourceBadge(s){const m={'PayPal':'b-blue','Venmo':'b-sky','BBMS':'b-slate','Stripe':'b-purple'};return '<span class="badge '+(m[s]||'b-slate')+'">'+esc(s)+'</span>';}
+function renderPayments(){
+ const rows=payRows();const total=PAYMENTS.reduce(function(s,p){return s+p.amount;},0);
+ const tiles=[{l:'Payments',v:PAYMENTS.length,d:'FY26 to date'},{l:'Total processed',v:usdK(total),d:'All sources'},{l:'Avg payment',v:usdK(total/PAYMENTS.length),d:'FY26'},{l:'Processors',v:'4',d:'PayPal · Venmo · BBMS · Stripe'}];
+ const srcOpts=[['all','All sources'],['PayPal','PayPal'],['Venmo','Venmo'],['BBMS','BBMS'],['Stripe','Stripe']];
+ const rngOpts=RNG_OPTS;
+ const szOpts=[[0,'Any amount'],[1000,'≥ $1K'],[5000,'≥ $5K'],[25000,'≥ $25K'],[50000,'≥ $50K']];
+ const pills='<div class="filters">'+payMenu('Source',state.pSource||'all',srcOpts,'setPSource')+payMenu('Date',state.pRange||'all',rngOpts,'setPRange')+payMenu('Amount',state.pSize||0,szOpts,'setPSize')+'</div>';
+ setHTML('#view',header('Payments','Incoming gift payments across processors')
+  +'<div class="tiles">'+tiles.map(tile).join('')+'</div>'+pills
+  +'<div class="card"><div class="card-h"><b>Payments</b><span class="muted">'+rows.length+' of '+PAYMENTS.length+'</span></div><div style="overflow-x:auto"><table><thead><tr><th>Donor</th><th>Transaction date</th><th class="r">Amount</th><th>Source</th><th class="r">Action</th></tr></thead><tbody>'
+  +(rows.length?rows.map(function(p){return '<tr class="clk" onclick="openRecord(\''+p.did+'\')"><td class="t-name">'+esc(p.donor)+'</td><td>'+esc(p.date)+'</td><td class="r tnum">'+usd(p.amount)+'</td><td>'+sourceBadge(p.source)+'</td><td class="r"><button class="btn btn-sec btn-sm" onclick="event.stopPropagation();openRecord(\''+p.did+'\')">Open</button></td></tr>';}).join(''):'<tr><td colspan="5"><div class="t-sub" style="padding:8px">No payments match these filters.</div></td></tr>')
+  +'</tbody></table></div></div>');
+}
 const REC={active:1180,mrr:49500,newM:42,churnedM:18,annual:594000,trend:[44,45.5,46.2,47.8,48.6,49.5],trendM:['Dec','Jan','Feb','Mar','Apr','May']};
 function prospectsCard(){
  const rows=prospects().filter(c=>c.stage!=='stewardship');
@@ -1148,6 +1452,9 @@ function listFiltered(){
  if(L.minLt>0)r=r.filter(c=>c.lifetime>=L.minLt);
  if(L.fund!=='all')r=r.filter(c=>(c.giving||[]).some(g=>g.fund===L.fund)||(c.fundInterest&&c.fundInterest.indexOf(L.fund)>=0));
  if(L.zip)r=r.filter(c=>c.zip.indexOf(L.zip)===0);
+ if(L.ev)r=r.filter(c=>(c.events||[]).length);
+ if(L.books)r=r.filter(c=>(c.books||[]).length);
+ if(L.course)r=r.filter(c=>(c.courses||[]).length);
  return r;
 }
 function renderLists(){
@@ -1156,7 +1463,12 @@ function renderLists(){
   +'<label class="fld"><span class="lk">Constituent type</span><select class="input" onchange="state.list.type=this.value;render()">'+['all','Individual','Organization','Foundation','Household'].map(t=>'<option value="'+t+'" '+(state.list.type===t?'selected':'')+'>'+(t==='all'?'All types':t)+'</option>').join('')+'</select></label>'
   +'<label class="fld"><span class="lk">Min lifetime giving</span><select class="input" onchange="state.list.minLt=+this.value;render()">'+[[0,'Any'],[10000,'$10K+'],[25000,'$25K+'],[100000,'$100K+'],[250000,'$250K+']].map(o=>'<option value="'+o[0]+'" '+(state.list.minLt===o[0]?'selected':'')+'>'+o[1]+'</option>').join('')+'</select></label></div>'
   +'<div class="grid2"><label class="fld"><span class="lk">Fund interest / giving</span><select class="input" onchange="state.list.fund=this.value;render()"><option value="all">Any fund</option>'+FUNDS.map(f=>'<option '+(state.list.fund===f.name?'selected':'')+'>'+esc(f.name)+'</option>').join('')+'</select></label>'
-  +'<label class="fld"><span class="lk">ZIP starts with</span><input class="input" value="'+esc(state.list.zip)+'" oninput="state.list.zip=this.value;render()" placeholder="e.g. 947"></label></div></div></div>';
+  +'<label class="fld"><span class="lk">ZIP starts with</span><input class="input" value="'+esc(state.list.zip)+'" oninput="state.list.zip=this.value;render()" placeholder="e.g. 947"></label></div>'
+  +'<div class="grid2"><label class="fld"><span class="lk">Engagement signals</span><div class="engchk">'
+  +'<label><input type="checkbox" '+(state.list.ev?'checked':'')+' onchange="state.list.ev=this.checked;render()"> Attended an event this year</label>'
+  +'<label><input type="checkbox" '+(state.list.books?'checked':'')+' onchange="state.list.books=this.checked;render()"> Bought from the bookstore</label>'
+  +'<label><input type="checkbox" '+(state.list.course?'checked':'')+' onchange="state.list.course=this.checked;render()"> Enrolled in a course</label>'
+  +'</div></label><label class="fld"><span class="lk">&nbsp;</span><div class="t-sub" style="padding-top:8px;line-height:1.5">Signals unify across events, Thinkific and the bookstore by email — build re-engagement and upgrade lists in seconds.</div></label></div></div></div>';
  const result='<div class="card" style="overflow:visible"><div class="card-h"><b>Matching constituents</b><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="muted">'+res.length+' members</span>'+(can('list')?'<button class="btn btn-sec btn-sm" onclick="saveSegmentModal()">'+ic('list',14)+'Save as list</button>':'')+(can('bulk')?'<button class="btn btn-pri btn-sm" onclick="bulkFromSegment()">'+ic('send',14)+'Bulk message</button>':'')+moreMenu([{label:'Download to CSV',icon:'download',onclick:'downloadCSVrows()'},{label:'Push to Mailchimp',icon:'mail',onclick:'pushSegmentMC()'}])+'</div></div>'
   +'<table><thead><tr><th>Name</th><th>Email</th><th>City</th><th>ZIP</th><th class="r">Lifetime</th></tr></thead><tbody>'
   +(res.length?res.map(c=>'<tr><td class="t-name">'+esc(c.name)+'</td><td>'+esc(c.email)+'</td><td>'+esc(c.city)+'</td><td>'+esc(c.zip)+'</td><td class="r tnum">'+usd(c.lifetime)+'</td></tr>').join(''):'<tr><td colspan="5"><div class="t-sub" style="padding:8px">No matches — loosen the filters.</div></td></tr>')
