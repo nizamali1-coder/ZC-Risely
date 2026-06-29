@@ -247,7 +247,7 @@ input[type=checkbox]{accent-color:var(--blue);width:16px;height:16px;cursor:poin
 .kcard .kfoot{display:flex;align-items:center;justify-content:space-between;margin-top:9px;font-size:11.5px;color:var(--slate5)}
 .kcard .kwhy{display:flex;gap:5px;align-items:flex-start;font-size:11px;color:var(--blue-d);background:var(--blue-l);border-radius:7px;padding:6px 7px;margin-top:9px;line-height:1.35}
 .kcard .kwhy svg{flex:none;margin-top:1px}
-.kcard .kacts{display:flex;gap:6px;margin-top:8px}
+.kcard .kacts{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .kbtn{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:4px;font-size:11.5px;font-weight:600;color:var(--slate6);background:#fff;border:1px solid var(--line);border-radius:7px;padding:5px 6px;cursor:pointer}
 .kbtn:hover{border-color:var(--blue);color:var(--blue-d);background:var(--blue-l)}
 .kcard.ai{border:1.5px dashed #C4B5FD;background:linear-gradient(180deg,#FAF5FF,#FFFFFF)}
@@ -296,6 +296,12 @@ input[type=checkbox]{accent-color:var(--blue);width:16px;height:16px;cursor:poin
 .aimore{margin-top:10px;font-size:13px;color:var(--slate6)}
 .ailink{color:var(--blue-d);font-weight:700;cursor:pointer;text-decoration:underline}
 .uav{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;color:#fff;font-size:11px;font-weight:800;margin-right:9px;vertical-align:middle}
+.prepgrid{display:grid;grid-template-columns:auto 1fr;gap:7px 16px}
+.prepgrid .pk{color:var(--slate5);font-size:13px}
+.prepgrid .pv{color:var(--navy);font-weight:600;font-size:13px}
+.prepsec{margin-top:15px;padding-top:13px;border-top:1px solid var(--line2)}
+.prep-h{display:flex;gap:6px;align-items:center;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#7C3AED;margin-bottom:8px}
+.prep-h svg{flex:none}
 .scorepill{display:inline-flex;align-items:center;justify-content:center;min-width:32px;height:24px;border:1.5px solid;border-radius:7px;font-weight:800;font-size:13px}
 .hstats{display:flex;gap:10px;flex-wrap:wrap}
 .hstat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 15px;box-shadow:var(--sh);text-align:left;min-width:118px}
@@ -685,8 +691,8 @@ let BULK_SENDS=[
 
 /* ---------- State ---------- */
 const state={persona:'admin',view:'dashboard',recordId:null,tab:'overview',drawerId:null,
- cFilter:'all',cLifetime:0,gFilter:'all',gFund:'all',gSize:0,gRange:'all',pSource:'all',pRange:'all',pSize:0,nbaType:'all',nbaAction:'all',nbaSignal:'all',nbaAssign:{},askLog:[],dashSeg:'nba',dpStage:'all',dplStatus:'all',dgFund:'all',dashFilter:'fy26',inboxFilter:'unread',selected:new Set(),bulk:null,forecastId:null,fcFilter:'all',catDraft:null,anTab:'revenue',fcExpanded:new Set(),catExpanded:new Set(),inboxCat:'mentions',settings:{tz:'America/Los_Angeles',inbox:null},
- wizard:null,voice:null,list:{type:'all',minLt:0,fund:'all',zip:'',recency:'all',ev:false,books:false,course:false,result:null}};
+ cFilter:'all',cLifetime:0,gFilter:'all',gFund:'all',gSize:0,gRange:'all',pSource:'all',pRange:'all',pSize:0,nbaType:'all',nbaAction:'all',nbaSignal:'all',nbaAssign:{},askLog:[],listConf:{},dashSeg:'nba',dpStage:'all',dplStatus:'all',dgFund:'all',dashFilter:'fy26',inboxFilter:'unread',selected:new Set(),bulk:null,forecastId:null,fcFilter:'all',catDraft:null,anTab:'revenue',fcExpanded:new Set(),catExpanded:new Set(),inboxCat:'mentions',settings:{tz:'America/Los_Angeles',inbox:null},
+ wizard:null,voice:null,list:{type:'all',minLt:0,fund:'all',zip:'',recency:'all',ev:false,books:false,course:false,hiZip:false,result:null}};
 
 /* ---------- Money helpers ---------- */
 function usd(n){return '$'+Math.round(n).toLocaleString('en-US');}
@@ -1058,11 +1064,14 @@ function setTab(t){state.tab=t;renderRecord();}
 function renderRecord(){
  const c=byId(state.recordId);if(!c){go('constituents');return;}
  const acts=[];
- if(can('note'))acts.push('<button class="btn btn-sec" onclick="setTab(\'notes\')">'+ic('edit',15)+'Add note</button>');
+ acts.push('<button class="btn btn-pri" onclick="openPrep(\''+c.id+'\')">'+ic('spark',15)+'Pre-meeting prep</button>');
  if(can('email'))acts.push('<button class="btn btn-sec" onclick="openEmail(\''+c.id+'\')">'+ic('mail',15)+'Send email</button>');
- if(can('deck'))acts.push('<button class="btn btn-pri" onclick="openWizard(\''+c.id+'\')">'+ic('slides',15)+'Create deck</button>');
- if(can('voice'))acts.push('<button class="btn btn-sec" onclick="openVoice(\''+c.id+'\')">'+ic('mic',15)+'Voice note</button>');
- if(can('gift'))acts.push('<button class="btn btn-sec" onclick="openGiftModal(\''+c.id+'\')">'+ic('gift',15)+'Add gift</button>');
+ const more=[];
+ if(can('note'))more.push({label:'Add note',icon:'edit',onclick:'setTab(\'notes\')'});
+ if(can('deck'))more.push({label:'Create deck',icon:'slides',onclick:'openWizard(\''+c.id+'\')'});
+ if(can('voice'))more.push({label:'Voice note',icon:'mic',onclick:'openVoice(\''+c.id+'\')'});
+ if(can('gift'))more.push({label:'Add gift',icon:'gift',onclick:'openGiftModal(\''+c.id+'\')'});
+ if(more.length)acts.push(moreMenu(more));
  const tabs=[['overview','Overview'],['relationships','Relationships ('+c.rel+')'],['giving','Giving History'],['engagement','Engagement'],['notes','Notes & Activity'],['presentations','Presentations'],['receipts','Receipts']];
  setHTML('#view',
   '<button class="backlink" onclick="go(\'constituents\')">'+ic('back',16)+'Constituents</button>'
@@ -1214,7 +1223,7 @@ function renderPipeline(){
    if(s.key==='identification'){const sug=aiSuggestProspects();if(sug.length)ai='<div class="ai-lane-h">'+ic('spark',12)+'AI suggested · '+sug.length+'</div>'+sug.map(r=>aiKcard(r)).join('');}
    return '<div class="kcol"><div class="kcol-h"><span class="kdot" style="background:'+s.color+'"></span>'+s.name+' · '+s.prob+'%<span class="kn">'+items.length+'</span></div>'
     +ai
-    +items.map(c=>'<div class="kcard" onclick="openRecord(\''+c.id+'\')"><div class="kt">'+esc(c.name)+'</div><div class="kf">'+esc(c.fundInterest||c.title)+'</div><div class="kamt tnum">'+usd(c.ask)+'</div><div class="prob"><i style="width:'+s.prob+'%;background:'+s.color+'"></i></div>'+(retargetFor(c.id)?'<div class="kwhy">'+ic('target',12)+'<span>'+esc(retargetFor(c.id).why)+'</span></div>':'')+'<div class="kacts"><button class="kbtn" onclick="event.stopPropagation();aiEmail(\''+c.id+'\')">'+ic('mail',13)+'Email</button><button class="kbtn" onclick="event.stopPropagation();aiSMS(\''+c.id+'\')">'+ic('phone',13)+'SMS</button></div><div class="kfoot"><span>'+esc((c.officer||'').split(' ')[0])+'</span><span class="miniav">'+initials(c.officer||'')+'</span></div></div>').join('')
+    +items.map(c=>'<div class="kcard" onclick="openRecord(\''+c.id+'\')"><div class="kt">'+esc(c.name)+'</div><div class="kf">'+esc(c.fundInterest||c.title)+'</div><div class="kamt tnum">'+usd(c.ask)+'</div><div class="prob"><i style="width:'+s.prob+'%;background:'+s.color+'"></i></div>'+(retargetFor(c.id)?'<div class="kwhy">'+ic('target',12)+'<span>'+esc(retargetFor(c.id).why)+'</span></div>':'')+'<div class="kacts"><button class="kbtn" onclick="event.stopPropagation();openPrep(\''+c.id+'\')">'+ic('spark',13)+'Prep</button><button class="kbtn" onclick="event.stopPropagation();aiEmail(\''+c.id+'\')">'+ic('mail',13)+'Email</button><button class="kbtn" onclick="event.stopPropagation();aiSMS(\''+c.id+'\')">'+ic('phone',13)+'SMS</button></div><div class="kfoot"><span>'+esc((c.officer||'').split(' ')[0])+'</span><span class="miniav">'+initials(c.officer||'')+'</span></div></div>').join('')
     +((items.length||ai)?'':'<div class="t-sub" style="padding:10px;text-align:center">—</div>')+'</div>';
  }).join('');
  setHTML('#view',header('Pipeline','Major-gift cultivation across five stages — click a card to open the prospect. AI-suggested retargets surface in the Identification lane.')
@@ -1265,6 +1274,33 @@ function aiDraftEmail(c,r){const first=esc(c.name.split(' ')[0]);const me=member
  if(r){if(r.sig.indexOf('Event')>=0)hook='seeing you at a recent Zaytuna event';else if(r.sig.indexOf('Courses')>=0||r.sig.indexOf('Course')>=0)hook='your engagement with our courses';else if(r.sig.indexOf('Bookstore')>=0)hook='your support through our bookstore';}
  const line=r?(r.ask>=100000?'I would love to share an opportunity for a leadership gift toward a project I think will resonate deeply with you.':'I would love to share a meaningful way to extend your support this year.'):'I would love to find time to share an opportunity I think will resonate with you.';
  return 'Dear '+first+',\n\nIt was a pleasure '+hook+'. Your engagement with Zaytuna means a great deal, and I wanted to reach out personally.\n\n'+line+'\n\nMight you have 20 minutes in the coming days?\n\nWarm regards,\n'+esc(me.name)+'\n'+esc(me.role);}
+function prepTalkingPoints(c){
+ const tp=[];const r=retargetFor(c.id);
+ if(c.fundInterest)tp.push('Lead with their interest in '+esc(c.fundInterest)+(c.ask?' — frame the '+usd(c.ask)+' ask':'')+'.');
+ if(c.hierarchy)tp.push('Acknowledge the family / foundation / LLC structure and their consolidated philanthropic impact.');
+ if((c.events||[]).length)tp.push('Thank them for attending '+esc(c.events[0])+'.');
+ if((c.courses||[]).length)tp.push('Reference their engagement with the “'+esc(c.courses[0])+'” course.');
+ if(c.capNum&&c.capNum>(c.lifetime||0)*1.5)tp.push('Capacity ('+esc(c.capacity)+') suggests real room to grow beyond '+usd(c.lifetime||0)+' lifetime.');
+ if(r&&(r.sig.indexOf('Lapsing')>=0||r.sig.indexOf('Overdue')>=0||r.sig.indexOf('Lapsed')>=0))tp.push('Gently surface the lapsed / overdue commitment and re-confirm intent.');
+ if(!tp.length)tp.push('Open with gratitude for their '+usd(c.lifetime||0)+' in lifetime support.');
+ return tp;
+}
+function openPrep(id){const c=byId(id);if(!c)return;const r=retargetFor(c.id);
+ const lastNote=(c.notes||[]).slice(-1)[0];const lastGift=(c.giving||[]).slice(-1)[0]||c.last;
+ const sig=[];if(HIGH_ZIPS[c.zip])sig.push('High-capacity ZIP ('+esc(HIGH_ZIPS[c.zip])+')');if(r)r.sig.forEach(x=>sig.push(x));
+ const pd=PLEDGES.filter(p=>p.did===c.id&&p.status!=='Scheduled');
+ const kv=(k,v)=>'<div class="pk">'+k+'</div><div class="pv">'+v+'</div>';
+ const grid='<div class="prepgrid">'+kv('Capacity',esc(c.capacity))+kv('Lifetime',usd(c.lifetime||0))+kv('FY25',usd(c.fy25||0))+(c.stage?kv('Pipeline',esc(stageObj(c.stage).name)+' · '+usd(c.ask)+' · '+esc(c.fundInterest)):kv('Pipeline','Not in pipeline'))+kv('Gift officer',esc(c.officer||'—'))+kv('Last gift',lastGift?(usd(lastGift.amount)+' · '+esc(lastGift.fund)+' · '+esc(lastGift.date)):'—')+'</div>';
+ const sigHtml=sig.length?'<div class="prepsec"><div class="prep-h">'+ic('target',13)+'Why now</div><div class="tagwrap">'+sig.map(x=>'<span class="sig'+(x.indexOf('High-capacity')>=0?' sig-zip':'')+'">'+esc(x)+'</span>').join('')+'</div></div>':'';
+ const tps='<div class="prepsec"><div class="prep-h">'+ic('spark',13)+'Suggested talking points</div><ul class="aiul">'+prepTalkingPoints(c).map(t=>'<li>'+t+'</li>').join('')+'</ul></div>';
+ const askLine=c.ask?'<div class="prepsec"><div class="prep-h">'+ic('gift',13)+'Suggested ask</div><div class="aians"><b>'+usd(c.ask)+'</b> toward '+esc(c.fundInterest||'the Annual Fund')+'</div></div>':'';
+ const eng='<div class="prepsec"><div class="prep-h">'+ic('link',13)+'Engagement</div><div class="aians">'+(c.events||[]).length+' events · '+(c.courses||[]).length+' courses · '+(c.books||[]).length+' bookstore orders'+(c.hierarchy?' · multi-entity household':((c.relationships||[]).length?' · '+(c.relationships||[]).length+' linked relationships':''))+'</div></div>';
+ const pledgeLine=pd.length?'<div class="prepsec"><div class="prep-h">'+ic('receipt',13)+'Open pledges</div><div class="aians">'+pd.map(p=>usd(p.amount)+' '+esc(p.fund)+' · due '+esc(p.due)+' · '+esc(p.status)).join('<br>')+'</div></div>':'';
+ const noteLine=lastNote?'<div class="prepsec"><div class="prep-h">'+ic('edit',13)+'Last activity</div><div class="aians">'+fmtMentions(lastNote.text)+'</div></div>':'';
+ openModal('<div class="modal"><div class="modal-h">'+ic('spark',20)+'<div><b>Pre-meeting prep</b><div class="sub">'+esc(c.name)+' · AI brief from live data</div></div><button class="mx" onclick="closeModal()">'+ic('x',18)+'</button></div>'
+  +'<div class="modal-b">'+grid+sigHtml+tps+askLine+eng+pledgeLine+noteLine+'</div>'
+  +'<div class="modal-f"><button class="btn btn-sec" onclick="closeModal();openEmail(\''+c.id+'\')">'+ic('mail',15)+'Draft email</button><button class="btn btn-sec" onclick="toast(\'Brief copied — illustrative\',\'check\')">'+ic('download',15)+'Copy brief</button><button class="btn btn-pri" onclick="toast(\'Added to your next meeting — illustrative\',\'check\')">'+ic('cal',15)+'Add to meeting</button></div></div>');
+}
 function aiEmail(did){const c=byId(did);const r=retargetFor(did);
  openModal('<div class="modal"><div class="modal-h">'+ic('spark',20)+'<div><b>AI-drafted email</b><div class="sub">To '+esc(c.name)+' · personalized from engagement</div></div><button class="mx" onclick="closeModal()">'+ic('x',18)+'</button></div>'
   +'<div class="modal-b">'+(r?'<div class="aibrief" style="margin:0 0 12px">'+ic('target',13)+'<span>'+esc(r.why)+'</span></div>':'')
@@ -1434,6 +1470,26 @@ function setPRange(v){state.pRange=v;render();}
 function setPSize(v){state.pSize=v;render();}
 function payMenu(label,active,opts,fn){const on=active&&active!=='all'&&active!==0;const cur=opts.find(o=>o[0]===active)||opts[0];return '<details class="menu"><summary class="fpill '+(on?'on':'')+'" style="display:inline-flex;align-items:center;gap:6px">'+(on?esc(cur[1]):label)+'<span style="display:inline-flex;transform:rotate(90deg)">'+ic('chev',13)+'</span></summary><div class="menu-pop" style="left:0;right:auto">'+opts.map(o=>'<div class="menu-item" onclick="this.closest(\'details\').open=false;'+fn+'('+(typeof o[0]==='number'?o[0]:'\''+o[0]+'\'')+')">'+(active===o[0]?ic('check',14):'<span style="display:inline-block;width:14px"></span>')+esc(o[1])+'</div>').join('')+'</div></details>';}
 function sourceBadge(s){const m={'PayPal':'b-blue','Venmo':'b-sky','BBMS':'b-slate','Stripe':'b-purple'};return '<span class="badge '+(m[s]||'b-slate')+'">'+esc(s)+'</span>';}
+const RECOVERY=[
+ {donor:'Hana Yusuf',did:null,amount:50,status:'In progress',reason:'Card expired',attempts:2,next:'SMS + retry · Jun 30'},
+ {donor:'Bilal Khan',did:null,amount:100,status:'Recovered',reason:'Card auto-updated (Account Updater)',attempts:1,next:'—'},
+ {donor:'Aisha Rahman',did:'aisha',amount:25,status:'Failed',reason:'Insufficient funds · 3 retries',attempts:3,next:'Officer follow-up'},
+ {donor:'Sumayya Noor',did:null,amount:75,status:'Expiring',reason:'Card expires next month',attempts:0,next:'Pre-expiry email queued'},
+ {donor:'Omar Farooq',did:null,amount:40,status:'Recovered',reason:'Donor updated via self-serve link',attempts:1,next:'—'},
+ {donor:'Yusuf Karim',did:'yusuf',amount:30,status:'In progress',reason:'Card declined',attempts:1,next:'Email 2 of 3'}
+];
+function recStatusBadge(s){const m={'Recovered':'b-green','In progress':'b-blue','Expiring':'b-amber','Failed':'b-amber'};return '<span class="badge '+(m[s]||'b-slate')+'">'+esc(s)+'</span>';}
+function recoveryCard(){
+ const atRiskRows=RECOVERY.filter(r=>r.status!=='Recovered');const atRisk=atRiskRows.reduce((s,r)=>s+r.amount,0);
+ const rec=RECOVERY.filter(r=>r.status==='Recovered').reduce((s,r)=>s+r.amount,0);const rate=Math.round(rec/((rec+atRisk)||1)*100);
+ const tiles=[{l:'At-risk recurring',v:usd(atRisk)+'/mo',d:atRiskRows.length+' donors · '+usd(atRisk*12)+'/yr'},{l:'Recovered (30d)',v:usd(rec)+'/mo',d:'≈ '+usd(rec*12)+'/yr saved'},{l:'Recovery rate',v:rate+'%',d:'Auto + assisted'},{l:'Bot actions (30d)',v:RECOVERY.reduce((s,r)=>s+r.attempts,0),d:'Updater · email · SMS · retry'}];
+ return '<div class="card" style="overflow:visible"><div class="card-h"><b>'+ic('spark',16)+' Card recovery</b><span class="muted">automated dunning for failed &amp; expiring recurring gifts</span></div>'
+  +'<div class="aibrief">'+ic('target',13)+'<span>Expired and declined cards are the biggest silent leak in recurring giving. The recovery bot runs card Account Updater, then a timed email + SMS + retry sequence, and only escalates high-value or repeatedly-failed gifts to an officer.</span></div>'
+  +'<div class="tiles" style="margin:4px 16px 14px">'+tiles.map(tile).join('')+'</div>'
+  +'<div style="overflow-x:auto"><table><thead><tr><th>Donor</th><th class="r">Monthly</th><th>Reason</th><th>Status</th><th class="r">Attempts</th><th>Next step</th><th class="r">Action</th></tr></thead><tbody>'
+  +RECOVERY.map(r=>'<tr'+(r.did?' class="clk" onclick="openRecord(\''+r.did+'\')"':'')+'><td class="t-name">'+esc(r.donor)+'</td><td class="r tnum">'+usd(r.amount)+'</td><td>'+esc(r.reason)+'</td><td>'+recStatusBadge(r.status)+'</td><td class="r">'+r.attempts+'</td><td>'+esc(r.next)+'</td><td class="r" style="white-space:nowrap">'+(r.status==='Recovered'?'<span class="t-sub">Resolved</span>':'<button class="btn btn-sec btn-sm" onclick="event.stopPropagation();toast(\'Recovery nudge sent — illustrative\',\'check\')">'+ic('send',13)+'Nudge</button>')+'</td></tr>').join('')
+  +'</tbody></table></div></div>';
+}
 function renderPayments(){
  const rows=payRows();const total=PAYMENTS.reduce(function(s,p){return s+p.amount;},0);
  const tiles=[{l:'Payments',v:PAYMENTS.length,d:'FY26 to date'},{l:'Total processed',v:usdK(total),d:'All sources'},{l:'Avg payment',v:usdK(total/PAYMENTS.length),d:'FY26'},{l:'Processors',v:'4',d:'PayPal · Venmo · BBMS · Stripe'}];
@@ -1442,7 +1498,7 @@ function renderPayments(){
  const szOpts=[[0,'Any amount'],[1000,'≥ $1K'],[5000,'≥ $5K'],[25000,'≥ $25K'],[50000,'≥ $50K']];
  const pills='<div class="filters">'+payMenu('Source',state.pSource||'all',srcOpts,'setPSource')+payMenu('Date',state.pRange||'all',rngOpts,'setPRange')+payMenu('Amount',state.pSize||0,szOpts,'setPSize')+'</div>';
  setHTML('#view',header('Payments','Incoming gift payments across processors')
-  +'<div class="tiles">'+tiles.map(tile).join('')+'</div>'+pills
+  +'<div class="tiles">'+tiles.map(tile).join('')+'</div>'+recoveryCard()+pills
   +'<div class="card"><div class="card-h"><b>Payments</b><span class="muted">'+rows.length+' of '+PAYMENTS.length+'</span></div><div style="overflow-x:auto"><table><thead><tr><th>Donor</th><th>Transaction date</th><th class="r">Amount</th><th>Source</th><th class="r">Action</th></tr></thead><tbody>'
   +(rows.length?rows.map(function(p){return '<tr class="clk" onclick="openRecord(\''+p.did+'\')"><td class="t-name">'+esc(p.donor)+'</td><td>'+esc(p.date)+'</td><td class="r tnum">'+usd(p.amount)+'</td><td>'+sourceBadge(p.source)+'</td><td class="r"><button class="btn btn-sec btn-sm" onclick="event.stopPropagation();openRecord(\''+p.did+'\')">Open</button></td></tr>';}).join(''):'<tr><td colspan="5"><div class="t-sub" style="padding:8px">No payments match these filters.</div></td></tr>')
   +'</tbody></table></div></div>');
@@ -1494,10 +1550,29 @@ function listFiltered(){
  if(L.ev)r=r.filter(c=>(c.events||[]).length);
  if(L.books)r=r.filter(c=>(c.books||[]).length);
  if(L.course)r=r.filter(c=>(c.courses||[]).length);
+ if(L.hiZip)r=r.filter(c=>HIGH_ZIPS[c.zip]);
  return r;
 }
+function askListAI(q){q=(q||'').trim();if(!q)return;const s=q.toLowerCase();
+ const L={type:'all',minLt:0,fund:'all',zip:'',recency:'all',ev:false,books:false,course:false,hiZip:false,result:null};
+ if(s.includes('individual'))L.type='Individual';else if(s.includes('organization')||s.includes('corporate')||s.includes('company'))L.type='Organization';else if(s.includes('foundation'))L.type='Foundation';else if(s.includes('household'))L.type='Household';
+ if(s.includes('250k')||s.includes('250,000'))L.minLt=250000;else if(s.includes('100k')||s.includes('100,000'))L.minLt=100000;else if(s.includes('50k')||s.includes('50,000'))L.minLt=50000;else if(s.includes('25k')||s.includes('25,000'))L.minLt=25000;else if(s.includes('10k')||s.includes('10,000'))L.minLt=10000;else if(s.includes('major'))L.minLt=100000;
+ if(s.includes('event')||s.includes('attend')||s.includes('gala')||s.includes('lecture')||s.includes('iftar'))L.ev=true;
+ if(s.includes('book'))L.books=true;
+ if(s.includes('course')||s.includes('thinkific')||s.includes('student')||s.includes('class'))L.course=true;
+ if(s.includes('high-capacity')||s.includes('high capacity')||s.includes('wealth')||s.includes('affluent')||(s.includes('zip')&&s.includes('high')))L.hiZip=true;
+ FUNDS.forEach(f=>{const w=f.name.toLowerCase().split(' ')[0];if(w.length>3&&s.includes(w))L.fund=f.name;});
+ const zm=q.match(/\b(9\d{2,4})\b/);if(zm&&!L.hiZip)L.zip=zm[1];
+ state.list=L;
+ const p=[];if(L.type!=='all')p.push(L.type+'s');if(L.minLt)p.push('≥ '+usdK(L.minLt));if(L.fund!=='all')p.push(L.fund);if(L.hiZip)p.push('high-capacity ZIP');if(L.zip)p.push('ZIP '+L.zip);if(L.ev)p.push('event attendees');if(L.books)p.push('bookstore buyers');if(L.course)p.push('course enrollees');
+ toast(p.length?'Segment: '+p.join(' · '):'Showing all — name a fund, amount, or signal','spark');render();}
+function askListFromInput(){const el=$('#listAskIn');askListAI(el?el.value:'');}
+function setListConf(id,v){state.listConf[id]=+v;}
+function addListToPipeline(id,conf){const c=byId(id);if(!c)return;conf=conf||c.confidence||10;c.confidence=conf;const was=!!c.stage;if(!c.stage){c.stage='identification';c.ask=c.ask||0;c.fundInterest=c.fundInterest||(state.list.fund!=='all'?state.list.fund:'Annual Fund');c.officer=c.officer||'Imran Patel';}toast(c.name+(was?' — confidence set to ':' added to pipeline · ')+conf+'%','target');render();}
 function renderLists(){
  const res=listFiltered();
+ const CONF_OPTS=[[0,'Confidence…'],[10,'Low · 10%'],[30,'Medium · 30%'],[60,'Likely · 60%'],[85,'Strong · 85%'],[100,'Committed · 100%']];
+ const aiCard='<div class="card" style="overflow:visible"><div class="card-h"><b>'+ic('spark',16)+' Ask AI to build a list</b><span class="muted">describe who you want in plain English</span></div><div class="card-b"><div class="askbar"><input class="input" id="listAskIn" placeholder="e.g. major donors in high-capacity ZIPs who attended an event" onkeydown="if(event.key===\'Enter\')askListFromInput()"><button class="btn btn-pri" onclick="askListFromInput()">'+ic('spark',15)+'Build list</button></div><div class="filters" style="margin-top:12px">'+['Donors in high-capacity ZIP codes','Event attendees who gave $10K+','Foundations giving to the Endowment','Bookstore buyers this year'].map(q=>'<button class="fpill" onclick="askListAI(\''+q+'\')">'+esc(q)+'</button>').join('')+'</div></div></div>';
  const builder='<div class="card"><div class="card-h"><b>Segment builder</b><span class="muted">filters apply live</span></div><div class="card-b"><div class="grid2">'
   +'<label class="fld"><span class="lk">Constituent type</span><select class="input" onchange="state.list.type=this.value;render()">'+['all','Individual','Organization','Foundation','Household'].map(t=>'<option value="'+t+'" '+(state.list.type===t?'selected':'')+'>'+(t==='all'?'All types':t)+'</option>').join('')+'</select></label>'
   +'<label class="fld"><span class="lk">Min lifetime giving</span><select class="input" onchange="state.list.minLt=+this.value;render()">'+[[0,'Any'],[10000,'$10K+'],[25000,'$25K+'],[100000,'$100K+'],[250000,'$250K+']].map(o=>'<option value="'+o[0]+'" '+(state.list.minLt===o[0]?'selected':'')+'>'+o[1]+'</option>').join('')+'</select></label></div>'
@@ -1507,15 +1582,16 @@ function renderLists(){
   +'<label><input type="checkbox" '+(state.list.ev?'checked':'')+' onchange="state.list.ev=this.checked;render()"> Attended an event this year</label>'
   +'<label><input type="checkbox" '+(state.list.books?'checked':'')+' onchange="state.list.books=this.checked;render()"> Bought from the bookstore</label>'
   +'<label><input type="checkbox" '+(state.list.course?'checked':'')+' onchange="state.list.course=this.checked;render()"> Enrolled in a course</label>'
+  +'<label><input type="checkbox" '+(state.list.hiZip?'checked':'')+' onchange="state.list.hiZip=this.checked;render()"> In a high-capacity ZIP</label>'
   +'</div></label><label class="fld"><span class="lk">&nbsp;</span><div class="t-sub" style="padding-top:8px;line-height:1.5">Signals unify across events, Thinkific and the bookstore by email — build re-engagement and upgrade lists in seconds.</div></label></div></div></div>';
  const result='<div class="card" style="overflow:visible"><div class="card-h"><b>Matching constituents</b><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="muted">'+res.length+' members</span>'+(can('list')?'<button class="btn btn-sec btn-sm" onclick="saveSegmentModal()">'+ic('list',14)+'Save as list</button>':'')+(can('bulk')?'<button class="btn btn-pri btn-sm" onclick="bulkFromSegment()">'+ic('send',14)+'Bulk message</button>':'')+moreMenu([{label:'Download to CSV',icon:'download',onclick:'downloadCSVrows()'},{label:'Push to Mailchimp',icon:'mail',onclick:'pushSegmentMC()'}])+'</div></div>'
-  +'<table><thead><tr><th>Name</th><th>Email</th><th>City</th><th>ZIP</th><th class="r">Lifetime</th></tr></thead><tbody>'
-  +(res.length?res.map(c=>'<tr><td class="t-name">'+esc(c.name)+'</td><td>'+esc(c.email)+'</td><td>'+esc(c.city)+'</td><td>'+esc(c.zip)+'</td><td class="r tnum">'+usd(c.lifetime)+'</td></tr>').join(''):'<tr><td colspan="5"><div class="t-sub" style="padding:8px">No matches — loosen the filters.</div></td></tr>')
+  +'<table><thead><tr><th>Name</th><th>Email</th><th>City</th><th>ZIP</th><th class="r">Lifetime</th><th class="r">Actions</th></tr></thead><tbody>'
+  +(res.length?res.map(c=>{const cf=state.listConf[c.id]||c.confidence||0;return '<tr><td class="t-name">'+esc(c.name)+'</td><td>'+esc(c.email)+'</td><td>'+esc(c.city)+'</td><td>'+esc(c.zip)+'</td><td class="r tnum">'+usd(c.lifetime)+'</td><td class="r" style="white-space:nowrap"><details class="menu"><summary class="btn btn-pri btn-sm" style="display:inline-flex;align-items:center;gap:6px">'+ic('target',13)+(c.stage?('In pipeline'+(cf?' · '+cf+'%':'')):'Add to pipeline')+'<span style="display:inline-flex;transform:rotate(90deg)">'+ic('chev',12)+'</span></summary><div class="menu-pop" style="right:0;left:auto">'+[[10,'Low · 10%'],[30,'Medium · 30%'],[60,'Likely · 60%'],[85,'Strong · 85%'],[100,'Committed · 100%']].map(o=>'<div class="menu-item" onclick="this.closest(\'details\').open=false;addListToPipeline(\''+c.id+'\','+o[0]+')">'+(cf===o[0]?ic('check',14):'<span style="display:inline-block;width:14px"></span>')+o[1]+'</div>').join('')+'</div></details></td></tr>';}).join(''):'<tr><td colspan="6"><div class="t-sub" style="padding:8px">No matches — loosen the filters.</div></td></tr>')
   +'</tbody></table></div>';
  const saved='<div class="card" style="overflow:visible"><div class="card-h"><b>Saved lists</b></div><table><thead><tr><th>List</th><th>Definition</th><th class="r">Members</th><th>Mailchimp</th><th class="r">Action</th></tr></thead><tbody>'
   +SAVED_LISTS.map((l,i)=>'<tr><td class="t-name">'+esc(l.name)+'</td><td>'+esc(l.desc)+'</td><td class="r tnum">'+l.count+'</td><td>'+(l.sync.startsWith('Synced')?'<span class="badge b-green">'+esc(l.sync)+'</span>':'<span class="badge b-slate">'+esc(l.sync)+'</span>')+'</td><td class="r" style="white-space:nowrap">'+(can('bulk')?'<button class="btn btn-sec btn-sm" onclick="bulkSaved('+i+')">'+ic('send',14)+'Message</button> ':'')+moreMenu([{label:'Download to CSV',icon:'download',onclick:'csvSaved('+i+')'},{label:'Push to Mailchimp',icon:'mail',onclick:'pushSavedMC('+i+')'}])+'</td></tr>').join('')
   +'</tbody></table></div>';
- setHTML('#view',header('Lists','Build a custom list, then send a bulk message or export it to Mailchimp')+builder+result+saved);
+ setHTML('#view',header('Lists','Build a custom list, then send a bulk message or export it to Mailchimp')+aiCard+builder+result+saved);
 }
 function csvEscape(v){v=String(v==null?'':v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
 function rowsToCSV(rows){if(!rows.length)return '';const k=Object.keys(rows[0]);return k.join(',')+'\n'+rows.map(r=>k.map(x=>csvEscape(r[x])).join(',')).join('\n');}
