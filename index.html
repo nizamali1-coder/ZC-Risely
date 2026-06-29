@@ -915,7 +915,7 @@ function nbaTableCard(){
  return '<div class="card" style="overflow:visible"><div class="card-h"><b>Next Best Action</b><span class="muted">'+rows.length+' of '+NBA.length+'</span></div>'
   +'<div class="card-b" style="padding-bottom:0">'+pills+'</div>'
   +'<table><thead><tr><th>Score</th><th>Donor</th><th class="r">Lifetime</th><th>Recommended action</th><th>Type / Signal</th><th>Gift type</th><th>Assignment</th><th class="r">Action</th></tr></thead><tbody>'
-  +rows.map(x=>{const i=NBA.indexOf(x);const tg=nbaTags(x);return '<tr '+(x.did?'class="clk" onclick="openRecord(\''+x.did+'\')"':'')+'><td><span class="scorepill" style="color:'+scoreColor(x.score)+';border-color:'+scoreColor(x.score)+'55">'+x.score+'</span></td><td class="t-name">'+esc(x.name)+'</td><td class="r tnum">'+usdK(x.lifetime)+'</td><td style="max-width:300px"><div class="t-sub" style="white-space:normal;line-height:1.45">'+esc(x.desc)+'</div></td><td><div class="tagwrap">'+tg.map((t,j)=>j===0?nbaTypeChip(t):'<span class="sig'+(t==='High-capacity ZIP'?' sig-zip':'')+'">'+esc(t)+'</span>').join('')+'</div></td><td>'+esc(x.gift)+'</td><td onclick="event.stopPropagation()">'+nbaAssignCell(x,i)+'</td><td class="r" style="white-space:nowrap">'+nbaActions(x,i)+'</td></tr>';}).join('')
+  +rows.map(x=>{const i=NBA.indexOf(x);const tg=nbaTags(x);return '<tr '+(x.did?'class="clk" onclick="openRecord(\''+x.did+'\')"':'')+'><td><span class="scorepill" style="color:'+scoreColor(x.score)+';border-color:'+scoreColor(x.score)+'55">'+x.score+'</span></td><td class="t-name">'+esc(x.name)+'</td><td class="r tnum">'+usdK(x.lifetime)+'</td><td style="min-width:300px;max-width:480px"><div class="t-sub" style="white-space:normal;line-height:1.45">'+esc(x.desc)+'</div></td><td><div class="tagwrap">'+tg.map((t,j)=>j===0?nbaTypeChip(t):'<span class="sig'+(t==='High-capacity ZIP'?' sig-zip':'')+'">'+esc(t)+'</span>').join('')+'</div></td><td>'+esc(x.gift)+'</td><td onclick="event.stopPropagation()">'+nbaAssignCell(x,i)+'</td><td class="r" style="white-space:nowrap">'+nbaActions(x,i)+'</td></tr>';}).join('')
   +'</tbody></table></div>';
 }
 function prospectTableCard(){
@@ -1342,8 +1342,10 @@ function nbaAssignCell(x,i){const cur=assignFor(x,i);const opts=OFFICERS.concat(
 function setNbaAssign(i,v){state.nbaAssign[i]=v;toast(v==='Unassigned'?'Unassigned':'Assigned to '+v,'check');render();}
 function nbaTypeColor(t){return {'Re-target':'#7C3AED','Upgrade':'#2563EB','Advance':'#1D4ED8','Re-engage':'#B07A4B','First ask':'#0EA5E9','Planned giving':'#2D6A4F','Pledge reminder':'#D97706','Recover':'#DC2626','Steward':'#0E7490'}[t]||'#475569';}
 function nbaActions(x,i){
- if(x.did)return '<button class="btn btn-sec btn-sm" onclick="event.stopPropagation();aiEmail(\''+x.did+'\')">'+ic('mail',14)+'Email</button><button class="btn btn-sec btn-sm" onclick="event.stopPropagation();aiSMS(\''+x.did+'\')">'+ic('phone',14)+'SMS</button><button class="btn btn-pri btn-sm" onclick="event.stopPropagation();openRecord(\''+x.did+'\')">Open</button>';
- return '<button class="btn btn-sec btn-sm" onclick="event.stopPropagation();nbaDraft('+i+')">'+ic('mail',14)+'Draft outreach</button><button class="btn btn-pri btn-sm" onclick="event.stopPropagation();toast(\'Constituent record created — illustrative\',\'check\')">'+ic('plus',14)+'Create record</button>';
+ const items=x.did
+  ?[{l:'Pre-meeting prep',ic:'spark',fn:'openPrep(\''+x.did+'\')'},{l:'Email',ic:'mail',fn:'aiEmail(\''+x.did+'\')'},{l:'Text (SMS)',ic:'phone',fn:'aiSMS(\''+x.did+'\')'},{l:'Open record',ic:'user',fn:'openRecord(\''+x.did+'\')'}]
+  :[{l:'Draft outreach',ic:'mail',fn:'nbaDraft('+i+')'},{l:'Create record',ic:'plus',fn:'toast(\'Constituent record created — illustrative\',\'check\')'}];
+ return '<details class="menu" onclick="event.stopPropagation()"><summary class="btn btn-sec btn-sm" style="display:inline-flex;align-items:center;gap:6px">'+ic('spark',13)+'Actions<span style="display:inline-flex;transform:rotate(90deg)">'+ic('chev',12)+'</span></summary><div class="menu-pop" style="right:0;left:auto">'+items.map(it=>'<div class="menu-item" onclick="this.closest(\'details\').open=false;'+it.fn+'">'+ic(it.ic,15)+it.l+'</div>').join('')+'</div></details>';
 }
 function nbaRow(x,i,withActions){const col=nbaTypeColor(x.type);
  return '<div class="rt" '+(x.did?'onclick="openRecord(\''+x.did+'\')"':'')+'>'
@@ -1471,12 +1473,12 @@ function setPSize(v){state.pSize=v;render();}
 function payMenu(label,active,opts,fn){const on=active&&active!=='all'&&active!==0;const cur=opts.find(o=>o[0]===active)||opts[0];return '<details class="menu"><summary class="fpill '+(on?'on':'')+'" style="display:inline-flex;align-items:center;gap:6px">'+(on?esc(cur[1]):label)+'<span style="display:inline-flex;transform:rotate(90deg)">'+ic('chev',13)+'</span></summary><div class="menu-pop" style="left:0;right:auto">'+opts.map(o=>'<div class="menu-item" onclick="this.closest(\'details\').open=false;'+fn+'('+(typeof o[0]==='number'?o[0]:'\''+o[0]+'\'')+')">'+(active===o[0]?ic('check',14):'<span style="display:inline-block;width:14px"></span>')+esc(o[1])+'</div>').join('')+'</div></details>';}
 function sourceBadge(s){const m={'PayPal':'b-blue','Venmo':'b-sky','BBMS':'b-slate','Stripe':'b-purple'};return '<span class="badge '+(m[s]||'b-slate')+'">'+esc(s)+'</span>';}
 const RECOVERY=[
- {donor:'Hana Yusuf',did:null,amount:50,status:'In progress',reason:'Card expired',attempts:2,next:'SMS + retry · Jun 30'},
- {donor:'Bilal Khan',did:null,amount:100,status:'Recovered',reason:'Card auto-updated (Account Updater)',attempts:1,next:'—'},
- {donor:'Aisha Rahman',did:'aisha',amount:25,status:'Failed',reason:'Insufficient funds · 3 retries',attempts:3,next:'Officer follow-up'},
- {donor:'Sumayya Noor',did:null,amount:75,status:'Expiring',reason:'Card expires next month',attempts:0,next:'Pre-expiry email queued'},
+ {donor:'Hana Yusuf',did:null,amount:50,status:'In progress',reason:'Card expired',attempts:2,next:'Stripe recovery in progress'},
+ {donor:'Bilal Khan',did:null,amount:100,status:'Recovered',reason:'Card auto-updated via Stripe (Account Updater)',attempts:1,next:'—'},
+ {donor:'Aisha Rahman',did:'aisha',amount:25,status:'Failed',reason:'Insufficient funds · 3 retries',attempts:3,next:'Stripe retries exhausted · officer follow-up'},
+ {donor:'Sumayya Noor',did:null,amount:75,status:'Expiring',reason:'Card expires next month',attempts:0,next:'Stripe pre-expiry update queued'},
  {donor:'Omar Farooq',did:null,amount:40,status:'Recovered',reason:'Donor updated via self-serve link',attempts:1,next:'—'},
- {donor:'Yusuf Karim',did:'yusuf',amount:30,status:'In progress',reason:'Card declined',attempts:1,next:'Email 2 of 3'}
+ {donor:'Yusuf Karim',did:'yusuf',amount:30,status:'In progress',reason:'Card declined',attempts:1,next:'Stripe recovery in progress'}
 ];
 function recStatusBadge(s){const m={'Recovered':'b-green','In progress':'b-blue','Expiring':'b-amber','Failed':'b-amber'};return '<span class="badge '+(m[s]||'b-slate')+'">'+esc(s)+'</span>';}
 function recoveryCard(){
@@ -1486,8 +1488,8 @@ function recoveryCard(){
  return '<div class="card" style="overflow:visible"><div class="card-h"><b>'+ic('spark',16)+' Card recovery</b><span class="muted">automated dunning for failed &amp; expiring recurring gifts</span></div>'
   +'<div class="aibrief">'+ic('target',13)+'<span>Expired and declined cards are the biggest silent leak in recurring giving. The recovery bot runs card Account Updater, then a timed email + SMS + retry sequence, and only escalates high-value or repeatedly-failed gifts to an officer.</span></div>'
   +'<div class="tiles" style="margin:4px 16px 14px">'+tiles.map(tile).join('')+'</div>'
-  +'<div style="overflow-x:auto"><table><thead><tr><th>Donor</th><th class="r">Monthly</th><th>Reason</th><th>Status</th><th class="r">Attempts</th><th>Next step</th><th class="r">Action</th></tr></thead><tbody>'
-  +RECOVERY.map(r=>'<tr'+(r.did?' class="clk" onclick="openRecord(\''+r.did+'\')"':'')+'><td class="t-name">'+esc(r.donor)+'</td><td class="r tnum">'+usd(r.amount)+'</td><td>'+esc(r.reason)+'</td><td>'+recStatusBadge(r.status)+'</td><td class="r">'+r.attempts+'</td><td>'+esc(r.next)+'</td><td class="r" style="white-space:nowrap">'+(r.status==='Recovered'?'<span class="t-sub">Resolved</span>':'<button class="btn btn-sec btn-sm" onclick="event.stopPropagation();toast(\'Recovery nudge sent — illustrative\',\'check\')">'+ic('send',13)+'Nudge</button>')+'</td></tr>').join('')
+  +'<div style="overflow-x:auto"><table><thead><tr><th>Donor</th><th class="r">Monthly</th><th>Reason</th><th>Status</th><th class="r">Attempts</th><th>Next step</th></tr></thead><tbody>'
+  +RECOVERY.map(r=>'<tr'+(r.did?' class="clk" onclick="openRecord(\''+r.did+'\')"':'')+'><td class="t-name">'+esc(r.donor)+'</td><td class="r tnum">'+usd(r.amount)+'</td><td>'+esc(r.reason)+'</td><td>'+recStatusBadge(r.status)+'</td><td class="r">'+r.attempts+'</td><td>'+esc(r.next)+'</td></tr>').join('')
   +'</tbody></table></div></div>';
 }
 function renderPayments(){
