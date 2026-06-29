@@ -692,7 +692,7 @@ let BULK_SENDS=[
 
 /* ---------- State ---------- */
 const state={persona:'admin',view:'dashboard',recordId:null,tab:'overview',drawerId:null,
- cFilter:'all',cLifetime:0,gFilter:'all',gFund:'all',gSize:0,gRange:'all',pSource:'all',pRange:'all',pSize:0,nbaType:'all',nbaAction:'all',nbaSignal:'all',nbaAssign:{},askLog:[],listConf:{},dashSeg:'nba',dpStage:'all',dplStatus:'all',dgFund:'all',dashFilter:'fy26',inboxFilter:'unread',selected:new Set(),bulk:null,forecastId:null,fcFilter:'all',catDraft:null,anTab:'revenue',fcExpanded:new Set(),catExpanded:new Set(),inboxCat:'mentions',settings:{tz:'America/Los_Angeles',inbox:null},
+ cFilter:'all',cLifetime:0,gFilter:'all',gFund:'all',gSize:0,gRange:'all',pSource:'all',pRange:'all',pSize:0,nbaType:'all',nbaAction:'all',nbaSignal:'all',nbaAssign:{},askLog:[],listConf:{},giftAssign:{},dashSeg:'nba',dpStage:'all',dplStatus:'all',dgFund:'all',dashFilter:'fy26',inboxFilter:'unread',selected:new Set(),bulk:null,forecastId:null,fcFilter:'all',catDraft:null,anTab:'revenue',fcExpanded:new Set(),catExpanded:new Set(),inboxCat:'mentions',settings:{tz:'America/Los_Angeles',inbox:null},
  wizard:null,voice:null,list:{type:'all',minLt:0,fund:'all',zip:'',recency:'all',ev:false,books:false,course:false,hiZip:false,result:null}};
 
 /* ---------- Money helpers ---------- */
@@ -1343,6 +1343,9 @@ const OFFICERS=['Imran Patel','Shams Khan','Yasmin Haddad','Tariq Mahmood'];
 function assignFor(x,i){if(state.nbaAssign[i]!==undefined)return state.nbaAssign[i];const c=x.did?byId(x.did):null;return (c&&c.officer)?c.officer:'Unassigned';}
 function nbaAssignCell(x,i){const cur=assignFor(x,i);const opts=OFFICERS.concat(['Unassigned']);const list=opts.indexOf(cur)<0?[cur].concat(opts):opts;return '<select class="cellsel'+(cur==='Unassigned'?' un':'')+'" onclick="event.stopPropagation()" onchange="setNbaAssign('+i+',this.value)">'+list.map(o=>'<option'+(o===cur?' selected':'')+'>'+esc(o)+'</option>').join('')+'</select>';}
 function setNbaAssign(i,v){state.nbaAssign[i]=v;toast(v==='Unassigned'?'Unassigned':'Assigned to '+v,'check');render();}
+function giftAssignFor(g){if(state.giftAssign[g.id]!==undefined)return state.giftAssign[g.id];const c=byId(g.did);return (c&&c.officer)?c.officer:'';}
+function giftAssignCell(g){const cur=giftAssignFor(g);const opts=[''].concat(OFFICERS);const list=opts.indexOf(cur)<0?[cur].concat(opts):opts;return '<select class="cellsel'+(cur===''?' un':'')+'" onclick="event.stopPropagation()" onchange="setGiftAssign(\''+g.id+'\',this.value)">'+list.map(o=>'<option value="'+esc(o)+'"'+(o===cur?' selected':'')+'>'+(o===''?'Unassigned':esc(o))+'</option>').join('')+'</select>';}
+function setGiftAssign(id,v){state.giftAssign[id]=v;toast(v?'Assigned to '+v:'Unassigned','check');render();}
 function nbaTypeColor(t){return {'Re-target':'#7C3AED','Upgrade':'#2563EB','Advance':'#1D4ED8','Re-engage':'#B07A4B','First ask':'#0EA5E9','Planned giving':'#2D6A4F','Pledge reminder':'#D97706','Recover':'#DC2626','Steward':'#0E7490'}[t]||'#475569';}
 function nbaActions(x,i){
  const items=x.did
@@ -1402,8 +1405,8 @@ function renderGifts(){
  setHTML('#view',header('Gifts','Gift entry and credit allocation',btn)
   +'<div class="tiles">'+tiles.map(tile).join('')+'</div>'+pills
   +'<div class="card"><div class="card-h"><b>All gifts</b><span class="muted">'+rows.length+' of '+GIFTS.length+'</span></div>'
-  +'<table><thead><tr><th>Donor</th><th>Date</th><th>Fund</th><th class="r">Amount</th><th>Credit</th><th>Status</th><th class="r">Action</th></tr></thead><tbody>'
-  +(rows.length?rows.map(g=>'<tr class="clk" onclick="openRecord(\''+g.did+'\')"><td class="t-name">'+esc(g.donor)+'</td><td>'+g.date+'</td><td>'+esc(g.fund)+'</td><td class="r tnum">'+usd(g.amount)+'</td><td>'+creditBadge(g.credit)+'</td><td>'+statusBadge(g.status)+'</td><td class="r"><button class="btn btn-sec btn-sm" onclick="event.stopPropagation();openRecord(\''+g.did+'\')">Open</button></td></tr>').join(''):'<tr><td colspan="7"><div class="t-sub" style="padding:8px">No gifts match these filters.</div></td></tr>')
+  +'<table><thead><tr><th>Donor</th><th>Date</th><th>Fund</th><th class="r">Amount</th><th>Credit</th><th>Status</th><th>Assignment</th></tr></thead><tbody>'
+  +(rows.length?rows.map(g=>'<tr class="clk" onclick="openRecord(\''+g.did+'\')"><td class="t-name">'+esc(g.donor)+'</td><td>'+g.date+'</td><td>'+esc(g.fund)+'</td><td class="r tnum">'+usd(g.amount)+'</td><td>'+creditBadge(g.credit)+'</td><td>'+statusBadge(g.status)+'</td><td onclick="event.stopPropagation()">'+giftAssignCell(g)+'</td></tr>').join(''):'<tr><td colspan="7"><div class="t-sub" style="padding:8px">No gifts match these filters.</div></td></tr>')
   +'</tbody></table></div>');
 }
 /* ============================ EVENTS (Marketing) ============================ */
