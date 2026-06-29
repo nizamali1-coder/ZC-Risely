@@ -1006,7 +1006,7 @@ function renderConstituents(){
   +'<div class="filters">'+fl.map(function(x,i){return '<button class="fpill '+(f===x[0]?'on':'')+'" onclick="state.cFilter=\''+x[0]+'\';render()">'+x[1]+'</button>'+(i===0?lifetimeMenu():'');}).join('')+'</div>'
   +selToolbar()
   +'<div class="card" style="overflow:visible"><div class="card-h"><b>'+(f==='all'?'All constituents':fl.find(x=>x[0]===f)[1])+(state.cLifetime?' · ≥ '+usdK(state.cLifetime):'')+'</b><span class="muted">'+rows.length+' shown · 12,480 total</span></div>'
-  +'<table><thead><tr>'+headCb+'<th>Name</th><th>Type</th><th>Relationships</th><th>Capacity</th><th class="r">Lifetime giving</th><th>Last gift</th><th class="r">Action</th></tr></thead><tbody>'
+  +'<table><thead><tr>'+headCb+'<th>Name</th><th>Type</th><th>Relationships</th><th class="r">Lifetime giving</th><th>Last gift</th><th class="r">Action</th></tr></thead><tbody>'
   +rows.map(c=>{
     const cb=selectable?'<td onclick="event.stopPropagation()"><input type="checkbox" '+(sel.has(c.id)?'checked':'')+' onclick="toggleSel(\''+c.id+'\')"></td>':'';
     const items=[{l:'Preview',ic:'user',fn:'openDrawer(\''+c.id+'\')'},{l:'Open record',ic:'grid',fn:'openRecord(\''+c.id+'\')'},{l:'Pre-meeting prep',ic:'spark',fn:'openPrep(\''+c.id+'\')'}];
@@ -1018,7 +1018,6 @@ function renderConstituents(){
      +'<td><div class="t-name">'+esc(c.name)+'</div><div class="t-sub">'+esc(c.title)+'</div></td>'
      +'<td>'+typeBadge(c.type)+'</td>'
      +'<td><span class="relcell"><span class="ric">'+c.rel+'</span>'+(c.rel===1?'link':'links')+'</span></td>'
-     +'<td><span class="badge '+(c.capNum>=500000?'b-purple':c.capNum>=250000?'b-blue':'b-slate')+'">'+esc(c.capacity)+'</span></td>'
      +'<td class="r tnum">'+usd(c.lifetime)+'</td>'
      +'<td>'+c.last.date+'<div class="t-sub">'+usd(c.last.amount)+' · '+esc(c.last.fund)+'</div></td>'
      +'<td class="r" style="white-space:nowrap">'+acts+'</td></tr>';
