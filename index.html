@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Risely — Zaytuna College Advancement (Interactive Requirements Prototype)</title>
+<style>
+:root{
+ color-scheme:light;
+ --blue:#2563EB;--blue-d:#1D4ED8;--blue-l:#EFF4FF;--blue-l2:#DBEAFE;
+ --navy:#0F172A;--slate7:#334155;--slate6:#475569;--slate5:#64748B;--slate4:#94A3B8;
+ --bg:#F8FAFC;--card:#FFFFFF;--line:#E2E8F0;--line2:#F1F5F9;
+ --amber-b:#FEF3C7;--amber-t:#B45309;--green-b:#DCFCE7;--green-t:#15803D;
+ --red-b:#FEE2E2;--red-t:#B91C1C;--purple-b:#EDE9FE;--purple-t:#6D28D9;--sky-b:#E0F2FE;--sky-t:#0369A1;
+ --r-card:16px;--r-btn:10px;
+ --sh:0 1px 2px rgba(15,23,42,.04),0 1px 3px rgba(15,23,42,.06);
+ --sh-lg:0 12px 34px rgba(15,23,42,.16);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--navy);font-size:14px;-webkit-font-smoothing:antialiased;line-height:1.5}
+button{font-family:inherit;cursor:pointer}
+a{color:inherit}
+.tnum{font-variant-numeric:tabular-nums}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:6px;border:2px solid var(--bg)}
+
+/* Topbar */
+#topbar{height:62px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:18px;padding:0 20px;position:sticky;top:0;z-index:40}
+.brand{display:flex;align-items:center;gap:11px;min-width:210px}
+.brand .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#3B82F6,#2563EB);display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 5px 12px rgba(37,99,235,.4)}
+.brand .bt b{font-size:18px;font-weight:800;letter-spacing:-.02em;color:var(--navy);display:block;line-height:1}
+.brand .bt span{font-size:11px;color:var(--slate5);font-weight:600}
+.persona{display:flex;gap:3px;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:4px}
+.persona button{border:none;background:transparent;border-radius:999px;padding:7px 13px;font-size:13px;font-weight:600;color:var(--slate5);display:flex;align-items:center;gap:8px;transition:.15s;white-space:nowrap}
+.persona button .pdot{width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.45}
+.persona button.on{color:#fff;box-shadow:0 2px 7px rgba(37,99,235,.45)}
+.persona button.on .pdot{opacity:1;background:#fff}
+.persona button:not(.on):hover{color:var(--navy);background:#fff}
+.tr{margin-left:auto;display:flex;align-items:center;gap:11px}
+.search{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 12px;width:230px;color:var(--slate4)}
+.search input{border:none;background:transparent;outline:none;font-size:13px;color:var(--navy);width:100%}
+.iconbtn{position:relative;width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:#fff;display:flex;align-items:center;justify-content:center;color:var(--slate6)}
+.iconbtn:hover{background:var(--bg)}
+.badge-dot{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:#EF4444;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+.avatar{width:38px;height:38px;border-radius:50%;color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
+
+/* Shell */
+#shell{display:flex;min-height:calc(100vh - 62px)}
+#sidebar{width:238px;background:#fff;border-right:1px solid var(--line);padding:16px 14px;display:flex;flex-direction:column;position:sticky;top:62px;height:calc(100vh - 62px);flex-shrink:0}
+.navsec{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--slate4);margin:16px 10px 8px}
+.navitem{display:flex;align-items:center;gap:11px;padding:10px 11px;border-radius:10px;color:var(--slate6);font-weight:600;font-size:14px;cursor:pointer;margin-bottom:2px}
+.navitem:hover{background:var(--line2)}
+.navitem.on{background:var(--blue-l);color:var(--blue)}
+.navitem svg{flex-shrink:0}
+.navitem .count{margin-left:auto;font-size:12px;background:var(--line2);color:var(--slate5);border-radius:8px;padding:1px 8px;font-weight:700}
+.navitem.on .count{background:#fff;color:var(--blue)}
+.navitem .ncount{margin-left:auto;font-size:11px;background:#EF4444;color:#fff;border-radius:9px;padding:1px 7px;font-weight:700}
+.navspacer{flex:1}
+.sb-foot{border-top:1px solid var(--line2);padding-top:10px;margin-top:8px}
+#main{flex:1;min-width:0}
+#view{padding:24px 30px 60px;max-width:1340px}
+
+/* Headings */
+.page-h{font-size:23px;font-weight:800;letter-spacing:-.02em;color:var(--navy)}
+.page-sub{color:var(--slate5);margin-top:3px;font-size:13.5px}
+.hrow{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+
+/* Banner */
+.banner{display:flex;align-items:center;gap:13px;background:var(--blue-l);border:1px solid var(--blue-l2);border-radius:14px;padding:13px 16px;margin:18px 0}
+.banner .bi{width:34px;height:34px;border-radius:9px;background:#fff;display:flex;align-items:center;justify-content:center;color:var(--blue);flex-shrink:0;border:1px solid var(--blue-l2)}
+.banner .btext{font-size:13.5px;color:var(--slate7);font-weight:500}
+.banner .btext b{color:var(--navy);font-weight:700}
+.banner .bx{margin-left:auto;display:flex;gap:8px;flex-shrink:0}
+
+/* Tiles */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin:16px 0}
+.tile{background:#fff;border:1px solid var(--line);border-radius:var(--r-card);padding:17px 19px;box-shadow:var(--sh);transition:.15s;text-align:left}
+.tile.sel{cursor:pointer}
+.tile.sel:hover{border-color:#CBD5E1}
+.tile.on{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-l)}
+.tile .tl{color:var(--slate5);font-size:13px;font-weight:600}
+.tile .tv{font-size:29px;font-weight:800;color:var(--navy);margin-top:8px;letter-spacing:-.02em}
+.tile .td{font-size:12px;margin-top:5px;color:var(--slate5);font-weight:500}
+.tile .td.up{color:var(--green-t)}
+
+/* Filters */
+.filters{display:flex;gap:9px;flex-wrap:wrap;margin:4px 0 16px}
+.fpill{border:1px solid var(--line);background:#fff;color:var(--slate6);border-radius:999px;padding:7px 15px;font-size:13px;font-weight:600}
+.fpill:hover{border-color:#CBD5E1}
+.fpill.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* Card + table */
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r-card);box-shadow:var(--sh);overflow:hidden}
+.card+.card{margin-top:18px}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 20px;border-bottom:1px solid var(--line2)}
+.card-h b{font-size:15px;font-weight:700;color:var(--navy)}
+.card-h .muted{color:var(--slate4);font-size:13px;font-weight:600}
+.card-b{padding:20px}
+table{width:100%;border-collapse:collapse}
+thead th{text-align:left;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--slate4);padding:12px 20px;border-bottom:1px solid var(--line2);white-space:nowrap}
+thead th.r,tbody td.r{text-align:right}
+tbody td{padding:13px 20px;border-bottom:1px solid var(--line2);font-size:14px;color:var(--slate7);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr.clk:hover{background:var(--bg);cursor:pointer}
+.t-name{font-weight:700;color:var(--navy)}
+.t-sub{font-size:12px;color:var(--slate5);margin-top:2px;font-weight:500}
+.relcell{display:inline-flex;align-items:center;gap:7px;font-weight:700;color:var(--navy)}
+.relcell .ric{width:24px;height:24px;border-radius:7px;background:var(--blue-l);color:var(--blue-d);display:flex;align-items:center;justify-content:center;font-size:12px}
+
+/* Badges + buttons */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
+.b-amber{background:var(--amber-b);color:var(--amber-t)}
+.b-green{background:var(--green-b);color:var(--green-t)}
+.b-blue{background:var(--blue-l2);color:var(--blue-d)}
+.b-slate{background:var(--line2);color:var(--slate6)}
+.b-purple{background:var(--purple-b);color:var(--purple-t)}
+.b-sky{background:var(--sky-b);color:var(--sky-t)}
+.btn{border:none;border-radius:var(--r-btn);padding:9px 15px;font-size:13.5px;font-weight:700;display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.btn-pri{background:var(--blue);color:#fff}
+.btn-pri:hover{background:var(--blue-d)}
+.btn-sec{background:#fff;border:1px solid var(--line);color:var(--slate7)}
+.btn-sec:hover{background:var(--bg)}
+.btn-sm{padding:7px 12px;font-size:13px}
+.btn-ghost{background:transparent;color:var(--blue);padding:9px 8px}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.backlink{display:inline-flex;align-items:center;gap:7px;color:var(--slate5);font-weight:700;font-size:13.5px;background:none;border:none;margin-bottom:14px}
+.backlink:hover{color:var(--blue)}
+
+/* Drawer */
+#scrim{position:fixed;inset:0;background:rgba(15,23,42,.35);opacity:0;pointer-events:none;transition:.2s;z-index:50}
+#scrim.on{opacity:1;pointer-events:auto}
+#drawer{position:fixed;top:0;right:0;height:100vh;width:430px;max-width:94vw;background:#fff;box-shadow:var(--sh-lg);transform:translateX(105%);transition:.26s cubic-bezier(.4,0,.2,1);z-index:60;display:flex;flex-direction:column}
+#drawer.on{transform:none}
+.dw-h{padding:20px;border-bottom:1px solid var(--line2);display:flex;gap:13px;align-items:flex-start}
+.dw-body{padding:20px;overflow:auto;flex:1}
+.dw-foot{padding:15px 20px;border-top:1px solid var(--line2);display:flex;gap:9px;flex-wrap:wrap}
+.dw-x{margin-left:auto;background:none;border:none;color:var(--slate4);width:30px;height:30px;border-radius:8px;flex-shrink:0}
+.dw-x:hover{background:var(--bg);color:var(--navy)}
+
+/* Modal */
+#modalRoot{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:70;padding:22px}
+#modalRoot.on{display:flex}
+.mback{position:absolute;inset:0;background:rgba(15,23,42,.5)}
+.modal{position:relative;background:#fff;border-radius:18px;box-shadow:var(--sh-lg);width:580px;max-width:96vw;max-height:90vh;display:flex;flex-direction:column;overflow:hidden}
+.modal.wide{width:720px}
+.modal-h{padding:18px 22px;border-bottom:1px solid var(--line2);display:flex;align-items:center;gap:12px}
+.modal-h b{font-size:16px;font-weight:800;color:var(--navy)}
+.modal-h .sub{font-size:12.5px;color:var(--slate5);font-weight:500}
+.modal-b{padding:22px;overflow:auto}
+.modal-f{padding:15px 22px;border-top:1px solid var(--line2);display:flex;justify-content:flex-end;gap:10px;background:var(--bg)}
+.mx{margin-left:auto;background:none;border:none;color:var(--slate4);width:32px;height:32px;border-radius:9px}
+.mx:hover{background:var(--bg);color:var(--navy)}
+
+/* Forms */
+.fld{display:block;margin-bottom:15px}
+.fld .lk{font-size:12.5px;font-weight:700;color:var(--slate6);margin-bottom:6px;display:block}
+.input,textarea,select{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:14px;font-family:inherit;color:var(--navy);outline:none;background:#fff}
+.input:focus,textarea:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-l)}
+textarea{resize:vertical;min-height:92px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+input[type=checkbox]{accent-color:var(--blue);width:16px;height:16px;cursor:pointer;vertical-align:middle}
+.btn-sm.icononly{padding:7px 9px}
+.selbar{display:flex;align-items:center;gap:12px;background:var(--blue-l);border:1px solid var(--blue-l2);border-radius:14px;padding:11px 16px;margin:0 0 16px}
+.selbar .bx{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.adjbox{width:96px;border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:13px;text-align:right;font-family:inherit;color:var(--navy);outline:none;background:#fff}
+.adjbox:focus{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-l)}
+.menu{position:relative;display:inline-block}
+.menu>summary{list-style:none;cursor:pointer}
+.menu>summary::-webkit-details-marker{display:none}
+.menu-pop{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh-lg);padding:6px;min-width:210px;z-index:40}
+.menu-item{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:8px;font-size:13.5px;font-weight:600;color:var(--slate7);cursor:pointer;white-space:nowrap}
+.menu-item:hover{background:var(--bg);color:var(--navy)}
+
+/* Record */
+.rec-top{display:flex;gap:16px;align-items:flex-start;margin-bottom:6px}
+.rec-av{width:62px;height:62px;border-radius:15px;color:#fff;font-size:22px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.av-ind{background:linear-gradient(135deg,#2563EB,#1D4ED8)}
+.av-org{background:linear-gradient(135deg,#B07A4B,#6D4426)}
+.av-fnd{background:linear-gradient(135deg,#2D6A4F,#1B4332)}
+.av-hh{background:linear-gradient(135deg,#0EA5E9,#0369A1)}
+.rec-cap{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 16px;text-align:right;box-shadow:var(--sh)}
+.rec-cap .l{font-size:11px;color:var(--slate5);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.rec-cap .v{font-size:22px;font-weight:800;color:var(--navy)}
+.actionbar{display:flex;gap:9px;flex-wrap:wrap;margin:18px 0 4px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:16px 0 20px;overflow-x:auto}
+.tab{padding:11px 15px;font-weight:700;font-size:14px;color:var(--slate5);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap}
+.tab:hover{color:var(--navy)}
+.tab.on{color:var(--blue);border-color:var(--blue)}
+.kv{display:grid;grid-template-columns:170px 1fr;gap:11px 16px;font-size:14px}
+.kv .k{color:var(--slate5);font-weight:600}
+.kv .v{color:var(--navy);font-weight:600}
+.cols{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;align-items:start}
+.impact{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.impact .ic{border:1px solid var(--line);border-radius:12px;padding:13px 15px}
+.impact .ic .l{font-size:12px;color:var(--slate5);font-weight:700}
+.impact .ic .v{font-size:20px;font-weight:800;color:var(--navy);margin-top:3px}
+.impact .ic.tot{background:var(--blue-l);border-color:var(--blue-l2)}
+.impact .ic.tot .v{color:var(--blue-d)}
+
+/* Hierarchy tree */
+.tree{padding:8px 0}
+.tnode{border:1.5px solid var(--line);border-radius:13px;padding:12px 14px;background:#fff;display:flex;gap:11px;align-items:center;box-shadow:var(--sh)}
+.tnode .tic{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;flex-shrink:0}
+.tnode .tnm{font-weight:700;color:var(--navy)}
+.tnode .tmeta{font-size:12px;color:var(--slate5);font-weight:500}
+.tnode .tamt{margin-left:auto;font-weight:800;color:var(--navy);text-align:right;white-space:nowrap}
+.tnode.primary{border-color:var(--blue);background:var(--blue-l)}
+.tchild{margin-left:30px;padding-left:24px;border-left:2px solid var(--line);margin-top:12px;display:flex;flex-direction:column;gap:12px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--slate6);margin-top:14px}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:middle}
+
+/* Notes / activity */
+.composer{border:1px solid var(--line);border-radius:13px;padding:13px;background:#fff;margin-bottom:18px}
+.mentionbar{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.mentionbar .ml{font-size:12px;color:var(--slate5);font-weight:700;margin-right:2px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:5px 10px;font-size:12.5px;font-weight:600;color:var(--slate6);background:#fff}
+.chip:hover{border-color:var(--blue);color:var(--blue)}
+.chip .ca{width:18px;height:18px;border-radius:50%;background:var(--blue-l);color:var(--blue-d);font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.note{display:flex;gap:11px;padding:13px 0;border-bottom:1px solid var(--line2)}
+.note:last-child{border-bottom:none}
+.note .na{width:34px;height:34px;border-radius:50%;color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.note .nb{flex:1}
+.note .nh{display:flex;align-items:center;gap:8px;margin-bottom:2px}
+.note .nh b{font-size:13.5px;color:var(--navy)}
+.note .nh .nt{font-size:12px;color:var(--slate4);font-weight:500}
+.note .ntext{font-size:13.5px;color:var(--slate7)}
+.mention{color:var(--blue-d);font-weight:700;background:var(--blue-l);padding:0 4px;border-radius:5px}
+.voice{display:flex;gap:11px;align-items:center;padding:11px 13px;border:1px solid var(--line);border-radius:12px;margin-bottom:10px;background:#fff}
+.voice .vp{width:34px;height:34px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.wave{flex:1;height:24px;background:repeating-linear-gradient(90deg,var(--blue-l2) 0 3px,transparent 3px 6px);border-radius:4px;opacity:.8}
+
+/* Kanban */
+.kanban{display:grid;grid-template-columns:repeat(5,minmax(210px,1fr));gap:13px;overflow-x:auto;padding-bottom:8px}
+.kcol{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:11px;min-width:210px}
+.kcol-h{display:flex;align-items:center;gap:8px;padding:4px 6px 11px;font-weight:700;font-size:13px;color:var(--slate6)}
+.kcol-h .kdot{width:8px;height:8px;border-radius:50%}
+.kcol-h .kn{margin-left:auto;background:#fff;border:1px solid var(--line);border-radius:8px;padding:0 7px;font-size:12px;color:var(--slate5)}
+.kcard{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;box-shadow:var(--sh);cursor:pointer}
+.kcard:hover{border-color:#CBD5E1}
+.kcard .kt{font-weight:700;color:var(--navy);font-size:14px}
+.kcard .kf{font-size:12px;color:var(--slate5);margin-top:2px}
+.kcard .kamt{font-weight:800;color:var(--navy);margin-top:9px;font-size:15px}
+.prob{height:6px;border-radius:3px;background:var(--line2);overflow:hidden;margin-top:9px}
+.prob>i{display:block;height:100%;background:var(--blue)}
+.kcard .kfoot{display:flex;align-items:center;justify-content:space-between;margin-top:9px;font-size:11.5px;color:var(--slate5)}
+.miniav{width:22px;height:22px;border-radius:50%;background:var(--blue-l);color:var(--blue-d);font-size:10px;font-weight:800;display:inline-flex;align-items:center;justify-content:center}
+
+/* Analytics bars */
+.bar-row{display:grid;grid-template-columns:150px 1fr 96px;align-items:center;gap:14px;margin-bottom:11px}
+.bar-row .bl{font-weight:700;color:var(--navy);font-size:13.5px}
+.bar-row .bl small{display:block;color:var(--slate5);font-weight:500;font-size:11.5px}
+.bar{height:24px;background:var(--line2);border-radius:7px;overflow:hidden}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,#60A5FA,#2563EB);border-radius:7px}
+.bar-row .bv{text-align:right;font-weight:800;color:var(--navy);font-size:13.5px}
+
+/* Wizard */
+.steps{display:flex;gap:8px;margin-bottom:20px}
+.step{flex:1;display:flex;align-items:center;gap:9px;padding:10px 12px;border:1px solid var(--line);border-radius:11px;font-size:12.5px;font-weight:700;color:var(--slate5)}
+.step .sn{width:22px;height:22px;border-radius:50%;background:var(--line2);color:var(--slate6);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.step.on{border-color:var(--blue);color:var(--blue);background:var(--blue-l)}
+.step.on .sn{background:var(--blue);color:#fff}
+.step.done .sn{background:var(--green-t);color:#fff}
+.slidegrid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}
+.slidethumb{border:1px solid var(--line);border-radius:11px;overflow:hidden;background:#fff}
+.slidethumb .sthead{height:64px;background:linear-gradient(135deg,#1D4ED8,#2563EB);color:#fff;display:flex;align-items:flex-end;padding:9px 11px;font-weight:800;font-size:12.5px}
+.slidethumb .stbody{padding:9px 11px;font-size:11.5px;color:var(--slate5)}
+.optrow{display:flex;align-items:center;gap:11px;padding:11px 13px;border:1px solid var(--line);border-radius:11px;margin-bottom:9px;cursor:pointer}
+.optrow:hover{border-color:#CBD5E1}
+.optrow.on{border-color:var(--blue);background:var(--blue-l)}
+.optrow .ck{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff}
+.optrow.on .ck{background:var(--blue);border-color:var(--blue)}
+.recbtn{width:88px;height:88px;border-radius:50%;background:var(--blue);color:#fff;border:none;display:flex;align-items:center;justify-content:center;margin:8px auto;box-shadow:0 8px 22px rgba(37,99,235,.4)}
+.recbtn.rec{background:#EF4444;animation:pulse 1.2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(239,68,68,.5)}70%{box-shadow:0 0 0 16px rgba(239,68,68,0)}100%{box-shadow:0 0 0 0 rgba(239,68,68,0)}}
+
+/* Toast */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:13px 18px;border-radius:12px;font-weight:600;font-size:13.5px;box-shadow:var(--sh-lg);opacity:0;pointer-events:none;transition:.22s;z-index:90;display:flex;align-items:center;gap:10px;max-width:90vw}
+#toast.on{opacity:1;transform:translateX(-50%)}
+#toast .tk{width:22px;height:22px;border-radius:50%;background:var(--green-t);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+.empty{text-align:center;padding:50px 20px;color:var(--slate5)}
+.empty .ei{width:54px;height:54px;border-radius:14px;background:var(--blue-l);color:var(--blue);display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+.note-banner{font-size:12px;color:var(--slate5);background:var(--bg);border:1px dashed var(--line);border-radius:10px;padding:9px 12px;margin-top:12px}
+.protochip{position:fixed;bottom:18px;left:18px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 13px;font-size:12px;font-weight:700;color:var(--slate6);box-shadow:var(--sh);z-index:30;display:flex;align-items:center;gap:7px}
+.protochip i{width:8px;height:8px;border-radius:50%;background:#22C55E;display:inline-block}
+@media(max-width:1100px){.tiles{grid-template-columns:repeat(2,1fr)}.cols{grid-template-columns:1fr}.search{display:none}}
+@media(max-width:780px){#sidebar{display:none}.persona button span.plabel{display:none}}
+</style>
+</head>
+<body>
+<div id="topbar">
+  <div class="brand">
+    <div class="logo" id="brandLogo"></div>
+    <div class="bt"><b>Risely</b><span>Zaytuna College · Advancement</span></div>
+  </div>
+  <div class="persona" id="persona"></div>
+  <div class="tr">
+    <div class="search">{ICON_SEARCH}<input placeholder="Search constituents, gifts..." id="globalSearch"></div>
+    <button class="iconbtn" id="bellBtn" title="Inbox">{ICON_BELL}<span class="badge-dot" id="bellBadge" style="display:none">0</span></button>
+    <div class="avatar" id="meAvatar">SM</div>
+  </div>
+</div>
+<div id="shell">
+  <aside id="sidebar"></aside>
+  <main id="main"><div id="view"><div style="padding:48px 30px;color:#64748B;font:600 15px 'Segoe UI',system-ui,sans-serif">Loading Risely…</div></div></main>
+</div>
+<div id="scrim"></div>
+<aside id="drawer"></aside>
+<div id="modalRoot"></div>
+<div id="toast"></div>
+<div class="protochip"><i></i>Interactive requirements prototype</div>
+<noscript><div style="padding:24px;font:600 15px 'Segoe UI',system-ui,sans-serif;color:#0f172a">Risely is an interactive prototype. Please open this file in a web browser (Chrome, Edge, or Safari) with JavaScript enabled to view it.</div></noscript>
+
+<script>
+/* =========================================================================
+   RISELY — Zaytuna College Advancement CRM
+   Interactive requirements prototype (single file, no dependencies)
+   ========================================================================= */
+
+/* ---------- Icons (lucide-style, stroke=currentColor) ---------- */
+const IC={
+ grid:'<path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/>',
+ users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+ target:'<path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6" rx="1"/><rect x="12" y="8" width="3" height="10" rx="1"/><rect x="17" y="5" width="3" height="13" rx="1"/>',
+ gift:'<path d="M20 12v10H4V12"/><path d="M2 7h20v5H2z"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>',
+ list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+ chart:'<path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>',
+ inbox:'<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
+ search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+ bell:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',
+ mail:'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/>',
+ slides:'<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>',
+ mic:'<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 19v3"/>',
+ download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>',
+ x:'<path d="M18 6 6 18M6 6l12 12"/>',
+ back:'<path d="m15 18-6-6 6-6"/>',
+ check:'<path d="M20 6 9 17l-5-5"/>',
+ logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
+ building:'<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4M8 6h.01M16 6h.01M12 6h.01M8 10h.01M16 10h.01M12 10h.01M8 14h.01M16 14h.01M12 14h.01"/>',
+ home:'<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/>',
+ heart:'<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
+ user:'<circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/>',
+ pin:'<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+ spark:'<path d="M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M5.6 18.4l2.8-2.8M15.6 8.4l2.8-2.8"/>',
+ play:'<path d="m6 3 14 9-14 9z"/>',
+ send:'<path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/>',
+ edit:'<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/>',
+ receipt:'<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M8 7h8M8 11h8M8 15h5"/>',
+ gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+ link:'<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+ globe:'<circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
+ trend:'<path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/>',
+ chev:'<path d="m9 18 6-6-6-6"/>'
+};
+function ic(n,s){s=s||18;return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(IC[n]||'')+'</svg>';}
+
+/* ---------- Team (drives @mention routing + current user) ---------- */
+const TEAM=[
+ {id:'sara',name:'Sara Mahmoud',role:'Gift Director',persona:'director',initials:'SM',color:'#2D6A4F'},
+ {id:'imran',name:'Imran Patel',role:'Gift Officer',persona:'officer',initials:'IP',color:'#2563EB'},
+ {id:'khadija',name:'Khadija Noor',role:'Gift Entry Admin',persona:'admin',initials:'KN',color:'#B07A4B'},
+ {id:'zaynab',name:'Zaynab Ali',role:'Marketing',persona:'marketing',initials:'ZA',color:'#9333EA'}
+];
+function memberByPersona(p){return TEAM.find(t=>t.persona===p);}
+
+/* ---------- Personas ---------- */
+const PERSONAS={
+ admin:{label:'Admin',sub:'Gift Entry',color:'#B07A4B',views:['dashboard','constituents','gifts','forecast','inbox'],
+   actions:['note','gift']},
+ officer:{label:'Gift Officer',sub:'Major Gifts',color:'#2563EB',views:['dashboard','constituents','pipeline','gifts','lists','forecast','inbox'],
+   actions:['note','email','deck','voice','gift','bulk','list']},
+ director:{label:'Gift Director',sub:'Advancement',color:'#2D6A4F',views:['dashboard','constituents','pipeline','gifts','lists','analytics','forecast','inbox'],
+   actions:['note','email','deck','voice','gift','bulk','list']},
+ marketing:{label:'Marketing',sub:'Engagement',color:'#9333EA',views:['dashboard','constituents','lists','inbox'],
+   actions:['note','bulk','list']}
+};
+const NAV=[
+ {sec:'Workspace',items:[
+   {k:'dashboard',label:'Dashboard',icon:'grid'},
+   {k:'constituents',label:'Constituents',icon:'users'},
+   {k:'pipeline',label:'Pipeline',icon:'target'},
+   {k:'gifts',label:'Gifts',icon:'gift'},
+   {k:'inbox',label:'Inbox',icon:'inbox'}
+ ]},
+ {sec:'Insights',items:[
+   {k:'lists',label:'Lists',icon:'list'},
+   {k:'analytics',label:'Analytics',icon:'chart'},
+   {k:'forecast',label:'Forecast',icon:'trend'}
+ ]}
+];
+
+/* ---------- Funds ---------- */
+const FUNDS=[
+ {name:'Annual Fund',tag:'Unrestricted'},
+ {name:'Scholarship Fund',tag:'Restricted'},
+ {name:'Endowment',tag:'UPMIFA · Restricted'},
+ {name:'Zakat Fund',tag:'Shariah · Restricted'},
+ {name:'Graduate Women’s Residence',tag:'Capital Project'},
+ {name:'Capital Fund',tag:'Restricted'},
+ {name:'Temp Restricted Fund',tag:'TR · Iftar · events'}
+];
+
+/* ---------- Constituents ---------- */
+const C=[
+ {id:'ahmad',name:'Ahmad Al-Rashid',type:'Individual',cid:'CON-001847',title:'CEO, Al-Rashid Holdings LLC',
+  email:'ahmad@alrashid.com',city:'Berkeley',state:'CA',zip:'94704',
+  roles:['Donor','Board Member','Alumnus ’14','Planned Giving'],capacity:'$500K+',capNum:500000,
+  lifetime:640000,fy25:95000,officer:'Imran Patel',
+  last:{date:'May 12, 2026',amount:50000,fund:'Annual Fund'},
+  stage:'solicitation',ask:500000,fundInterest:'Endowment',
+  hierarchy:true,
+  relationships:[
+    {name:'Fatima Al-Rashid',role:'Spouse',type:'Individual',rid:'fatima'},
+    {name:'Zayd Al-Rashid',role:'Son · Minor',type:'Individual',rid:null},
+    {name:'Maryam Al-Rashid',role:'Daughter · Minor',type:'Individual',rid:null},
+    {name:'Al-Rashid Household',role:'Primary member',type:'Household',rid:'household'},
+    {name:'Al-Rashid Holdings LLC',role:'CEO',type:'Organization',rid:'holdings'},
+    {name:'Al-Rashid Family Foundation',role:'President',type:'Foundation',rid:'foundation'}
+  ],
+  giving:[
+    {date:'May 12, 2026',amount:50000,fund:'Annual Fund',credit:'Hard',entity:'Personal',receipt:'Receipted'},
+    {date:'Feb 10, 2026',amount:200000,fund:'Endowment',credit:'Soft (100%)',entity:'Family Foundation',receipt:'Receipted'},
+    {date:'Apr 18, 2026',amount:25000,fund:'Capital Fund',credit:'Soft',entity:'Holdings LLC',receipt:'Pending'},
+    {date:'Dec 20, 2025',amount:20000,fund:'Endowment',credit:'Joint',entity:'Household',receipt:'Receipted'},
+    {date:'Sep 02, 2025',amount:45000,fund:'Scholarship Fund',credit:'Hard',entity:'Personal',receipt:'Receipted'}
+  ],
+  notes:[
+    {by:'imran',text:'Coffee in Berkeley confirmed. Ahmad open to a blended endowment + capital commitment. Wants to discuss the Graduate Women’s Residence naming opportunity with @Sara Mahmoud before we formalize the ask.',time:'Today 8:55 AM PT'},
+    {by:'khadija',text:'Foundation grant ($200K) posted and soft-credited 100% to Ahmad. Year-end statement routing set to grants@ + ahmad@ + cpa@.',time:'Feb 11, 2026 9:10 AM PT'}
+  ],
+  voice:[]
+ },
+ {id:'fatima',name:'Fatima Al-Rashid',type:'Individual',cid:'CON-001848',title:'Community Volunteer',
+  email:'fatima@alrashid.com',city:'Berkeley',state:'CA',zip:'94704',
+  roles:['Donor','Spouse'],capacity:'$100K',capNum:100000,lifetime:80000,fy25:5000,officer:'Imran Patel',
+  last:{date:'Mar 02, 2026',amount:5000,fund:'Scholarship Fund'},
+  relationships:[
+    {name:'Ahmad Al-Rashid',role:'Spouse',type:'Individual',rid:'ahmad'},
+    {name:'Al-Rashid Household',role:'Member',type:'Household',rid:'household'}
+  ],
+  giving:[{date:'Mar 02, 2026',amount:5000,fund:'Scholarship Fund',credit:'Hard',entity:'Personal',receipt:'Receipted'}],
+  notes:[],voice:[]
+ },
+ {id:'holdings',name:'Al-Rashid Holdings LLC',type:'Organization',cid:'ORG-000211',title:'Real estate holdings · Matching gift employer',
+  email:'giving@alrashidholdings.com',city:'Oakland',state:'CA',zip:'94607',
+  roles:['Corporate Donor','Matching Gift'],capacity:'$250K',capNum:250000,lifetime:120000,fy25:25000,officer:'Imran Patel',
+  last:{date:'Apr 18, 2026',amount:25000,fund:'Capital Fund'},
+  relationships:[{name:'Ahmad Al-Rashid',role:'CEO · Primary contact',type:'Individual',rid:'ahmad'}],
+  giving:[{date:'Apr 18, 2026',amount:25000,fund:'Capital Fund',credit:'Hard',entity:'Corporate',receipt:'Pending'}],
+  notes:[],voice:[]
+ },
+ {id:'foundation',name:'Al-Rashid Family Foundation',type:'Foundation',cid:'ORG-000212',title:'Private foundation · 501(c)(3)',
+  email:'grants@alrashidfoundation.org',city:'Berkeley',state:'CA',zip:'94704',
+  roles:['Grantmaker','Foundation'],capacity:'$1M+',capNum:1000000,lifetime:400000,fy25:200000,officer:'Sara Mahmoud',
+  last:{date:'Feb 10, 2026',amount:200000,fund:'Endowment'},
+  stage:'stewardship',ask:200000,fundInterest:'Endowment',
+  relationships:[{name:'Ahmad Al-Rashid',role:'President',type:'Individual',rid:'ahmad'}],
+  giving:[{date:'Feb 10, 2026',amount:200000,fund:'Endowment',credit:'Hard',entity:'Foundation',receipt:'Receipted'}],
+  notes:[],voice:[]
+ },
+ {id:'household',name:'Al-Rashid Household',type:'Household',cid:'HH-000098',title:'Joint giving unit · Berkeley, CA',
+  email:'family@alrashid.com',city:'Berkeley',state:'CA',zip:'94704',
+  roles:['Household'],capacity:'$500K+',capNum:500000,lifetime:120000,fy25:120000,officer:'Imran Patel',
+  last:{date:'Dec 20, 2025',amount:20000,fund:'Endowment'},
+  relationships:[
+    {name:'Ahmad Al-Rashid',role:'Primary',type:'Individual',rid:'ahmad'},
+    {name:'Fatima Al-Rashid',role:'Spouse',type:'Individual',rid:'fatima'},
+    {name:'Zayd Al-Rashid',role:'Son · Minor',type:'Individual',rid:null},
+    {name:'Maryam Al-Rashid',role:'Daughter · Minor',type:'Individual',rid:null}
+  ],
+  giving:[{date:'Dec 20, 2025',amount:20000,fund:'Endowment',credit:'Joint',entity:'Household',receipt:'Receipted'}],
+  notes:[],voice:[]
+ },
+ {id:'omar',name:'Dr. Omar Siddiqui',type:'Individual',cid:'CON-002041',title:'Cardiologist · Stanford Health',
+  email:'osiddiqui@example.com',city:'Palo Alto',state:'CA',zip:'94301',
+  roles:['Donor','Board Member','Major Gift Prospect'],capacity:'$1M+',capNum:1000000,lifetime:250000,fy25:40000,officer:'Imran Patel',
+  last:{date:'May 20, 2026',amount:40000,fund:'Endowment'},
+  stage:'solicitation',ask:750000,fundInterest:'Graduate Women’s Residence',
+  relationships:[
+    {name:'Nadia Siddiqui',role:'Spouse',type:'Individual',rid:null},
+    {name:'Siddiqui Family Trust',role:'Trustee',type:'Organization',rid:null}
+  ],
+  giving:[
+    {date:'May 20, 2026',amount:40000,fund:'Endowment',credit:'Hard',entity:'Personal',receipt:'Pending'},
+    {date:'Nov 11, 2025',amount:60000,fund:'Scholarship Fund',credit:'Hard',entity:'Personal',receipt:'Receipted'}
+  ],
+  notes:[
+    {by:'imran',text:'Omar is deeply interested in funding the acquisition of a residence to house Graduate Program women (the Rihla House project). Wants naming in memory of his mother. Asked for floor plans + a naming gift agreement. @Sara Mahmoud can we align on the $750K ask?',time:'Yesterday 3:20 PM PT'}
+  ],
+  voice:[]
+ },
+ {id:'layla',name:'Layla Hassan',type:'Individual',cid:'CON-002088',title:'VP Product · Fintech',
+  email:'layla.hassan@example.com',city:'Fremont',state:'CA',zip:'94536',
+  roles:['Donor','Major Gift Prospect'],capacity:'$250K',capNum:250000,lifetime:60000,fy25:15000,officer:'Imran Patel',
+  last:{date:'Apr 02, 2026',amount:15000,fund:'Scholarship Fund'},
+  stage:'qualification',ask:150000,fundInterest:'Scholarship Fund',
+  relationships:[],
+  giving:[{date:'Apr 02, 2026',amount:15000,fund:'Scholarship Fund',credit:'Hard',entity:'Personal',receipt:'Receipted'}],
+  notes:[],voice:[]
+ },
+ {id:'crescent',name:'Crescent Charitable Foundation',type:'Foundation',cid:'ORG-000305',title:'Community foundation · grants',
+  email:'grants@crescentfdn.org',city:'San Francisco',state:'CA',zip:'94102',
+  roles:['Grantmaker','Foundation'],capacity:'$500K+',capNum:500000,lifetime:300000,fy25:75000,officer:'Sara Mahmoud',
+  last:{date:'Jan 28, 2026',amount:75000,fund:'Endowment'},
+  stage:'cultivation',ask:300000,fundInterest:'Endowment',
+  relationships:[],
+  giving:[{date:'Jan 28, 2026',amount:75000,fund:'Endowment',credit:'Hard',entity:'Foundation',receipt:'Receipted'}],
+  notes:[],voice:[]
+ },
+ {id:'mariam',name:'Mariam Farouk',type:'Individual',cid:'CON-002120',title:'Retired Professor',
+  email:'mariam.farouk@example.com',city:'Sacramento',state:'CA',zip:'95814',
+  roles:['Donor','Planned Giving'],capacity:'$400K',capNum:400000,lifetime:30000,fy25:3000,officer:'Imran Patel',
+  last:{date:'Mar 15, 2026',amount:3000,fund:'Annual Fund'},
+  stage:'identification',ask:400000,fundInterest:'Endowment (Bequest)',
+  relationships:[],
+  giving:[{date:'Mar 15, 2026',amount:3000,fund:'Annual Fund',credit:'Hard',entity:'Personal',receipt:'Receipted'}],
+  notes:[],voice:[]
+ },
+ {id:'yusuf',name:'Yusuf Karim',type:'Individual',cid:'CON-001990',title:'Software Engineer · Alumnus ’16',
+  email:'yusuf.karim@example.com',city:'San Jose',state:'CA',zip:'95112',
+  roles:['Donor','Alumnus ’16'],capacity:'$50K',capNum:50000,lifetime:12000,fy25:2500,officer:'Imran Patel',
+  last:{date:'May 01, 2026',amount:2500,fund:'Annual Fund'},
+  relationships:[],
+  giving:[{date:'May 01, 2026',amount:2500,fund:'Annual Fund',credit:'Hard',entity:'Personal',receipt:'Receipted'}],
+  notes:[],voice:[]
+ },
+ {id:'aisha',name:'Aisha Rahman',type:'Individual',cid:'CON-002201',title:'Teacher · Annual donor',
+  email:'aisha.rahman@example.com',city:'Berkeley',state:'CA',zip:'94703',
+  roles:['Donor'],capacity:'$25K',capNum:25000,lifetime:8000,fy25:1200,officer:'Imran Patel',
+  last:{date:'Apr 22, 2026',amount:1200,fund:'Zakat Fund'},
+  relationships:[],
+  giving:[{date:'Apr 22, 2026',amount:1200,fund:'Zakat Fund',credit:'Hard',entity:'Personal',receipt:'Pending'}],
+  notes:[],voice:[]
+ }
+];
+C.forEach(c=>{c.rel=(c.relationships||[]).length;c.presentations=c.presentations||[];});
+byId('ahmad').presentations=[{title:'Endowment naming proposal',by:'imran',date:'Jun 20, 2026 · PT',status:'Sent',ask:500000}];
+byId('omar').presentations=[{title:'Graduate Women’s Residence — naming proposal',by:'imran',date:'Jun 24, 2026 · PT',status:'Sent',ask:750000},{title:'Campus visit follow-up deck',by:'imran',date:'Jun 25, 2026 · PT',status:'Downloaded',ask:750000}];
+function byId(id){return C.find(c=>c.id===id);}
+
+/* Hard-credit / multi-entity impact for Ahmad (consolidated philanthropic view) */
+const AHMAD_IMPACT=[
+ {l:'Personal hard credit',v:95000},
+ {l:'Household (joint)',v:20000},
+ {l:'Corporate (Holdings LLC)',v:25000},
+ {l:'Foundation grants (soft 100%)',v:200000}
+];
+
+/* Receipt routing matrix (Al-Rashid) */
+const ROUTING=[
+ {entity:'Personal — Ahmad',gift:'$50K wire · Annual Fund',hard:'Ahmad Al-Rashid',soft:'Household (Fatima)',imm:'ahmad@alrashid.com',ye:'ahmad@ + cpa@accountingfirm.com',tag:'Immediate'},
+ {entity:'Spouse — Fatima',gift:'$5K check · Scholarship',hard:'Fatima Al-Rashid',soft:'Household (Ahmad)',imm:'fatima@alrashid.com',ye:'fatima@ + family@alrashid.com',tag:'Immediate'},
+ {entity:'Joint — Household',gift:'$20K check · Endowment',hard:'Both spouses (full each)',soft:'—',imm:'family@alrashid.com',ye:'family@ + ahmad@ + fatima@',tag:'Immediate'},
+ {entity:'Corporate — Holdings LLC',gift:'$25K sponsorship',hard:'Al-Rashid Holdings LLC',soft:'Ahmad Al-Rashid',imm:'giving@alrashidholdings.com',ye:'cfo@ + giving@',tag:'Both'},
+ {entity:'Matching — Holdings LLC',gift:'2:1 match on $5K (=$10K, at cap)',hard:'Al-Rashid Holdings LLC',soft:'Ahmad Al-Rashid',imm:'giving@alrashidholdings.com',ye:'Consolidated corporate year-end',tag:'Year-End'},
+ {entity:'Foundation — Family Fdn',gift:'$200K grant · Endowment corpus',hard:'Al-Rashid Family Foundation',soft:'Ahmad Al-Rashid (100%)',imm:'grants@alrashidfoundation.org',ye:'grants@ + ahmad@ + cpa@',tag:'Both'}
+];
+
+/* Flat recent gifts (Gifts view + dashboards) */
+let GIFTS=[
+ {id:'g1',donor:'Ahmad Al-Rashid',did:'ahmad',date:'May 12, 2026',amount:50000,fund:'Annual Fund',credit:'Hard',status:'Receipted'},
+ {id:'g2',donor:'Dr. Omar Siddiqui',did:'omar',date:'May 20, 2026',amount:40000,fund:'Endowment',credit:'Hard',status:'Pending'},
+ {id:'g3',donor:'Al-Rashid Holdings LLC',did:'holdings',date:'Apr 18, 2026',amount:25000,fund:'Capital Fund',credit:'Hard',status:'Pending'},
+ {id:'g4',donor:'Layla Hassan',did:'layla',date:'Apr 02, 2026',amount:15000,fund:'Scholarship Fund',credit:'Hard',status:'Receipted'},
+ {id:'g5',donor:'Aisha Rahman',did:'aisha',date:'Apr 22, 2026',amount:1200,fund:'Zakat Fund',credit:'Hard',status:'Pending'},
+ {id:'g6',donor:'Crescent Charitable Foundation',did:'crescent',date:'Jan 28, 2026',amount:75000,fund:'Endowment',credit:'Hard',status:'Receipted'},
+ {id:'g7',donor:'Fatima Al-Rashid',did:'fatima',date:'Mar 02, 2026',amount:5000,fund:'Scholarship Fund',credit:'Hard',status:'Receipted'},
+ {id:'g8',donor:'Yusuf Karim',did:'yusuf',date:'May 01, 2026',amount:2500,fund:'Annual Fund',credit:'Hard',status:'Receipted'},
+ {id:'g9',donor:'Al-Rashid Family Foundation',did:'foundation',date:'Feb 10, 2026',amount:200000,fund:'Endowment',credit:'Hard',status:'Receipted'}
+];
+/* Open pledges with payments coming due (admin focus) */
+let PLEDGES=[
+ {donor:'Dr. Omar Siddiqui',did:'omar',fund:'Graduate Women’s Residence',balance:600000,due:'Jun 30, 2026',amount:150000,status:'Due soon'},
+ {donor:'Layla Hassan',did:'layla',fund:'Scholarship Fund',balance:90000,due:'Jun 15, 2026',amount:30000,status:'Overdue'},
+ {donor:'Ahmad Al-Rashid',did:'ahmad',fund:'Endowment',balance:150000,due:'Jul 1, 2026',amount:50000,status:'Due soon'},
+ {donor:'Crescent Charitable Foundation',did:'crescent',fund:'Endowment',balance:225000,due:'Aug 1, 2026',amount:75000,status:'Scheduled'},
+ {donor:'Mariam Farouk',did:'mariam',fund:'Annual Fund',balance:9000,due:'Jul 10, 2026',amount:3000,status:'Due soon'}
+];
+
+/* Saved marketing lists */
+const SAVED_LISTS=[
+ {name:'FY26 Major Donors ($25K+)',desc:'Lifetime giving over $25K',sync:'Synced 6:00 AM PT',members:['ahmad','omar','crescent','foundation','holdings','layla']},
+ {name:'Berkeley Alumni',desc:'Constituents in 94703 / 94704 with alumni role',sync:'Not synced',members:['ahmad','fatima','aisha','yusuf']},
+ {name:'Lapsed Annual Fund',desc:'No gift in 13+ months',sync:'Synced yesterday',members:['yusuf','aisha','mariam']}
+];
+SAVED_LISTS.forEach(l=>{l.count=(l.members||[]).length;});
+
+/* Inbox (@mention review queue) */
+let INBOX=[
+ {to:'director',from:'imran',did:'omar',text:'@Sara Mahmoud can you approve the $750K ask strategy for the Graduate Women’s Residence before our meeting?',time:'Today 9:42 AM PT',read:false},
+ {to:'director',from:'khadija',did:'ahmad',text:'@Sara Mahmoud flagged a soft-credit on Ahmad’s foundation grant for review before year-end statements run.',time:'Yesterday 4:15 PM PT',read:false},
+ {to:'officer',from:'sara',did:'layla',text:'@Imran Patel let’s move Layla to solicitation after the campus visit.',time:'Yesterday 2:03 PM PT',read:false},
+ {to:'admin',from:'imran',did:'ahmad',text:'@Khadija Noor please enter Ahmad’s $50K wire under Annual Fund, receipt to personal email.',time:'Mon 11:20 AM PT',read:true}
+];
+let BULK_SENDS=[
+ {id:'bs1',date:'Jun 24, 2026',time:'10:12 AM PT',by:'zaynab',channel:'Mailchimp campaign',subject:'Ramadan 2026 — final-week match',list:'FY26 Major Donors ($25K+)',recipients:['ahmad','omar','crescent','foundation','holdings','layla']},
+ {id:'bs2',date:'Jun 18, 2026',time:'3:40 PM PT',by:'sara',channel:'Email blast',subject:'Graduate Women’s Residence — naming opportunity',list:'Major prospects',recipients:['omar','ahmad','crescent']}
+];
+
+/* ---------- State ---------- */
+const state={persona:'admin',view:'dashboard',recordId:null,tab:'overview',drawerId:null,
+ cFilter:'all',dashFilter:'fy26',inboxFilter:'unread',selected:new Set(),bulk:null,forecastId:null,fcFilter:'all',catDraft:null,anTab:'revenue',fcExpanded:new Set(),catExpanded:new Set(),inboxCat:'mentions',settings:{tz:'America/Los_Angeles',inbox:null},
+ wizard:null,voice:null,list:{type:'all',minLt:0,fund:'all',zip:'',recency:'all',result:null}};
+
+/* ---------- Money helpers ---------- */
+function usd(n){return '$'+Math.round(n).toLocaleString('en-US');}
+function usdK(n){if(n>=1e6)return '$'+(n/1e6).toFixed(n%1e6?1:0)+'M';if(n>=1e3)return '$'+Math.round(n/1e3)+'K';return '$'+n;}
+
+/* ---------- DOM helpers ---------- */
+const $=s=>document.querySelector(s);
+function setHTML(sel,html){const n=$(sel);if(n)n.innerHTML=html;}
+function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));}
+
+/* ---------- Toast ---------- */
+let toastT;
+function toast(msg,icon){
+ const t=$('#toast');
+ t.innerHTML='<span class="tk">'+ic(icon||'check',13)+'</span>'+esc(msg);
+ t.classList.add('on');clearTimeout(toastT);
+ toastT=setTimeout(()=>t.classList.remove('on'),2600);
+}
+
+/* ---------- Modal ---------- */
+function openModal(html){const r=$('#modalRoot');r.innerHTML='<div class="mback" onclick="closeModal()"></div>'+html;r.classList.add('on');}
+function closeModal(){const r=$('#modalRoot');r.classList.remove('on');r.innerHTML='';state.wizard=null;if(state.voice&&state.voice.timer){clearInterval(state.voice.timer);}state.voice=null;}
+
+/* ---------- Badge helper for status ---------- */
+function statusBadge(s){
+ if(s==='Receipted')return '<span class="badge b-green">'+ic('check',12)+'Receipted</span>';
+ if(s==='Pending')return '<span class="badge b-amber">Pending receipt</span>';
+ return '<span class="badge b-slate">'+esc(s)+'</span>';
+}
+function creditBadge(c){
+ if(/Joint/.test(c))return '<span class="badge b-purple">'+esc(c)+'</span>';
+ if(/Soft/.test(c))return '<span class="badge b-sky">'+esc(c)+'</span>';
+ return '<span class="badge b-blue">'+esc(c)+'</span>';
+}
+function typeBadge(t){
+ const m={Individual:'b-blue',Organization:'b-slate',Foundation:'b-green',Household:'b-sky'};
+ return '<span class="badge '+(m[t]||'b-slate')+'">'+esc(t)+'</span>';
+}
+function avClass(t){return t==='Organization'?'av-org':t==='Foundation'?'av-fnd':t==='Household'?'av-hh':'av-ind';}
+function initials(n){return n.split(' ').filter(w=>/[A-Za-z]/.test(w[0])).slice(0,2).map(w=>w[0]).join('').toUpperCase();}
+function can(a){return PERSONAS[state.persona].actions.includes(a);}
+
+/* ---------- Top bar (persona pill + me) ---------- */
+function renderTop(){
+ $('#brandLogo').innerHTML=ic('spark',20);
+ setHTML('#globalSearch','');
+ $('.search').firstChild.replaceWith?0:0;
+ // persona pill
+ $('#persona').innerHTML=Object.keys(PERSONAS).map(p=>{
+   const P=PERSONAS[p];const on=state.persona===p;
+   return '<button class="'+(on?'on':'')+'" style="'+(on?'background:'+P.color:'')+'" onclick="setPersona(\''+p+'\')">'
+     +'<span class="pdot"></span><span class="plabel">'+P.label+'</span></button>';
+ }).join('');
+ // me avatar
+ const me=memberByPersona(state.persona);
+ const a=$('#meAvatar');a.textContent=me.initials;a.style.background='linear-gradient(135deg,'+me.color+',#0f172a55)';a.style.background=me.color;
+ a.title=me.name+' · '+me.role;
+ // bell
+ const unread=INBOX.filter(i=>i.to===state.persona&&!i.read).length;
+ const b=$('#bellBadge');if(unread){b.style.display='flex';b.textContent=unread;}else b.style.display='none';
+}
+
+/* ---------- Sidebar ---------- */
+function renderSidebar(){
+ const allow=PERSONAS[state.persona].views;
+ let h='';
+ NAV.forEach(sec=>{
+   const items=sec.items.filter(i=>allow.includes(i.k));
+   if(!items.length)return;
+   h+='<div class="navsec">'+sec.sec+'</div>';
+   items.forEach(i=>{
+     const on=state.view===i.k||(state.view==='record'&&i.k==='constituents');
+     let badge='';
+     if(i.k==='inbox'){const u=INBOX.filter(x=>x.to===state.persona&&!x.read).length;if(u)badge='<span class="ncount">'+u+'</span>';}
+     if(i.k==='pipeline'){const n=C.filter(c=>c.stage&&c.stage!=='stewardship').length;badge='<span class="count">'+n+'</span>';}
+     h+='<div class="navitem '+(on?'on':'')+'" onclick="go(\''+i.k+'\')">'+ic(i.icon)+'<span>'+i.label+'</span>'+badge+'</div>';
+   });
+ });
+ h+='<div class="navspacer"></div><div class="sb-foot"><div class="navitem '+(state.view==='settings'?'on':'')+'" onclick="go(\'settings\')">'+ic('gear')+'<span>Settings</span></div><div class="navitem" onclick="toast(\'Prototype — sign out is illustrative\')">'+ic('logout')+'<span>Sign out</span></div></div>';
+ $('#sidebar').innerHTML=h;
+}
+
+/* ---------- Router ---------- */
+function go(v){state.view=v;state.recordId=null;closeDrawer();render();window.scrollTo(0,0);}
+function setPersona(p){
+ if(!PERSONAS[p])return;
+ state.persona=p;
+ // keep current view if allowed; record view always allowed (constituents in every persona)
+ if(state.view!=='record' && state.view!=='settings' && state.view!=='forecastRec' && !PERSONAS[p].views.includes(state.view))state.view='dashboard';
+ closeDrawer();render();
+ toast('Now viewing as '+PERSONAS[p].label+' — '+PERSONAS[p].sub,'user');
+}
+function render(){
+ renderTop();renderSidebar();
+ const v=state.view;
+ if(v==='record')return renderRecord();
+ if(v==='dashboard')return renderDashboard();
+ if(v==='constituents')return renderConstituents();
+ if(v==='pipeline')return renderPipeline();
+ if(v==='gifts')return renderGifts();
+ if(v==='lists')return renderLists();
+ if(v==='analytics')return renderAnalytics();
+ if(v==='inbox')return renderInbox();
+ if(v==='forecast')return renderForecast();
+ if(v==='forecastRec')return renderForecastRec();
+ if(v==='settings')return renderSettings();
+}
+/* ---------- Pipeline stages ---------- */
+const STAGES=[
+ {key:'identification',name:'Identification',prob:10,color:'#94A3B8'},
+ {key:'qualification',name:'Qualification',prob:30,color:'#0EA5E9'},
+ {key:'cultivation',name:'Cultivation',prob:60,color:'#6366F1'},
+ {key:'solicitation',name:'Solicitation',prob:85,color:'#2563EB'},
+ {key:'stewardship',name:'Stewardship',prob:100,color:'#15803D'}
+];
+function stageObj(k){return STAGES.find(s=>s.key===k);}
+function prospects(){return C.filter(c=>c.stage);}
+function pipelineTotal(){return prospects().reduce((s,c)=>s+(c.ask||0),0);}
+function pipelineWeighted(){return prospects().reduce((s,c)=>s+(c.ask||0)*stageObj(c.stage).prob/100,0);}
+function totalRaised(){return GIFTS.reduce((s,g)=>s+g.amount,0);}
+function pendingCount(){return GIFTS.filter(g=>g.status==='Pending').length;}
+function fmtMentions(t){let s=esc(t);TEAM.forEach(m=>{s=s.split('@'+m.name).join('<span class="mention">@'+m.name+'</span>');});return s;}
+
+/* ============================ DASHBOARD ============================ */
+function renderDashboard(){
+ const me=memberByPersona(state.persona);
+ const P=PERSONAS[state.persona];
+ let banner='',tiles=[],body='';
+ const filters='<div class="filters">'+['This week','This month','This quarter','FY26'].map(f=>{
+   const k=f.toLowerCase();return '<button class="fpill '+(state.dashFilter===k?'on':'')+'" onclick="state.dashFilter=\''+k+'\';render()">'+f+'</button>';}).join('')+'</div>';
+
+ if(state.persona==='admin'){
+   banner='<div class="banner"><div class="bi">'+ic('spark')+'</div><div class="btext"><b>Blackbaud reverse-sync active.</b> Last constituent sync 6:00 AM PT · 0 conflicts.</div><div class="bx"><button class="btn btn-sec btn-sm" onclick="toast(\'Sync log is illustrative in this prototype\')">View log</button></div></div>';
+   tiles=[{l:'Pledges due',v:PLEDGES.filter(p=>p.status!=='Scheduled').length,d:'Next 60 days · '+usd(PLEDGES.filter(p=>p.status!=='Scheduled').reduce((s,p)=>s+p.amount,0))},
+     {l:'Gifts this month',v:GIFTS.length,d:'Entered & posted'},
+     {l:'Posted (FY26)',v:usdK(totalRaised()),d:'All funds'},
+     {l:'Data flags',v:2,d:'Soft-credit review',sel:'inbox'}];
+   body=pledgesDueCard();
+ }else if(state.persona==='officer'){
+   const u=INBOX.filter(i=>i.to==='officer'&&!i.read).length;const pd=PLEDGES.filter(p=>p.status!=='Scheduled');
+   banner='<div class="banner"><div class="bi">'+ic('inbox')+'</div><div class="btext"><b>'+u+' @mentions awaiting your review.</b> Sara asked about moving Layla to solicitation.</div><div class="bx"><button class="btn btn-pri btn-sm" onclick="go(\'inbox\')">Open Inbox</button></div></div>';
+   tiles=[{l:'Pledges due',v:pd.length,d:usd(pd.reduce((s,p)=>s+p.amount,0))+' · next 60d'},
+     {l:'My prospects',v:prospects().filter(c=>c.stage!=='stewardship').length,d:usdK(pipelineWeighted())+' weighted',sel:'pipeline'},
+     {l:'Asks out',v:C.filter(c=>c.stage==='solicitation').length,d:'In solicitation'},
+     {l:'Recurring MRR',v:usdK(REC.mrr),d:REC.active.toLocaleString()+' donors'}];
+   body=pledgesDueCard()+prospectsCard()+recurringSummaryCard();
+ }else if(state.persona==='director'){
+   const pd=PLEDGES.filter(p=>p.status!=='Scheduled');
+   banner='<div class="banner"><div class="bi">'+ic('chart')+'</div><div class="btext"><b>Full advancement reporting lives in Analytics.</b> Board report due Jun 30 · pipeline at 92% of the FY26 goal.</div><div class="bx"><button class="btn btn-pri btn-sm" onclick="go(\'analytics\')">Open Advancement Dashboard</button></div></div>';
+   tiles=[{l:'Pledges due',v:pd.length,d:usd(pd.reduce((s,p)=>s+p.amount,0))+' · next 60d'},
+     {l:'Active prospects',v:prospects().filter(c=>c.stage!=='stewardship').length,d:usdK(pipelineWeighted())+' weighted',sel:'pipeline'},
+     {l:'Recurring MRR',v:usdK(REC.mrr),d:REC.active.toLocaleString()+' donors'},
+     {l:'Raised FY26',v:usdK(totalRaised()),d:'+18% vs FY25',up:true}];
+   body=pledgesDueCard()+prospectsCard()+recurringSummaryCard();
+ }else{ // marketing
+   banner='<div class="banner"><div class="bi">'+ic('mail')+'</div><div class="btext"><b>Connect Mailchimp</b> to auto-sync engagement lists — you can do this anytime in Settings.</div><div class="bx"><button class="btn btn-pri btn-sm" onclick="toast(\'Mailchimp connect is illustrative\')">Connect</button><button class="btn btn-sec btn-sm" onclick="toast(\'Snoozed\')">Snooze</button></div></div>';
+   tiles=[{l:'Subscribers',v:'3,210',d:'+124 this month',up:true},
+     {l:'Active lists',v:SAVED_LISTS.length,d:'Segments',sel:'lists'},
+     {l:'Avg open rate',v:'41%',d:'Last 5 sends',up:true},
+     {l:'Upcoming events',v:3,d:'Next 60 days'}];
+   body=listsReadyCard();
+ }
+
+ setHTML('#view',
+   '<div class="hrow"><div><div class="page-h">Good afternoon, '+me.name.split(' ')[0]+'</div>'
+   +'<div class="page-sub">'+P.label+' · '+P.sub+' workspace — Friday, Jun 26, 2026 · PT</div></div></div>'
+   +banner
+   +'<div class="tiles">'+tiles.map(t=>tile(t)).join('')+'</div>'
+   +filters+body);
+}
+function tile(t){
+ return '<div class="tile '+(t.sel?'sel':'')+'" '+(t.sel?'onclick="go(\''+t.sel+'\')"':'')+'>'
+   +'<div class="tl">'+t.l+'</div><div class="tv tnum">'+t.v+'</div>'
+   +(t.d?'<div class="td '+(t.up?'up':'')+'">'+t.d+'</div>':'')+'</div>';
+}
+function giftsTableCard(title,rows,canReceipt){
+ return '<div class="card"><div class="card-h"><b>'+title+'</b><span class="muted">'+rows.length+' gifts</span></div>'
+ +'<table><thead><tr><th>Donor</th><th>Date</th><th>Fund</th><th class="r">Amount</th><th>Credit</th><th>Status</th><th class="r">Action</th></tr></thead><tbody>'
+ +rows.map(g=>'<tr class="clk" onclick="openRecord(\''+g.did+'\')"><td class="t-name">'+esc(g.donor)+'</td><td>'+g.date+'</td><td>'+esc(g.fund)+'</td><td class="r tnum">'+usd(g.amount)+'</td><td>'+creditBadge(g.credit)+'</td><td>'+statusBadge(g.status)+'</td>'
+   +'<td class="r">'+(canReceipt&&g.status==='Pending'?'<button class="btn btn-pri btn-sm" onclick="event.stopPropagation();sendReceipt(\''+g.id+'\')">'+ic('receipt',14)+'Send receipt</button>':'<button class="btn btn-sec btn-sm" onclick="event.stopPropagation();openRecord(\''+g.did+'\')">Open</button>')+'</td></tr>').join('')
+ +'</tbody></table></div>';
+}
+function portfolioCard(){
+ const rows=prospects().filter(c=>c.officer==='Imran Patel');
+ return '<div class="card"><div class="card-h"><b>My portfolio — priority prospects</b><span class="muted">'+rows.length+'</span></div>'
+ +'<table><thead><tr><th>Prospect</th><th>Stage</th><th class="r">Ask</th><th>Focus</th><th class="r">Action</th></tr></thead><tbody>'
+ +rows.map(c=>{const s=stageObj(c.stage);return '<tr class="clk" onclick="openRecord(\''+c.id+'\')"><td class="t-name">'+esc(c.name)+'<div class="t-sub">'+esc(c.title)+'</div></td>'
+   +'<td><span class="badge b-blue" style="background:'+s.color+'22;color:'+s.color+'">'+s.name+'</span></td><td class="r tnum">'+usd(c.ask)+'</td><td>'+esc(c.fundInterest||'—')+'</td>'
+   +'<td class="r"><button class="btn btn-sec btn-sm" onclick="event.stopPropagation();openRecord(\''+c.id+'\')">Open</button></td></tr>';}).join('')
+ +'</tbody></table></div>';
+}
+function listsReadyCard(){
+ return '<div class="card"><div class="card-h"><b>Lists ready to sync</b><button class="btn btn-pri btn-sm" onclick="go(\'lists\')">'+ic('plus',14)+'Build list</button></div>'
+ +'<table><thead><tr><th>List</th><th>Definition</th><th class="r">Members</th><th>Status</th><th class="r">Action</th></tr></thead><tbody>'
+ +SAVED_LISTS.map((l,i)=>'<tr><td class="t-name">'+esc(l.name)+'</td><td>'+esc(l.desc)+'</td><td class="r tnum">'+l.count+'</td><td>'+(l.sync.startsWith('Synced')?'<span class="badge b-green">'+esc(l.sync)+'</span>':'<span class="badge b-slate">'+esc(l.sync)+'</span>')+'</td>'
+   +'<td class="r"><button class="btn btn-pri btn-sm" onclick="downloadList(\''+esc(l.name)+'\')">'+ic('download',14)+'Mailchimp CSV</button></td></tr>').join('')
+ +'</tbody></table></div>';
+}
+
+/* ============================ CONSTITUENTS ============================ */
+function renderConstituents(){
+ const f=state.cFilter;const rows=constituentRows();const sel=state.selected;const selectable=can('bulk')||can('list');
+ const major=C.filter(c=>c.capNum>=250000).length;
+ const tiles=[{l:'All constituents',v:C.length,d:'In database'},
+   {l:'Major donors',v:major,d:'Capacity $250K+'},
+   {l:'Active prospects',v:C.filter(c=>c.stage&&c.stage!=='stewardship').length,d:'In pipeline'},
+   {l:'New this month',v:2,d:'Added in Jun'}];
+ const fl=[['all','All'],['Individual','Individuals'],['Organization','Organizations'],['Foundation','Foundations'],['Household','Households'],['major','Major donors']];
+ const allSel=rows.length&&rows.every(c=>sel.has(c.id));
+ const headCb=selectable?'<th style="width:40px"><input type="checkbox" '+(allSel?'checked':'')+' onclick="toggleSelAll()"></th>':'';
+ const sub=selectable?'Click a row to preview · select rows to build a list or send a bulk message · email or build a deck from any row':'Click any row to preview · open the full record for relationships, giving and notes';
+ setHTML('#view',
+  '<div class="hrow"><div><div class="page-h">Constituents</div><div class="page-sub">'+sub+'</div></div>'
+  +(can('gift')?'<button class="btn btn-pri" onclick="openGiftModal(null)">'+ic('plus',16)+'Add gift</button>':'')+'</div>'
+  +'<div class="tiles">'+tiles.map(tile).join('')+'</div>'
+  +'<div class="filters">'+fl.map(x=>'<button class="fpill '+(f===x[0]?'on':'')+'" onclick="state.cFilter=\''+x[0]+'\';render()">'+x[1]+'</button>').join('')+'</div>'
+  +selToolbar()
+  +'<div class="card"><div class="card-h"><b>'+(f==='all'?'All constituents':fl.find(x=>x[0]===f)[1])+'</b><span class="muted">'+rows.length+' records</span></div>'
+  +'<table><thead><tr>'+headCb+'<th>Name</th><th>Type</th><th>Relationships</th><th>Capacity</th><th class="r">Lifetime giving</th><th>Last gift</th><th class="r">Action</th></tr></thead><tbody>'
+  +rows.map(c=>{
+    const cb=selectable?'<td onclick="event.stopPropagation()"><input type="checkbox" '+(sel.has(c.id)?'checked':'')+' onclick="toggleSel(\''+c.id+'\')"></td>':'';
+    let acts='<button class="btn btn-sec btn-sm" onclick="event.stopPropagation();openDrawer(\''+c.id+'\')">Preview</button>';
+    if(can('email'))acts+=' <button class="btn btn-sec btn-sm icononly" title="Send email" onclick="event.stopPropagation();openEmail(\''+c.id+'\')">'+ic('mail',15)+'</button>';
+    if(can('deck'))acts+=' <button class="btn btn-sec btn-sm icononly" title="Create presentation" onclick="event.stopPropagation();openWizard(\''+c.id+'\')">'+ic('slides',15)+'</button>';
+    return '<tr class="clk" onclick="openDrawer(\''+c.id+'\')">'+cb
+     +'<td><div class="t-name">'+esc(c.name)+'</div><div class="t-sub">'+esc(c.title)+'</div></td>'
+     +'<td>'+typeBadge(c.type)+'</td>'
+     +'<td><span class="relcell"><span class="ric">'+c.rel+'</span>'+(c.rel===1?'link':'links')+'</span></td>'
+     +'<td><span class="badge '+(c.capNum>=500000?'b-purple':c.capNum>=250000?'b-blue':'b-slate')+'">'+esc(c.capacity)+'</span></td>'
+     +'<td class="r tnum">'+usd(c.lifetime)+'</td>'
+     +'<td>'+c.last.date+'<div class="t-sub">'+usd(c.last.amount)+' · '+esc(c.last.fund)+'</div></td>'
+     +'<td class="r" style="white-space:nowrap">'+acts+'</td></tr>';
+  }).join('')
+  +'</tbody></table></div>');
+}
+
+/* ============================ DRAWER (preview) ============================ */
+function openDrawer(id){state.drawerId=id;renderDrawer();$('#drawer').classList.add('on');$('#scrim').classList.add('on');$('#scrim').onclick=closeDrawer;}
+function closeDrawer(){$('#drawer').classList.remove('on');$('#scrim').classList.remove('on');}
+function renderDrawer(){
+ const c=byId(state.drawerId);if(!c)return;
+ const acts=[];
+ acts.push('<button class="btn btn-pri" style="flex:1" onclick="openRecord(\''+c.id+'\')">'+ic('user',15)+'Open full record</button>');
+ if(can('note'))acts.push('<button class="btn btn-sec btn-sm" onclick="openRecord(\''+c.id+'\');setTimeout(()=>setTab(\'notes\'),20)">'+ic('edit',14)+'Note</button>');
+ if(can('email'))acts.push('<button class="btn btn-sec btn-sm" onclick="openEmail(\''+c.id+'\')">'+ic('mail',14)+'Email</button>');
+ if(can('deck'))acts.push('<button class="btn btn-sec btn-sm" onclick="openWizard(\''+c.id+'\')">'+ic('slides',14)+'Deck</button>');
+ const rel=(c.relationships||[]).slice(0,5).map(r=>'<div class="tnode" style="margin-bottom:9px;padding:9px 11px" '+(r.rid?'onclick="openRecord(\''+r.rid+'\')" style="cursor:pointer"':'')+'>'
+   +'<div class="tic" style="width:28px;height:28px;background:'+relColor(r.type)+'">'+ic(relIcon(r.type),13)+'</div>'
+   +'<div><div class="tnm" style="font-size:13.5px">'+esc(r.name)+'</div><div class="tmeta">'+esc(r.role)+'</div></div></div>').join('')||'<div class="t-sub">No linked relationships.</div>';
+ $('#drawer').innerHTML=
+  '<div class="dw-h"><div class="rec-av '+avClass(c.type)+'" style="width:52px;height:52px;font-size:18px">'+initials(c.name)+'</div>'
+  +'<div style="flex:1"><div style="font-size:18px;font-weight:800;color:var(--navy)">'+esc(c.name)+'</div>'
+  +'<div class="t-sub">'+esc(c.title)+'</div><div style="margin-top:7px;display:flex;gap:6px;flex-wrap:wrap">'+typeBadge(c.type)+'<span class="badge '+(c.capNum>=500000?'b-purple':'b-blue')+'">'+esc(c.capacity)+'</span></div></div>'
+  +'<button class="dw-x" onclick="closeDrawer()">'+ic('x',18)+'</button></div>'
+  +'<div class="dw-body">'
+  +'<div class="kv" style="grid-template-columns:130px 1fr">'
+    +'<div class="k">Constituent ID</div><div class="v">'+esc(c.cid)+'</div>'
+    +'<div class="k">Lifetime giving</div><div class="v">'+usd(c.lifetime)+'</div>'
+    +'<div class="k">FY25 giving</div><div class="v">'+usd(c.fy25)+'</div>'
+    +'<div class="k">Last gift</div><div class="v">'+usd(c.last.amount)+' · '+c.last.date+'</div>'
+    +'<div class="k">Gift officer</div><div class="v">'+esc(c.officer||'—')+'</div>'
+    +(c.stage?'<div class="k">Pipeline stage</div><div class="v">'+stageObj(c.stage).name+' · ask '+usd(c.ask)+'</div>':'')
+  +'</div>'
+  +'<div style="font-size:12px;font-weight:700;color:var(--slate4);text-transform:uppercase;letter-spacing:.06em;margin:20px 0 10px">Relationships ('+c.rel+')</div>'+rel
+  +(c.hierarchy?'<div class="note-banner">Multi-entity donor — open the full record to see the household → LLC → foundation hierarchy and per-entity receipt routing.</div>':'')
+  +'</div>'
+  +'<div class="dw-foot">'+acts.join('')+'</div>';
+}
+function relColor(t){return t==='Organization'?'#B07A4B':t==='Foundation'?'#2D6A4F':t==='Household'?'#0EA5E9':'#2563EB';}
+function relIcon(t){return t==='Organization'?'building':t==='Foundation'?'heart':t==='Household'?'home':'user';}
+
+/* ============================ DONOR 360 RECORD ============================ */
+function openRecord(id){state.recordId=id;state.view='record';state.tab='overview';closeDrawer();render();window.scrollTo(0,0);}
+function setTab(t){state.tab=t;renderRecord();}
+function renderRecord(){
+ const c=byId(state.recordId);if(!c){go('constituents');return;}
+ const acts=[];
+ if(can('note'))acts.push('<button class="btn btn-sec" onclick="setTab(\'notes\')">'+ic('edit',15)+'Add note</button>');
+ if(can('email'))acts.push('<button class="btn btn-sec" onclick="openEmail(\''+c.id+'\')">'+ic('mail',15)+'Send email</button>');
+ if(can('deck'))acts.push('<button class="btn btn-pri" onclick="openWizard(\''+c.id+'\')">'+ic('slides',15)+'Create deck</button>');
+ if(can('voice'))acts.push('<button class="btn btn-sec" onclick="openVoice(\''+c.id+'\')">'+ic('mic',15)+'Voice note</button>');
+ if(can('gift'))acts.push('<button class="btn btn-sec" onclick="openGiftModal(\''+c.id+'\')">'+ic('gift',15)+'Add gift</button>');
+ const tabs=[['overview','Overview'],['relationships','Relationships ('+c.rel+')'],['giving','Giving History'],['notes','Notes & Activity'],['presentations','Presentations'],['receipts','Receipts']];
+ setHTML('#view',
+  '<button class="backlink" onclick="go(\'constituents\')">'+ic('back',16)+'Constituents</button>'
+  +'<div class="rec-top"><div class="rec-av '+avClass(c.type)+'">'+initials(c.name)+'</div>'
+  +'<div style="flex:1"><div style="font-size:24px;font-weight:800;letter-spacing:-.02em">'+esc(c.name)+'</div>'
+  +'<div class="page-sub">'+esc(c.title)+' · '+esc(c.city)+', '+esc(c.state)+' '+esc(c.zip)+'</div>'
+  +'<div style="margin-top:9px;display:flex;gap:6px;flex-wrap:wrap">'+typeBadge(c.type)+(c.roles||[]).map(r=>'<span class="badge b-slate">'+esc(r)+'</span>').join('')+'</div></div>'
+  +'<div class="rec-cap"><div class="l">Capacity</div><div class="v">'+esc(c.capacity)+'</div></div></div>'
+  +'<div class="actionbar">'+acts.join('')+'</div>'
+  +'<div class="tabs">'+tabs.map(t=>'<div class="tab '+(state.tab===t[0]?'on':'')+'" onclick="setTab(\''+t[0]+'\')">'+t[1]+'</div>').join('')+'</div>'
+  +'<div id="tabbody">'+recordTab(c)+'</div>');
+}
+function recordTab(c){
+ if(state.tab==='overview')return tabOverview(c);
+ if(state.tab==='relationships')return tabRel(c);
+ if(state.tab==='giving')return tabGiving(c);
+ if(state.tab==='notes')return tabNotes(c);
+ if(state.tab==='presentations')return tabPres(c);
+ if(state.tab==='receipts')return tabReceipts(c);
+ return '';
+}
+function presBadge(s){if(s==='Sent')return '<span class="badge b-green">'+ic('check',12)+'Sent</span>';if(s==='Downloaded')return '<span class="badge b-blue">Downloaded</span>';if(s==='Saved')return '<span class="badge b-sky">Saved</span>';if(s==='In O365')return '<span class="badge b-purple">In O365</span>';return '<span class="badge b-slate">'+esc(s)+'</span>';}
+function tabPres(c){
+ const ps=c.presentations||[];
+ const head='<div class="card-h"><b>Presentations</b><div style="display:flex;gap:10px;align-items:center"><span class="muted">'+ps.length+' decks</span>'+(can('deck')?'<button class="btn btn-pri btn-sm" onclick="openWizard(\''+c.id+'\')">'+ic('slides',14)+'New deck</button>':'')+'</div></div>';
+ if(!ps.length)return '<div class="card">'+head+'<div class="empty"><div class="ei">'+ic('slides',24)+'</div><div style="font-weight:700;color:var(--navy)">No presentations yet</div><div>Create a donor deck with the wizard — it logs here with who made it and when.</div></div></div>';
+ return '<div class="card">'+head+'<table><thead><tr><th>Presentation</th><th>Created by</th><th>Date</th><th class="r">Ask</th><th>Status</th></tr></thead><tbody>'
+  +ps.slice().reverse().map(p=>{const m=TEAM.find(t=>t.id===p.by)||{name:'User'};return '<tr><td class="t-name">'+esc(p.title)+'</td><td>'+esc(m.name)+'</td><td>'+esc(p.date)+'</td><td class="r tnum">'+(p.ask?usd(p.ask):'—')+'</td><td>'+presBadge(p.status)+'</td></tr>';}).join('')
+  +'</tbody></table></div>';
+}
+function tabOverview(c){
+ let impact='';
+ if(c.hierarchy){
+   const total=AHMAD_IMPACT.reduce((s,x)=>s+x.v,0);
+   impact='<div class="card"><div class="card-h"><b>Consolidated philanthropic impact</b><span class="muted">across all affiliated entities</span></div><div class="card-b">'
+   +'<div class="impact">'+AHMAD_IMPACT.map(x=>'<div class="ic"><div class="l">'+esc(x.l)+'</div><div class="v tnum">'+usd(x.v)+'</div></div>').join('')
+   +'<div class="ic tot" style="grid-column:1/-1"><div class="l">Total influence (hard + soft)</div><div class="v tnum">'+usd(total)+'</div></div></div>'
+   +'<div class="note-banner">Hard and soft credit are segregated to the correct entity records for CASE GRS, receipting and IRS purposes — while this view rolls up Ahmad’s total philanthropic influence.</div></div></div>';
+ }
+ return '<div class="cols"><div class="card"><div class="card-h"><b>Constituent details</b></div><div class="card-b">'
+  +'<div class="kv">'
+  +'<div class="k">Constituent ID</div><div class="v">'+esc(c.cid)+'</div>'
+  +'<div class="k">Type</div><div class="v">'+esc(c.type)+'</div>'
+  +'<div class="k">Primary email</div><div class="v">'+esc(c.email)+'</div>'
+  +'<div class="k">Location</div><div class="v">'+esc(c.city)+', '+esc(c.state)+' '+esc(c.zip)+'</div>'
+  +'<div class="k">Lifecycle roles</div><div class="v">'+(c.roles||[]).join(' · ')+'</div>'
+  +'<div class="k">Capacity rating</div><div class="v">'+esc(c.capacity)+'</div>'
+  +'<div class="k">Gift officer</div><div class="v">'+esc(c.officer||'—')+'</div>'
+  +'<div class="k">Lifetime giving</div><div class="v tnum">'+usd(c.lifetime)+'</div>'
+  +'<div class="k">FY25 giving</div><div class="v tnum">'+usd(c.fy25)+'</div>'
+  +(c.stage?'<div class="k">Pipeline</div><div class="v">'+stageObj(c.stage).name+' · ask '+usd(c.ask)+' · '+esc(c.fundInterest)+'</div>':'')
+  +'</div></div></div>'
+  +'<div>'+impact+(c.hierarchy?'':'<div class="card"><div class="card-h"><b>Quick stats</b></div><div class="card-b"><div class="impact"><div class="ic"><div class="l">Lifetime</div><div class="v tnum">'+usd(c.lifetime)+'</div></div><div class="ic"><div class="l">FY25</div><div class="v tnum">'+usd(c.fy25)+'</div></div><div class="ic"><div class="l">Relationships</div><div class="v">'+c.rel+'</div></div><div class="ic"><div class="l">Gifts</div><div class="v">'+(c.giving||[]).length+'</div></div></div></div></div>')+'</div></div>';
+}
+function tnodeHTML(name,meta,amount,cls,icon,color,rid){
+ return '<div class="tnode '+(cls||'')+'" '+(rid?'onclick="openRecord(\''+rid+'\')" style="cursor:pointer"':'')+'>'
+  +'<div class="tic" style="background:'+color+'">'+ic(icon,16)+'</div>'
+  +'<div><div class="tnm">'+esc(name)+'</div><div class="tmeta">'+esc(meta)+'</div></div>'
+  +(amount?'<div class="tamt tnum">'+amount+'</div>':'')+'</div>';
+}
+function tabRel(c){
+ const addBtn=can('gift')?'<button class="btn btn-pri btn-sm" onclick="openAddRel(\''+c.id+'\')">'+ic('link',14)+'Add relationship</button>':'';
+ if(c.hierarchy){
+   const tree='<div class="tree">'
+     +tnodeHTML('Ahmad Al-Rashid','Primary constituent · CEO · Foundation President','$640K lifetime','primary','user','#2563EB',null)
+     +'<div class="tchild">'
+       +tnodeHTML('Al-Rashid Household','Joint giving unit · 12 Badr Way, Berkeley','$120K FY25','','home','#0EA5E9','household')
+       +'<div class="tchild">'
+         +tnodeHTML('Fatima Al-Rashid','Spouse · soft credit on joint gifts','$80K','','user','#2563EB','fatima')
+         +tnodeHTML('Zayd Al-Rashid','Son · minor · do-not-solicit','','','user','#94A3B8',null)
+         +tnodeHTML('Maryam Al-Rashid','Daughter · minor · do-not-solicit','','','user','#94A3B8',null)
+       +'</div>'
+       +tnodeHTML('Al-Rashid Holdings LLC','Corporate · CEO · 2:1 matching employer','$120K','','building','#B07A4B','holdings')
+       +tnodeHTML('Al-Rashid Family Foundation','Private foundation · President · grants','$400K','','heart','#2D6A4F','foundation')
+     +'</div></div>'
+     +'<div class="legend"><span><i style="background:#2563EB"></i>Individual</span><span><i style="background:#0EA5E9"></i>Household</span><span><i style="background:#B07A4B"></i>Corporate</span><span><i style="background:#2D6A4F"></i>Foundation</span><span><i style="background:#94A3B8"></i>Minor</span></div>';
+   return '<div class="card"><div class="card-h"><b>Multi-entity relationship hierarchy</b><div style="display:flex;gap:10px;align-items:center"><span class="muted">one constituent · seven linked entities</span>'+addBtn+'</div></div><div class="card-b">'+tree
+     +'<div class="note-banner">This is the Al-Rashid scenario from RFP §5.0 — a single master constituent who is simultaneously an individual donor, household primary, corporate officer and foundation president, with no duplicate records.</div></div></div>';
+ }
+ if(!(c.relationships||[]).length)return '<div class="card"><div class="card-h"><b>Relationships</b>'+addBtn+'</div><div class="empty"><div class="ei">'+ic('users',24)+'</div><div style="font-weight:700;color:var(--navy)">No linked relationships yet</div><div>Add a spouse, child, trustee or affiliated organization to start the map.</div></div></div>';
+ return '<div class="card"><div class="card-h"><b>Relationships</b><div style="display:flex;gap:10px;align-items:center"><span class="muted">'+c.rel+' linked</span>'+addBtn+'</div></div><div class="card-b">'
+  +'<div style="display:flex;flex-direction:column;gap:11px">'+c.relationships.map(r=>tnodeHTML(r.name,r.role,'',(''),relIcon(r.type),relColor(r.type),r.rid)).join('')+'</div></div></div>';
+}
+function tabGiving(c){
+ const g=c.giving||[];
+ if(!g.length)return '<div class="card"><div class="empty"><div class="ei">'+ic('gift',24)+'</div><div style="font-weight:700;color:var(--navy)">No gifts on record</div></div></div>';
+ return '<div class="card"><div class="card-h"><b>Giving history</b><span class="muted">'+g.length+' gifts · '+usd(g.reduce((s,x)=>s+x.amount,0))+'</span></div>'
+  +'<table><thead><tr><th>Date</th><th>Fund</th><th class="r">Amount</th><th>Credit</th><th>Entity</th><th>Receipt</th></tr></thead><tbody>'
+  +g.map(x=>'<tr><td>'+x.date+'</td><td>'+esc(x.fund)+'</td><td class="r tnum">'+usd(x.amount)+'</td><td>'+creditBadge(x.credit)+'</td><td>'+esc(x.entity)+'</td><td>'+statusBadge(x.receipt)+'</td></tr>').join('')
+  +'</tbody></table></div>';
+}
+function tabNotes(c){
+ const me=memberByPersona(state.persona);
+ const chips=TEAM.filter(t=>t.persona!==state.persona).map(t=>'<button class="chip" onclick="insertMention(\''+t.name+'\')"><span class="ca">'+t.initials+'</span>@'+t.name.split(' ')[0]+'</button>').join('');
+ const composer='<div class="composer"><textarea id="noteInput" placeholder="Write a note about '+esc(c.name)+'... type @ to mention a teammate"></textarea>'
+   +'<div class="mentionbar"><span class="ml">Mention</span>'+chips+'<button class="btn btn-pri btn-sm" style="margin-left:auto" onclick="postNote()">'+ic('send',14)+'Post note</button></div></div>';
+ const notes=(c.notes||[]).slice().reverse().map(n=>{
+   const m=TEAM.find(t=>t.id===n.by)||{name:'User',initials:'U',color:'#64748B'};
+   return '<div class="note"><div class="na" style="background:'+m.color+'">'+m.initials+'</div><div class="nb"><div class="nh"><b>'+esc(m.name)+'</b><span class="nt">'+esc(n.time)+'</span></div><div class="ntext">'+fmtMentions(n.text)+'</div></div></div>';
+ }).join('')||'<div class="t-sub" style="padding:8px 0">No notes yet — be the first to log activity.</div>';
+ const voices=(c.voice||[]).length?'<div class="card-h" style="border-top:1px solid var(--line2)"><b>Voice notes</b></div><div class="card-b">'+(c.voice||[]).map(v=>'<div class="voice"><div class="vp">'+ic('play',15)+'</div><div style="flex:1"><div style="font-weight:700;color:var(--navy);font-size:13px">'+esc((TEAM.find(t=>t.id===v.by)||{name:'User'}).name)+' · '+esc(v.time)+' · '+v.dur+'</div><div class="wave" style="margin-top:6px"></div><div class="ntext" style="margin-top:7px">'+esc(v.transcript)+'</div></div></div>').join('')+'</div>':'';
+ return '<div class="card"><div class="card-b">'+composer+'</div><div class="card-h" style="border-top:1px solid var(--line2)"><b>Activity</b><span class="muted">'+(c.notes||[]).length+' notes</span></div><div class="card-b">'+notes+'</div>'+voices+'</div>';
+}
+function tabReceipts(c){
+ if(c.hierarchy){
+   return '<div class="card"><div class="card-h"><b>Receipt & acknowledgement routing</b><span class="muted">per entity · per timing event</span></div>'
+   +'<table><thead><tr><th>Giving entity</th><th>Example gift</th><th>Hard credit</th><th>Soft credit</th><th>Immediate receipt</th><th>Year-end statement</th></tr></thead><tbody>'
+   +ROUTING.map(r=>'<tr><td class="t-name">'+esc(r.entity)+'</td><td>'+esc(r.gift)+'</td><td>'+esc(r.hard)+'</td><td>'+esc(r.soft)+'</td><td><span style="color:var(--blue-d);font-weight:600">'+esc(r.imm)+'</span></td><td>'+esc(r.ye)+'</td></tr>').join('')
+   +'</tbody></table><div class="card-b"><div class="note-banner">Every entity × event combination has independently configurable recipients (personal, household, corporate billing, CFO, CPA). This is RFP §Q — receipt & acknowledgement routing.</div></div></div>';
+ }
+ return '<div class="card"><div class="card-h"><b>Receipt preferences</b></div><div class="card-b"><div class="kv">'
+  +'<div class="k">Immediate receipt to</div><div class="v">'+esc(c.email)+'</div>'
+  +'<div class="k">Year-end statement to</div><div class="v">'+esc(c.email)+'</div>'
+  +'<div class="k">Format</div><div class="v">PDF on institutional letterhead</div>'
+  +'<div class="k">Standing CC</div><div class="v">—</div>'
+  +'</div><div class="note-banner">Receipt routing is configurable per constituent and per gift entity. Multi-entity donors (see Ahmad Al-Rashid) show a full routing matrix here.</div></div></div>';
+}
+function header(h,sub,btn){return '<div class="hrow"><div><div class="page-h">'+h+'</div><div class="page-sub">'+sub+'</div></div>'+(btn||'')+'</div>';}
+
+/* ============================ PIPELINE ============================ */
+function renderPipeline(){
+ const tiles=[
+  {l:'Total pipeline',v:usdK(pipelineTotal()),d:prospects().length+' open opportunities'},
+  {l:'Weighted forecast',v:usdK(pipelineWeighted()),d:'Probability-adjusted'},
+  {l:'In solicitation',v:C.filter(c=>c.stage==='solicitation').length,d:'Asks out now'},
+  {l:'Largest ask',v:usdK(Math.max.apply(null,prospects().map(c=>c.ask))),d:'Graduate Women’s Residence'}
+ ];
+ const cols=STAGES.map(s=>{
+   const items=prospects().filter(c=>c.stage===s.key);
+   return '<div class="kcol"><div class="kcol-h"><span class="kdot" style="background:'+s.color+'"></span>'+s.name+' · '+s.prob+'%<span class="kn">'+items.length+'</span></div>'
+    +items.map(c=>'<div class="kcard" onclick="openRecord(\''+c.id+'\')"><div class="kt">'+esc(c.name)+'</div><div class="kf">'+esc(c.fundInterest||c.title)+'</div><div class="kamt tnum">'+usd(c.ask)+'</div><div class="prob"><i style="width:'+s.prob+'%;background:'+s.color+'"></i></div><div class="kfoot"><span>'+esc((c.officer||'').split(' ')[0])+'</span><span class="miniav">'+initials(c.officer||'')+'</span></div></div>').join('')
+    +(items.length?'':'<div class="t-sub" style="padding:10px;text-align:center">—</div>')+'</div>';
+ }).join('');
+ setHTML('#view',header('Pipeline','Major-gift cultivation across five stages — click a card to open the prospect')
+  +'<div class="tiles">'+tiles.map(tile).join('')+'</div>'
+  +'<div class="card"><div class="card-b"><div class="kanban">'+cols+'</div></div></div>');
+}
+
+/* ============================ GIFTS ============================ */
+function renderGifts(){
+ const tiles=[{l:'Gifts this month',v:GIFTS.length,d:'Posted'},
+  {l:'Pending receipts',v:pendingCount(),d:'Awaiting send'},
+  {l:'Processed FY26',v:usdK(totalRaised()),d:'All funds'},
+  {l:'Avg gift',v:usdK(totalRaised()/GIFTS.length),d:'FY26'}];
+ const btn=can('gift')?'<button class="btn btn-pri" onclick="openGiftModal(null)">'+ic('plus',16)+'New gift</button>':'';
+ setHTML('#view',header('Gifts','Gift entry, credit allocation and receipt routing',btn)
+  +'<div class="tiles">'+tiles.map(tile).join('')+'</div>'
+  +'<div class="card"><div class="card-h"><b>All gifts</b><span class="muted">'+GIFTS.length+' records</span></div>'
+  +'<table><thead><tr><th>Donor</th><th>Date</th><th>Fund</th><th class="r">Amount</th><th>Credit</th><th>Status</th><th class="r">Action</th></tr></thead><tbody>'
+  +GIFTS.map(g=>'<tr class="clk" onclick="openRecord(\''+g.did+'\')"><td class="t-name">'+esc(g.donor)+'</td><td>'+g.date+'</td><td>'+esc(g.fund)+'</td><td class="r tnum">'+usd(g.amount)+'</td><td>'+creditBadge(g.credit)+'</td><td>'+statusBadge(g.status)+'</td><td class="r">'+(g.status==='Pending'&&can('gift')?'<button class="btn btn-pri btn-sm" onclick="event.stopPropagation();sendReceipt(\''+g.id+'\')">'+ic('receipt',14)+'Send receipt</button>':'<button class="btn btn-sec btn-sm" onclick="event.stopPropagation();openRecord(\''+g.did+'\')">Open</button>')+'</td></tr>').join('')
+  +'</tbody></table></div>');
+}
+function sendReceipt(id){const g=GIFTS.find(x=>x.id===id);if(!g)return;g.status='Receipted';const c=byId(g.did);if(c&&c.giving){const gi=c.giving.find(x=>x.amount===g.amount&&x.fund===g.fund);if(gi)gi.receipt='Receipted';}toast('Receipt sent to '+(c?c.email:'donor')+' · PT','receipt');render();}
+function pledgeBadge(s){if(s==='Overdue')return '<span class="badge" style="background:var(--red-b);color:var(--red-t)">Overdue</span>';if(s==='Due soon')return '<span class="badge b-amber">Due soon</span>';return '<span class="badge b-slate">Scheduled</span>';}
+function pledgesDueCard(){
+ return '<div class="card" style="overflow:visible"><div class="card-h"><b>Pledges coming due</b><span class="muted">'+PLEDGES.length+' open pledges</span></div>'
+ +'<table><thead><tr><th>Donor</th><th>Fund</th><th class="r">Balance</th><th>Next payment</th><th class="r">Amount due</th><th>Status</th><th class="r">Action</th></tr></thead><tbody>'
+ +PLEDGES.map((p,i)=>'<tr class="clk" onclick="openRecord(\''+p.did+'\')"><td class="t-name">'+esc(p.donor)+'</td><td>'+esc(p.fund)+'</td><td class="r tnum">'+usd(p.balance)+'</td><td>'+esc(p.due)+'</td><td class="r tnum">'+usd(p.amount)+'</td><td>'+pledgeBadge(p.status)+'</td><td class="r" style="white-space:nowrap" onclick="event.stopPropagation()"><button class="btn btn-pri btn-sm" onclick="pledgeReminder('+i+')">'+ic('mail',14)+'Send reminder</button> '+moreMenu([{label:'Record payment',icon:'gift',onclick:'recordPayment('+i+')'},{label:'Email donor',icon:'mail',onclick:'openEmail(\''+p.did+'\')'},{label:'Open record',icon:'user',onclick:'openRecord(\''+p.did+'\')'}])+'</td></tr>').join('')
+ +'</tbody></table></div>';
+}
+function pledgeReminder(i){const p=PLEDGES[i];if(!p)return;toast('Pledge reminder sent to '+p.donor+' · '+usd(p.amount)+' due '+p.due,'mail');}
+function recordPayment(i){const p=PLEDGES[i];if(!p)return;p.balance=Math.max(0,p.balance-p.amount);if(p.balance===0)p.status='Scheduled';toast('Payment recorded · '+usd(p.amount)+' to '+p.fund,'gift');render();}
+const REC={active:1180,mrr:49500,newM:42,churnedM:18,annual:594000,trend:[44,45.5,46.2,47.8,48.6,49.5],trendM:['Dec','Jan','Feb','Mar','Apr','May']};
+function prospectsCard(){
+ const rows=prospects().filter(c=>c.stage!=='stewardship');
+ return '<div class="card"><div class="card-h"><b>Prospects</b><div style="display:flex;gap:10px;align-items:center"><span class="muted">'+rows.length+' active · '+usdK(pipelineWeighted())+' weighted</span><button class="btn btn-sec btn-sm" onclick="go(\'pipeline\')">Open pipeline</button></div></div>'
+ +'<table><thead><tr><th>Prospect</th><th>Stage</th><th class="r">Ask</th><th>Fund</th><th>Officer</th><th class="r">Action</th></tr></thead><tbody>'
+ +rows.map(c=>{const s=stageObj(c.stage);return '<tr class="clk" onclick="openRecord(\''+c.id+'\')"><td class="t-name">'+esc(c.name)+'<div class="t-sub">'+esc(c.title)+'</div></td><td><span class="badge" style="background:'+s.color+'22;color:'+s.color+'">'+s.name+'</span></td><td class="r tnum">'+usd(c.ask)+'</td><td>'+esc(c.fundInterest||'—')+'</td><td>'+esc((c.officer||'').split(' ')[0])+'</td><td class="r"><button class="btn btn-sec btn-sm" onclick="event.stopPropagation();openRecord(\''+c.id+'\')">Open</button></td></tr>';}).join('')
+ +'</tbody></table></div>';
+}
+function recurringSummaryCard(){
+ const net=REC.newM-REC.churnedM;
+ const t=[['Active monthly donors',REC.active.toLocaleString()],['Monthly recurring revenue',usd(REC.mrr)],['Annual run-rate',usdK(REC.annual)],['New this month','+'+REC.newM],['Churned this month','−'+REC.churnedM],['Net new sustainers',(net>=0?'+':'')+net]];
+ const max=Math.max.apply(null,REC.trend);
+ const bars=REC.trend.map((v,i)=>'<div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px"><div style="width:62%;background:linear-gradient(180deg,#60A5FA,#2563EB);border-radius:5px 5px 0 0;height:'+Math.round(v/max*70)+'px"></div><div class="t-sub" style="font-size:10px">'+REC.trendM[i]+'</div></div>').join('');
+ return '<div class="card"><div class="card-h"><b>Monthly recurring summary</b><span class="muted">sustainer program</span></div><div class="card-b"><div class="impact" style="grid-template-columns:repeat(3,1fr)">'+t.map(x=>'<div class="ic"><div class="l">'+x[0]+'</div><div class="v tnum">'+x[1]+'</div></div>').join('')+'</div><div style="display:flex;align-items:flex-end;gap:8px;height:90px;margin-top:18px">'+bars+'</div><div class="t-sub" style="margin-top:6px">MRR trend, last 6 months ($K)</div></div></div>';
+}
+function openGiftModal(id){
+ const c=id?byId(id):null;
+ const opts=C.map(x=>'<option value="'+x.id+'" '+(c&&c.id===x.id?'selected':'')+'>'+esc(x.name)+'</option>').join('');
+ const funds=FUNDS.map(f=>'<option>'+esc(f.name)+'</option>').join('');
+ openModal('<div class="modal"><div class="modal-h">'+ic('gift',20)+'<div><b>Add gift</b><div class="sub">Enter a gift, assign credit and route the receipt</div></div><button class="mx" onclick="closeModal()">'+ic('x',18)+'</button></div>'
+  +'<div class="modal-b">'
+  +'<label class="fld"><span class="lk">Donor / entity</span><select class="input" id="gfDonor">'+opts+'</select></label>'
+  +'<div class="grid2"><label class="fld"><span class="lk">Amount</span><input class="input" id="gfAmt" value="25,000"></label><label class="fld"><span class="lk">Gift date</span><input class="input" id="gfDate" value="Jun 26, 2026"></label></div>'
+  +'<div class="grid2"><label class="fld"><span class="lk">Fund</span><select class="input" id="gfFund">'+funds+'</select></label><label class="fld"><span class="lk">Credit type</span><select class="input" id="gfCredit"><option>Hard</option><option>Soft</option><option>Joint</option></select></label></div>'
+  +'<label class="fld"><span class="lk">Immediate receipt to</span><input class="input" id="gfRcpt" value="'+(c?esc(c.email):'')+'" placeholder="email@domain.com"></label>'
+  +'</div><div class="modal-f"><button class="btn btn-sec" onclick="closeModal()">Cancel</button><button class="btn btn-pri" onclick="saveGift()">'+ic('check',15)+'Post gift</button></div></div>');
+}
+function saveGift(){
+ const did=$('#gfDonor').value;const c=byId(did);
+ const amt=parseInt(($('#gfAmt').value||'0').replace(/[^0-9]/g,''))||0;
+ const fund=$('#gfFund').value,credit=$('#gfCredit').value,date=$('#gfDate').value;
+ GIFTS.unshift({id:'g'+(GIFTS.length+1+Math.floor(Math.random()*999)),donor:c.name,did:did,date:date,amount:amt,fund:fund,credit:credit,status:'Pending'});
+ if(c.giving)c.giving.unshift({date:date,amount:amt,fund:fund,credit:credit,entity:'Personal',receipt:'Pending'});
+ closeModal();toast('Gift posted · '+usd(amt)+' to '+fund,'gift');
+ if(state.view!=='gifts')go('gifts');else render();
+}
+
+/* ============================ LISTS (Mailchimp) ============================ */
+function listFiltered(){
+ let r=C.slice();const L=state.list;
+ if(L.type!=='all')r=r.filter(c=>c.type===L.type);
+ if(L.minLt>0)r=r.filter(c=>c.lifetime>=L.minLt);
+ if(L.fund!=='all')r=r.filter(c=>(c.giving||[]).some(g=>g.fund===L.fund)||(c.fundInterest&&c.fundInterest.indexOf(L.fund)>=0));
+ if(L.zip)r=r.filter(c=>c.zip.indexOf(L.zip)===0);
+ return r;
+}
+function renderLists(){
+ const res=listFiltered();
+ const builder='<div class="card"><div class="card-h"><b>Segment builder</b><span class="muted">filters apply live</span></div><div class="card-b"><div class="grid2">'
+  +'<label class="fld"><span class="lk">Constituent type</span><select class="input" onchange="state.list.type=this.value;render()">'+['all','Individual','Organization','Foundation','Household'].map(t=>'<option value="'+t+'" '+(state.list.type===t?'selected':'')+'>'+(t==='all'?'All types':t)+'</option>').join('')+'</select></label>'
+  +'<label class="fld"><span class="lk">Min lifetime giving</span><select class="input" onchange="state.list.minLt=+this.value;render()">'+[[0,'Any'],[10000,'$10K+'],[25000,'$25K+'],[100000,'$100K+'],[250000,'$250K+']].map(o=>'<option value="'+o[0]+'" '+(state.list.minLt===o[0]?'selected':'')+'>'+o[1]+'</option>').join('')+'</select></label></div>'
+  +'<div class="grid2"><label class="fld"><span class="lk">Fund interest / giving</span><select class="input" onchange="state.list.fund=this.value;render()"><option value="all">Any fund</option>'+FUNDS.map(f=>'<option '+(state.list.fund===f.name?'selected':'')+'>'+esc(f.name)+'</option>').join('')+'</select></label>'
+  +'<label class="fld"><span class="lk">ZIP starts with</span><input class="input" value="'+esc(state.list.zip)+'" oninput="state.list.zip=this.value;render()" placeholder="e.g. 947"></label></div></div></div>';
+ const result='<div class="card" style="overflow:visible"><div class="card-h"><b>Matching constituents</b><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="muted">'+res.length+' members</span>'+(can('list')?'<button class="btn btn-sec btn-sm" onclick="saveSegmentModal()">'+ic('list',14)+'Save as list</button>':'')+(can('bulk')?'<button class="btn btn-pri btn-sm" onclick="bulkFromSegment()">'+ic('send',14)+'Bulk message</button>':'')+moreMenu([{label:'Download to CSV',icon:'download',onclick:'downloadCSVrows()'},{label:'Push to Mailchimp',icon:'mail',onclick:'pushSegmentMC()'}])+'</div></div>'
+  +'<table><thead><tr><th>Name</th><th>Email</th><th>City</th><th>ZIP</th><th class="r">Lifetime</th></tr></thead><tbody>'
+  +(res.length?res.map(c=>'<tr><td class="t-name">'+esc(c.name)+'</td><td>'+esc(c.email)+'</td><td>'+esc(c.city)+'</td><td>'+esc(c.zip)+'</td><td class="r tnum">'+usd(c.lifetime)+'</td></tr>').join(''):'<tr><td colspan="5"><div class="t-sub" style="padding:8px">No matches — loosen the filters.</div></td></tr>')
+  +'</tbody></table></div>';
+ const saved='<div class="card" style="overflow:visible"><div class="card-h"><b>Saved lists</b></div><table><thead><tr><th>List</th><th>Definition</th><th class="r">Members</th><th>Mailchimp</th><th class="r">Action</th></tr></thead><tbody>'
+  +SAVED_LISTS.map((l,i)=>'<tr><td class="t-name">'+esc(l.name)+'</td><td>'+esc(l.desc)+'</td><td class="r tnum">'+l.count+'</td><td>'+(l.sync.startsWith('Synced')?'<span class="badge b-green">'+esc(l.sync)+'</span>':'<span class="badge b-slate">'+esc(l.sync)+'</span>')+'</td><td class="r" style="white-space:nowrap">'+(can('bulk')?'<button class="btn btn-sec btn-sm" onclick="bulkSaved('+i+')">'+ic('send',14)+'Message</button> ':'')+moreMenu([{label:'Download to CSV',icon:'download',onclick:'csvSaved('+i+')'},{label:'Push to Mailchimp',icon:'mail',onclick:'pushSavedMC('+i+')'}])+'</td></tr>').join('')
+  +'</tbody></table></div>';
+ setHTML('#view',header('Lists','Build a custom list, then send a bulk message or export it to Mailchimp')+builder+result+saved);
+}
+function csvEscape(v){v=String(v==null?'':v);return /[",\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v;}
+function rowsToCSV(rows){if(!rows.length)return '';const k=Object.keys(rows[0]);return k.join(',')+'\n'+rows.map(r=>k.map(x=>csvEscape(r[x])).join(',')).join('\n');}
+function mcRows(list){return list.map(c=>({'Email Address':c.email,'First Name':c.name.split(' ')[0],'Last Name':c.name.split(' ').slice(1).join(' '),'City':c.city,'State':c.state,'ZIP':c.zip,'Lifetime Giving':c.lifetime,'Capacity':c.capacity,'Tags':(c.roles||[]).join('|')}));}
+function downloadBlob(fn,content,mime){const b=new Blob([content],{type:mime||'text/plain'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=fn;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500);}
+function downloadCSVrows(){const list=listFiltered();if(!list.length){toast('No constituents match — adjust filters');return;}downloadBlob('Risely_Mailchimp_Segment.csv',rowsToCSV(mcRows(list)),'text/csv');toast(list.length+' contacts exported — ready to import into Mailchimp','download');}
+function downloadList(name){downloadBlob('Risely_'+name.replace(/[^A-Za-z0-9]+/g,'_')+'.csv',rowsToCSV(mcRows(C.slice())),'text/csv');toast('“'+name+'” exported for Mailchimp','download');}
+function moreMenu(items){return '<details class="menu"><summary class="btn btn-sec btn-sm">More actions <span style="display:inline-flex;vertical-align:middle;transform:rotate(90deg)">'+ic('chev',13)+'</span></summary><div class="menu-pop">'+items.map(it=>'<div class="menu-item" onclick="this.closest(\'details\').open=false;'+it.onclick+'">'+ic(it.icon,15)+it.label+'</div>').join('')+'</div></details>';}
+function pushMailchimp(n,name){const dest=state.settings.inbox==='Mailchimp'?'Mailchimp':'Mailchimp';toast(n+' contacts pushed to '+dest+(name?' · audience “'+name+'”':''),'mail');}
+function pushSegmentMC(){const l=listFiltered();if(!l.length){toast('No constituents match — adjust filters');return;}pushMailchimp(l.length,'Risely segment');}
+function pushSavedMC(i){const l=SAVED_LISTS[i];if(!l)return;pushMailchimp(l.count,l.name);}
+function pushSelMC(){if(!state.selected.size){toast('Select at least one constituent');return;}pushMailchimp(state.selected.size,'Selection');}
+
+/* ---- Constituents selection + bulk + custom lists ---- */
+function constituentRows(){const f=state.cFilter;let rows=C.slice();if(f==='major')rows=rows.filter(c=>c.capNum>=250000);else if(f!=='all')rows=rows.filter(c=>c.type===f);return rows;}
+function selToolbar(){
+ if(!(can('bulk')||can('list')))return '';
+ const n=state.selected.size;if(!n)return '';
+ let b='<div class="selbar"><div style="display:flex;align-items:center;gap:10px"><span class="badge b-blue">'+n+' selected</span><span class="t-sub">act on these constituents</span></div><div class="bx">';
+ if(can('bulk'))b+='<button class="btn btn-pri btn-sm" onclick="bulkFromSelection()">'+ic('send',14)+'Send bulk message</button>';
+ if(can('list'))b+='<button class="btn btn-sec btn-sm" onclick="createListFromSelection()">'+ic('list',14)+'Create list</button>';
+ b+=moreMenu([{label:'Download to CSV',icon:'download',onclick:'exportSelection()'},{label:'Push to Mailchimp',icon:'mail',onclick:'pushSelMC()'}])+'<button class="btn btn-sec btn-sm" onclick="clearSel()">Clear</button></div></div>';
+ return b;
+}
+function toggleSel(id){state.selected.has(id)?state.selected.delete(id):state.selected.add(id);render();}
+function toggleSelAll(){const rows=constituentRows();const all=rows.length&&rows.every(c=>state.selected.has(c.id));rows.forEach(c=>all?state.selected.delete(c.id):state.selected.add(c.id));render();}
+function clearSel(){state.selected.clear();render();}
+function selectedList(){return [...state.selected].map(byId).filter(Boolean);}
+function exportSelection(){const l=selectedList();if(!l.length){toast('Select at least one constituent');return;}downloadBlob('Risely_Selection.csv',rowsToCSV(mcRows(l)),'text/csv');toast(l.length+' contacts exported for Mailchimp','download');}
+function bulkFromSelection(){if(!state.selected.size){toast('Select at least one constituent');return;}openBulk({count:state.selected.size,label:'Selected constituents',source:'selection',recipients:[...state.selected]});}
+function bulkFromSegment(){const l=listFiltered();if(!l.length){toast('No constituents match — adjust filters');return;}openBulk({count:l.length,label:'Segment builder result',source:'segment',recipients:l.map(c=>c.id)});}
+function createListFromSelection(){if(!state.selected.size){toast('Select at least one constituent');return;}openModal('<div class="modal"><div class="modal-h">'+ic('list',20)+'<div><b>Create list from selection</b><div class="sub">'+state.selected.size+' constituents</div></div><button class="mx" onclick="closeModal()">'+ic('x',18)+'</button></div><div class="modal-b"><label class="fld"><span class="lk">List name</span><input class="input" id="lsName" value="New list — '+state.selected.size+' donors"></label><div class="note-banner">Saved lists live in the Lists workspace, where you can send a bulk message or export to Mailchimp anytime.</div></div><div class="modal-f"><button class="btn btn-sec" onclick="closeModal()">Cancel</button><button class="btn btn-pri" onclick="saveSelectionList()">Create list</button></div></div>');}
+function saveSelectionList(){const name=($('#lsName')?$('#lsName').value:'')||'New list';const members=[...state.selected];SAVED_LISTS.unshift({name:name,count:members.length,desc:'Custom list from selected constituents',sync:'Not synced',members:members});state.selected.clear();closeModal();toast('List “'+name+'” created · '+members.length+' members','list');if(PERSONAS[state.persona].views.includes('lists'))go('lists');else render();}
+function openBulk(opts){state.bulk=opts;const inbox=state.settings.inbox;
+ const chans=(inbox?['Email blast · '+inbox]:[]).concat(['Mailchimp campaign','SMS']);
+ const warn=inbox?'':'<div class="note-banner">No sending inbox connected. Connect one in Settings to send email blasts — or export to Mailchimp.</div>';
+ openModal('<div class="modal"><div class="modal-h">'+ic('send',20)+'<div><b>Send bulk message</b><div class="sub">'+esc(opts.label)+' · '+opts.count+' recipients</div></div><button class="mx" onclick="closeModal()">'+ic('x',18)+'</button></div><div class="modal-b">'
+  +'<label class="fld"><span class="lk">Channel</span><select class="input" id="bkChan">'+chans.map(c=>'<option>'+esc(c)+'</option>').join('')+'</select></label>'
+  +'<label class="fld"><span class="lk">Subject</span><input class="input" id="bkSub" value="An invitation from Zaytuna College"></label>'
+  +'<label class="fld"><span class="lk">Message</span><textarea id="bkBody" style="min-height:150px">Assalamu alaikum,\n\nWe are writing to share an update from Zaytuna College and an opportunity to be part of what comes next.\n\nWith gratitude,\nOffice of Advancement</textarea></label>'
+  +warn+'</div><div class="modal-f"><button class="btn btn-sec" onclick="closeModal()">Cancel</button><button class="btn btn-pri" onclick="sendBulk()">'+ic('send',15)+'Send to '+opts.count+'</button></div></div>');
+}
+function sendBulk(){const o=state.bulk||{count:0,recipients:[]};const chan=$('#bkChan')?$('#bkChan').value:'';const sub=$('#bkSub')?$('#bkSub').value:'(no subject)';const me=memberByPersona(state.persona);BULK_SENDS.unshift({id:'bs'+Date.now(),date:'Today',time:'Just now · PT',by:me.id,channel:chan,subject:sub,list:o.label,recipients:(o.recipients||[]).slice()});closeModal();toast('Bulk message sent to '+o.count+' · logged in Inbox › Bulk Sends','send');if(o.source==='selection')state.selected.clear();render();}
+function bulkSaved(i){const l=SAVED_LISTS[i];if(!l)return;openBulk({count:l.count,label:l.name,source:'saved',recipients:(l.members||[]).slice()});}
+function viewBulk(id){const b=BULK_SENDS.find(x=>x.id===id);if(!b)return;const rows=b.recipients.map(rid=>{const c=byId(rid);return c?'<tr class="clk" onclick="closeModal();openRecord(\''+c.id+'\')"><td class="t-name">'+esc(c.name)+'</td><td>'+esc(c.email)+'</td><td>'+esc(c.city)+'</td></tr>':'';}).join('');
+ openModal('<div class="modal"><div class="modal-h">'+ic('send',20)+'<div><b>Bulk send recipients</b><div class="sub">'+esc(b.subject)+' · '+b.recipients.length+' people · '+esc(b.date)+' '+esc(b.time)+'</div></div><button class="mx" onclick="closeModal()">'+ic('x',18)+'</button></div><div class="modal-b" style="padding:0"><table><thead><tr><th>Name</th><th>Email</th><th>City</th></tr></thead><tbody>'+rows+'</tbody></table></div><div class="modal-f"><button class="btn btn-sec" onclick="closeModal()">Close</button><button class="btn btn-pri" onclick="closeModal();toast(\'Re-send queued (prototype)\',\'send\')">'+ic('send',15)+'Re-send to list</button></div></div>');}
+function csvSaved(i){const l=SAVED_LISTS[i];if(!l)return;downloadBlob('Risely_'+l.name.replace(/[^A-Za-z0-9]+/g,'_')+'.csv',rowsToCSV(mcRows(C.slice())),'text/csv');toast('“'+l.name+'” exported for Mailchimp','download');}
+function saveSegmentModal(){const n=listFiltered().length;openModal('<div class="modal"><div class="modal-h">'+ic('list',20)+'<div><b>Save as list</b><div class="sub">'+n+' matching constituents</div></div><button class="mx" onclick="closeModal()">'+ic('x',18)+'</button></div><div class="modal-b"><label class="fld"><span class="lk">List name</span><input class="input" id="segName" value="Segment — '+n+' donors"></label></div><div class="modal-f"><button class="btn btn-sec" onclick="closeModal()">Cancel</button><button class="btn btn-pri" onclick="saveSegment()">Save list</button></div></div>');}
+function saveSegment(){const members=listFiltered().map(c=>c.id);const name=($('#segName')?$('#segName').value:'')||'Segment';SAVED_LISTS.unshift({name:name,count:members.length,desc:'Saved from segment builder',sync:'Not synced',members:members});closeModal();toast('List “'+name+'” saved · '+members.length+' members','list');render();}
+
+/* ---- Add relationship ---- */
+function openAddRel(id){const c=byId(id);
+ const dl=C.filter(x=>x.id!==id).map(x=>'<option value="'+esc(x.name)+'">').join('');
+ const types=['Spouse','Son','Daughter','Parent','Sibling','Partner','Grandparent','Trustee','Employer / Employee','Business partner','Board colleague','Foundation officer','Advisor','Other'];
+ openModal('<div class="modal"><div class="modal-h">'+ic('link',20)+'<div><b>Add relationship</b><div class="sub">Link a person or entity to '+esc(c.name)+'</div></div><button class="mx" onclick="closeModal()">'+ic('x',18)+'</button></div><div class="modal-b">'
+  +'<label class="fld"><span class="lk">Search a name</span><input class="input" id="relName" list="relPeople" placeholder="Type to search constituents or enter a new name" autocomplete="off"><datalist id="relPeople">'+dl+'</datalist></label>'
+  +'<label class="fld"><span class="lk">Relationship type</span><select class="input" id="relType">'+types.map(t=>'<option>'+t+'</option>').join('')+'</select></label>'
+  +'<div class="note-banner">If the name matches an existing constituent, Risely links both records and adds the reciprocal relationship. Otherwise it adds a new linked name.</div>'
+  +'</div><div class="modal-f"><button class="btn btn-sec" onclick="closeModal()">Cancel</button><button class="btn btn-pri" onclick="saveRel(\''+id+'\')">'+ic('check',15)+'Add relationship</button></div></div>');
+}
+function reciprocal(t){const m={'Spouse':'Spouse','Son':'Parent','Daughter':'Parent','Parent':'Child','Grandparent':'Grandchild','Sibling':'Sibling','Partner':'Partner','Business partner':'Business partner','Board colleague':'Board colleague'};return m[t]||'Related';}
+function saveRel(id){const c=byId(id);const name=($('#relName')?$('#relName').value:'').trim();const type=$('#relType')?$('#relType').value:'Other';
+ if(!name){toast('Enter a name to link');return;}
+ const match=C.find(x=>x.name.toLowerCase()===name.toLowerCase()&&x.id!==id);
+ c.relationships=c.relationships||[];
+ c.relationships.push({name:match?match.name:name,role:type,type:match?match.type:'Individual',rid:match?match.id:null});
+ c.rel=c.relationships.length;
+ if(match){match.relationships=match.relationships||[];match.relationships.push({name:c.name,role:reciprocal(type),type:c.type,rid:c.id});match.rel=match.relationships.length;}
+ closeModal();toast('Linked '+name+' as '+type+(match?' · reciprocal added':''),'link');state.tab='relationships';renderRecord();
+}
+
+/* ---- Settings ---- */
+function renderSettings(){const s=state.settings;const me=memberByPersona(state.persona);
+ const tzs=[['America/Los_Angeles','Pacific Time (PT)'],['America/Denver','Mountain Time (MT)'],['America/Chicago','Central Time (CT)'],['America/New_York','Eastern Time (ET)'],['UTC','UTC']];
+ const inbox=s.inbox;
+ const providers=[['Google Workspace','mail'],['Microsoft 365','mail'],['Mailchimp','send'],['Custom SMTP','globe']];
+ const inboxCard=inbox
+  ?'<div class="tnode" style="border-color:var(--green-t)"><div class="tic" style="background:var(--green-t)">'+ic('check',16)+'</div><div style="flex:1"><div class="tnm">'+esc(inbox)+' connected</div><div class="tmeta">Sending inbox for bulk email from Lists and selections</div></div><button class="btn btn-sec btn-sm" onclick="disconnectInbox()">Disconnect</button></div>'
+  :'<div style="display:flex;gap:9px;flex-wrap:wrap">'+providers.map(p=>'<button class="btn btn-sec" onclick="connectInbox(\''+p[0]+'\')">'+ic(p[1],15)+'Connect '+p[0]+'</button>').join('')+'</div><div class="note-banner">Connect a sending inbox to enable bulk email sends. Until then you can still export lists to Mailchimp.</div>';
+ setHTML('#view',header('Settings','Workspace preferences · signed in as '+me.name)
+  +'<div class="cols"><div class="card"><div class="card-h"><b>Time zone</b></div><div class="card-b"><label class="fld"><span class="lk">Show all dates and times in</span><select class="input" onchange="setTz(this.value)">'+tzs.map(t=>'<option value="'+t[0]+'" '+(s.tz===t[0]?'selected':'')+'>'+t[1]+'</option>').join('')+'</select></label><div class="note-banner">Risely renders every timestamp in this zone. Default is Pacific Time.</div></div></div>'
+  +'<div class="card"><div class="card-h"><b>Sending inbox</b>'+(inbox?'<span class="badge b-green">Connected</span>':'<span class="badge b-amber">Not connected</span>')+'</div><div class="card-b">'+inboxCard+'</div></div></div>'
+  +'<div class="card"><div class="card-h"><b>Account</b></div><div class="card-b"><div class="kv"><div class="k">Signed in as</div><div class="v">'+esc(me.name)+'</div><div class="k">Role</div><div class="v">'+esc(me.role)+'</div><div class="k">Active persona</div><div class="v">'+PERSONAS[state.persona].label+' · '+PERSONAS[state.persona].sub+'</div></div></div></div>');
+}
+function setTz(tz){state.settings.tz=tz;toast('Time zone set to '+tz,'globe');}
+function connectInbox(p){state.settings.inbox=p;toast(p+' connected — bulk email enabled','check');render();}
+function disconnectInbox(){state.settings.inbox=null;toast('Sending inbox disconnected');render();}
+
+/* ============================ FORECAST ============================ */
+/* Blackbaud fund-level roll-up source: actuals received / open pledges / designated commitments */
+const BBFUNDS={
+ 'Annual Fund':{actuals:140000,pledges:40000,designated:60000},
+ 'Zakat Fund':{actuals:300000,pledges:60000,designated:40000},
+ 'Temp Restricted Fund':{actuals:120000,pledges:80000,designated:50000},
+ 'Scholarship Fund':{actuals:220000,pledges:150000,designated:80000},
+ 'Endowment':{actuals:300000,pledges:250000,designated:600000},
+ 'Graduate Women’s Residence':{actuals:150000,pledges:400000,designated:150000},
+ 'Capital Fund':{actuals:100000,pledges:100000,designated:100000}
+};
+function bb(f){return BBFUNDS[f]||{actuals:0,pledges:0,designated:0};}
+/* Forecast categories follow Shams' six fund categories (Zakat > Temp Restricted > Capital > Scholarship > Endowment > College Fund) */
+const FC_CATS=()=>[
+ {code:'Zakat',name:'Shariah-restricted',funds:['Zakat Fund']},
+ {code:'Temp Restricted',name:'TR · Iftar · events',funds:['Temp Restricted Fund']},
+ {code:'Capital',name:'Residence · campus',funds:['Capital Fund','Graduate Women’s Residence']},
+ {code:'Scholarship',name:'Financial aid merit',funds:['Scholarship Fund']},
+ {code:'Endowment',name:'Endowed funds',funds:['Endowment']},
+ {code:'College Fund',name:'Operating · Donorbox · P2P',funds:['Annual Fund']}
+];
+function fcCats(goals,adjs){return FC_CATS().map((c,i)=>({code:c.code,name:c.name,funds:c.funds.slice(),goal:goals[i],adj:(adjs&&adjs[i])||0}));}
+let FORECASTS=[
+ {id:'fy27v1',name:'FY2027 v1',fy:'FY2027',status:'Draft',owner:'sara',updated:'Jun 24, 2026 · PT',cats:fcCats([450000,300000,1500000,500000,1000000,350000])},
+ {id:'fy27v2',name:'FY2027 v2',fy:'FY2027',status:'In Review',owner:'sara',updated:'Jun 26, 2026 · PT',cats:fcCats([470000,300000,1400000,480000,1050000,360000],[20000,0,-50000,0,100000,15000])},
+ {id:'fy26final',name:'FY2026 Final',fy:'FY2026',status:'Final',owner:'sara',updated:'Jul 15, 2025 · PT',cats:fcCats([350000,200000,900000,400000,1000000,260000])}
+];
+function catRoll(c){let a=0,p=0,d=0;(c.funds||[]).forEach(f=>{const b=bb(f);a+=b.actuals;p+=b.pledges;d+=b.designated;});const adj=c.adj||0;return {actuals:a,pledges:p,designated:d,adj:adj,forecast:a+p+d+adj};}
+function fcTotals(fc){const t={actuals:0,pledges:0,designated:0,forecast:0,goal:0};(fc.cats||[]).forEach(c=>{const r=catRoll(c);t.actuals+=r.actuals;t.pledges+=r.pledges;t.designated+=r.designated;t.forecast+=r.forecast;t.goal+=(c.goal||0);});return t;}
+function fcById(id){return FORECASTS.find(f=>f.id===id);}
+function fcStatusBadge(s){const m={'Draft':'b-slate','In Review':'b-amber','Final':'b-green'};return '<span class="badge '+(m[s]||'b-slate')+'">'+esc(s)+'</span>';}
+function vsGoal(v){return v>=0?'<span class="badge b-green">+'+usdK(v)+'</span>':'<span class="badge b-amber">−'+usdK(Math.abs(v))+'</span>';}
+function canForecast(){return PERSONAS[state.persona].views.includes('forecast');}
+const QSPLIT=[['Q1 · Aug–Oct',0.18],['Q2 · Nov–Jan',0.27],['Q3 · Feb–Apr',0.32],['Q4 · May–Jul',0.23]];
+function toggleFcExp(id){if(!state.fcExpanded)state.fcExpanded=new Set();state.fcExpanded.has(id)?state.fcExpanded.delete(id):state.fcExpanded.add(id);render();}
+function renderForecast(){
+ const ff=state.fcFilter||'all';
+ const fys=Array.from(new Set(FORECASTS.map(f=>f.fy)));
+ const rows=FORECASTS.filter(f=>ff==='all'||f.fy===ff);
+ const latest=FORECASTS.find(f=>f.fy==='FY2027')||FORECASTS[0];const lt=latest?fcTotals(latest):{forecast:0,goal:0,actuals:0,pledges:0};
+ const tiles=[{l:'Forecast versions',v:FORECASTS.length,d:'Across fiscal years'},
+   {l:(latest?latest.name:'Latest')+' forecast',v:usdK(lt.forecast),d:'Goal '+usdK(lt.goal)},
+   {l:'Actuals to date',v:usdK(lt.actuals),d:'From Blackbaud'},
+   {l:'Open pledges',v:usdK(lt.pledges),d:'From Blackbaud'}];
+ const fl=[['all','All']].concat(fys.map(y=>[y,y]));
+ const btn=canForecast()?'<button class="btn btn-pri" onclick="newForecast()">'+ic('plus',16)+'New forecast</button>':'';
+ setHTML('#view',header('Forecast','Scenario versions that roll up Blackbaud funds, pledges and actuals by category',btn)
+  +'<div class="tiles">'+tiles.map(tile).join('')+'</div>'
+  +'<div class="filters">'+fl.map(x=>'<button class="fpill '+(ff===x[0]?'on':'')+'" onclick="state.fcFilter=\''+x[0]+'\';render()">'+esc(x[1])+'</button>').join('')+'</div>'
+  +'<div class="card"><div class="card-h"><b>Forecasts</b><span class="muted">'+rows.length+' versions</span></div><div style="overflow-x:auto">'
+  +'<table><thead><tr><th style="width:34px"></th><th>Forecast</th><th>FY</th><th>Status</th><th>Owner</th><th class="r">Categories</th><th class="r">Forecast</th><th class="r">Goal</th><th class="r">vs Goal</th><th>Updated</th></tr></thead><tbody>'
+  +rows.map(f=>{const t=fcTotals(f);const v=t.forecast-t.goal;const o=TEAM.find(m=>m.id===f.owner)||{name:'—'};const exp=state.fcExpanded&&state.fcExpanded.has(f.id);
+    let tr='<tr class="clk" onclick="openForecast(\''+f.id+'\')"><td onclick="event.stopPropagation();toggleFcExp(\''+f.id+'\')" style="cursor:pointer;text-align:center"><span style="display:inline-block;color:var(--slate4);transition:transform .15s;transform:rotate('+(exp?'90':'0')+'deg)">'+ic('chev',16)+'</span></td><td class="t-name">'+esc(f.name)+'</td><td>'+esc(f.fy)+'</td><td>'+fcStatusBadge(f.status)+'</td><td>'+esc(o.name)+'</td><td class="r">'+f.cats.length+'</td><td class="r tnum" style="font-weight:800;color:var(--navy)">'+usd(t.forecast)+'</td><td class="r tnum">'+usd(t.goal)+'</td><td class="r">'+vsGoal(v)+'</td><td>'+esc(f.updated)+'</td></tr>';
+    if(exp){tr+='<tr><td colspan="10" style="padding:0;background:var(--bg)"><div style="padding:14px 20px"><div style="font-size:11px;font-weight:700;color:var(--slate5);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Quarterly forecast · '+esc(f.name)+'</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">'+QSPLIT.map(q=>{const qf=t.forecast*q[1],qg=t.goal*q[1],qv=qf-qg;return '<div style="border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff"><div style="font-size:12px;color:var(--slate5);font-weight:700">'+q[0]+'</div><div class="tnum" style="font-size:20px;font-weight:800;color:var(--navy);margin-top:3px">'+usdK(qf)+'</div><div class="t-sub" style="margin-top:2px">goal '+usdK(qg)+' · <span style="color:'+(qv>=0?'var(--green-t)':'var(--amber-t)')+'">'+(qv>=0?'+':'−')+usdK(Math.abs(qv))+'</span></div></div>';}).join('')+'</div></div></td></tr>';}
+    return tr;}).join('')
+  +'</tbody></table></div></div>');
+}
+function openForecast(id){state.forecastId=id;state.view='forecastRec';state.catExpanded=new Set();render();window.scrollTo(0,0);}
+function setCatAdj(fcId,idx,val){const fc=fcById(fcId);if(!fc||!fc.cats[idx])return;fc.cats[idx].adj=parseInt((val||'0').replace(/[^0-9-]/g,''))||0;fc.updated='Just now · PT';renderForecastRec();}
+function toggleCatExp(i){if(!state.catExpanded)state.catExpanded=new Set();state.catExpanded.has(i)?state.catExpanded.delete(i):state.catExpanded.add(i);renderForecastRec();}
+function fcQuarterCards(fc,t){
+ const elapsed=2;const qF=QSPLIT.map(q=>t.forecast*q[1]);const eF=qF.slice(0,elapsed).reduce((s,x)=>s+x,0)||1;
+ const cards=QSPLIT.map((q,i)=>{const f=qF[i],closed=i<elapsed,a=closed?t.actuals*(f/eF):null,p=closed&&f?Math.round(a/f*100):0,ok=p>=100;
+   return '<div style="background:#fff;border:1px solid var(--line);border-radius:16px;padding:15px 17px;box-shadow:var(--sh)">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><div style="font-size:13px;font-weight:700;color:var(--slate6)">'+q[0]+'</div>'+(closed?'<span class="badge b-green">Closed</span>':'<span class="badge b-slate">Upcoming</span>')+'</div>'
+    +'<div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;gap:10px"><div><div class="t-sub" style="font-size:11px">Forecast</div><div class="tnum" style="font-size:19px;font-weight:800;color:var(--navy)">'+usdK(f)+'</div></div><div style="text-align:right"><div class="t-sub" style="font-size:11px">Actuals</div><div class="tnum" style="font-size:19px;font-weight:800;color:'+(closed?'var(--navy)':'var(--slate4)')+'">'+(closed?usdK(a):'—')+'</div></div></div>'
+    +'<div class="prob" style="margin-top:10px;height:7px"><i style="width:'+(closed?Math.min(100,p):0)+'%;background:'+(ok?'linear-gradient(90deg,#34D399,#15803D)':'linear-gradient(90deg,#60A5FA,#2563EB)')+'"></i></div>'
+    +'<div class="t-sub" style="margin-top:6px">'+(closed?'<span style="font-weight:700;color:'+(ok?'var(--green-t)':'var(--amber-t)')+'">'+p+'% to plan</span>':'forecast only')+'</div></div>';
+ }).join('');
+ return '<div class="card" style="margin-bottom:16px"><div class="card-h"><b>Quarterly actuals vs forecast</b><span class="muted">'+esc(fc.fy)+' · '+usdK(t.actuals)+' actuals to date of '+usdK(t.forecast)+' forecast</span></div><div class="card-b"><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">'+cards+'</div></div></div>';
+}
+function renderForecastRec(){
+ const fc=fcById(state.forecastId);if(!fc){go('forecast');return;}
+ const t=fcTotals(fc);const v=t.forecast-t.goal;const o=TEAM.find(m=>m.id===fc.owner)||{name:'—'};
+ const acts=canForecast()?'<div class="actionbar"><button class="btn btn-pri" onclick="openCatModal(\''+fc.id+'\',null)">'+ic('plus',15)+'New category</button><button class="btn btn-sec" onclick="duplicateForecast(\''+fc.id+'\')">'+ic('slides',15)+'Duplicate version</button><button class="btn btn-sec" onclick="recalcForecast(\''+fc.id+'\')">'+ic('spark',15)+'Recalculate from Blackbaud</button><button class="btn btn-sec" onclick="exportForecast(\''+fc.id+'\')">'+ic('download',15)+'Export</button></div>':'';
+ const tiles=[{l:'Forecast (projected)',v:usdK(t.forecast),d:fc.cats.length+' categories'},
+   {l:'Goal',v:usdK(t.goal),d:'Target'},
+   {l:'Actuals to date',v:usdK(t.actuals),d:'Received · BB'},
+   {l:'% to goal',v:(t.goal?Math.round(t.actuals/t.goal*100):0)+'%',d:'actuals ÷ goal'}];
+ let body;
+ if(!fc.cats.length){
+   body='<div class="card"><div class="card-h"><b>Forecast categories</b></div><div class="empty"><div class="ei">'+ic('list',24)+'</div><div style="font-weight:700;color:var(--navy)">No categories yet</div><div>Create a category (e.g. 12K) and choose which Blackbaud fund types roll up into it.</div>'+(canForecast()?'<div style="margin-top:14px"><button class="btn btn-pri" onclick="openCatModal(\''+fc.id+'\',null)">'+ic('plus',15)+'New category</button></div>':'')+'</div></div>';
+ }else{
+   const rows=fc.cats.map((c,i)=>{const r=catRoll(c);const cv=r.forecast-(c.goal||0);const cexp=state.catExpanded&&state.catExpanded.has(i);
+     let tr='<tr class="clk" onclick="openCatModal(\''+fc.id+'\','+i+')"><td onclick="event.stopPropagation();toggleCatExp('+i+')" style="cursor:pointer;text-align:center"><span style="display:inline-block;color:var(--slate4);transition:transform .15s;transform:rotate('+(cexp?'90':'0')+'deg)">'+ic('chev',16)+'</span></td><td><div class="t-name">'+esc(c.code)+'</div><div class="t-sub">'+esc(c.name)+'</div></td><td style="max-width:240px">'+(c.funds.length?c.funds.map(f=>'<span class="badge b-slate" style="margin:2px 4px 2px 0;font-weight:600">'+esc(f)+'</span>').join(''):'<span class="t-sub">No funds mapped</span>')+'</td><td class="r tnum">'+usd(r.actuals)+'</td><td class="r tnum">'+usd(r.pledges)+'</td><td class="r tnum">'+usd(r.designated)+'</td><td class="r" onclick="event.stopPropagation()"><input class="adjbox" value="'+(c.adj?usd(c.adj):'')+'" placeholder="$0" onchange="setCatAdj(\''+fc.id+'\','+i+',this.value)"></td><td class="r tnum" style="font-weight:800;color:var(--navy)">'+usd(r.forecast)+'</td><td class="r tnum">'+usd(c.goal||0)+'</td><td class="r">'+vsGoal(cv)+'</td></tr>';
+     if(cexp){tr+='<tr><td colspan="10" style="padding:0;background:var(--bg)"><div style="padding:13px 20px"><div style="font-size:11px;font-weight:700;color:var(--slate5);text-transform:uppercase;letter-spacing:.06em;margin-bottom:9px">Quarterly cut · '+esc(c.code)+'</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">'+QSPLIT.map(q=>{const qf=r.forecast*q[1],qg=(c.goal||0)*q[1],qv=qf-qg;return '<div style="border:1px solid var(--line);border-radius:11px;padding:10px 12px;background:#fff"><div style="font-size:11.5px;color:var(--slate5);font-weight:700">'+q[0]+'</div><div class="tnum" style="font-size:18px;font-weight:800;color:var(--navy);margin-top:2px">'+usdK(qf)+'</div><div class="t-sub">goal '+usdK(qg)+' · <span style="color:'+(qv>=0?'var(--green-t)':'var(--amber-t)')+'">'+(qv>=0?'+':'−')+usdK(Math.abs(qv))+'</span></div></div>';}).join('')+'</div></div></td></tr>';}
+     return tr;}).join('');
+   const foot='<tr style="background:var(--bg);font-weight:800"><td></td><td class="t-name">Total</td><td></td><td class="r tnum">'+usd(t.actuals)+'</td><td class="r tnum">'+usd(t.pledges)+'</td><td class="r tnum">'+usd(t.designated)+'</td><td></td><td class="r tnum" style="color:var(--navy)">'+usd(t.forecast)+'</td><td class="r tnum">'+usd(t.goal)+'</td><td class="r">'+vsGoal(v)+'</td></tr>';
+   body='<div class="card"><div class="card-h"><b>Forecast categories</b><span class="muted">expand a row for its quarterly cut · adjust inline · click a row to edit goal &amp; fund mapping</span></div><div style="overflow-x:auto"><table><thead><tr><th style="width:34px"></th><th>Category</th><th>Blackbaud funds rolling up</th><th class="r">Actuals</th><th class="r">Pledges</th><th class="r">Designated</th><th class="r">Adj.</th><th class="r">Forecast</th><th class="r">Goal</th><th class="r">vs Goal</th></tr></thead><tbody>'+rows+foot+'</tbody></table></div></div>'
+    +'<div class="note-banner" style="margin-top:14px">Actuals, open pledges and designated funds roll up automatically from Blackbaud for the fund types mapped to each category. Forecast = actuals + pledges + designated + manual adjustment.</div>';
+ }
+ setHTML('#view',
+  '<button class="backlink" onclick="go(\'forecast\')">'+ic('back',16)+'Forecast</button>'
+  +'<div class="rec-top"><div class="rec-av av-fnd">'+ic('trend',26)+'</div><div style="flex:1"><div style="font-size:24px;font-weight:800;letter-spacing:-.02em">'+esc(fc.name)+'</div><div class="page-sub">'+esc(fc.fy)+' · owner '+esc(o.name)+' · updated '+esc(fc.updated)+'</div><div style="margin-top:9px">'+fcStatusBadge(fc.status)+'</div></div>'
+  +'<div class="rec-cap"><div class="l">vs Goal</div><div class="v" style="color:'+(v>=0?'var(--green-t)':'var(--red-t)')+'">'+(v>=0?'+':'−')+usdK(Math.abs(v))+'</div></div></div>'
+  +acts+fcQuarterCards(fc,t)+'<div class="tiles">'+tiles.map(tile).join('')+'</div>'+body);
+}
+function newForecast(){
+ openModal('<div class="modal"><div class="modal-h">'+ic('trend',20)+'<div><b>New forecast</b><div class="sub">Create a forecast version</div></div><button class="mx" onclick="closeModal()">'+ic('x',18)+'</button></div><div class="modal-b"><div class="grid2"><label class="fld"><span class="lk">Name</span><input class="input" id="fcName" value="FY2027 v3"></label><label class="fld"><span class="lk">Fiscal year</span><input class="input" id="fcFy" value="FY2027"></label></div><label class="fld"><span class="lk">Start from</span><select class="input" id="fcBase"><option value="">Blank</option>'+FORECASTS.map(f=>'<option value="'+f.id+'">Copy categories from '+esc(f.name)+'</option>').join('')+'</select></label><div class="note-banner">After creating, add categories and map the Blackbaud fund types that roll up into each.</div></div><div class="modal-f"><button class="btn btn-sec" onclick="closeModal()">Cancel</button><button class="btn btn-pri" onclick="saveForecast()">Create forecast</button></div></div>');
+}
+function saveForecast(){const name=($('#fcName')?$('#fcName').value:'')||'Untitled';const fy=($('#fcFy')?$('#fcFy').value:'')||'FY2027';const base=$('#fcBase')?$('#fcBase').value:'';let cats=[];if(base){const b=fcById(base);if(b)cats=b.cats.map(c=>({code:c.code,name:c.name,funds:c.funds.slice(),goal:c.goal,adj:c.adj||0}));}const fc={id:'fc'+Date.now(),name:name,fy:fy,status:'Draft',owner:memberByPersona(state.persona).id,updated:'Just now · PT',cats:cats};FORECASTS.unshift(fc);closeModal();toast('Forecast “'+name+'” created','trend');state.view='forecastRec';state.forecastId=fc.id;render();}
+function duplicateForecast(id){const fc=fcById(id);if(!fc)return;const n=FORECASTS.filter(f=>f.fy===fc.fy).length+1;const copy={id:'fc'+Date.now(),name:fc.fy+' v'+n,fy:fc.fy,status:'Draft',owner:memberByPersona(state.persona).id,updated:'Just now · PT',cats:fc.cats.map(c=>({code:c.code,name:c.name,funds:c.funds.slice(),goal:c.goal,adj:c.adj||0}))};FORECASTS.unshift(copy);state.forecastId=copy.id;toast('Created '+copy.name,'trend');render();}
+function recalcForecast(id){const fc=fcById(id);if(fc)fc.updated='Just now · PT';toast('Recalculated from Blackbaud · 6 funds synced','spark');render();}
+function exportForecast(id){const fc=fcById(id);if(!fc)return;const rows=fc.cats.map(c=>{const r=catRoll(c);return {Category:c.code,Name:c.name,Funds:c.funds.join('|'),Actuals:r.actuals,Pledges:r.pledges,Designated:r.designated,Adjustment:c.adj||0,Forecast:r.forecast,Goal:c.goal||0,vsGoal:r.forecast-(c.goal||0)};});downloadBlob('Risely_'+fc.name.replace(/[^A-Za-z0-9]+/g,'_')+'.csv',rowsToCSV(rows),'text/csv');toast('Forecast exported','download');}
+function openCatModal(fcId,idx){const fc=fcById(fcId);const ex=idx!=null?fc.cats[idx]:null;state.catDraft={fcId:fcId,idx:idx,code:ex?ex.code:'',name:ex?ex.name:'',funds:ex?ex.funds.slice():[],goal:ex?ex.goal:0,adj:ex?(ex.adj||0):0};renderCatModal();}
+function catDraftRoll(){const d=state.catDraft;let a=0,p=0,dd=0;d.funds.forEach(f=>{const b=bb(f);a+=b.actuals;p+=b.pledges;dd+=b.designated;});return {actuals:a,pledges:p,designated:dd};}
+function readCatDraft(){const d=state.catDraft;if($('#catCode'))d.code=$('#catCode').value;if($('#catName'))d.name=$('#catName').value;if($('#catGoal'))d.goal=parseInt(($('#catGoal').value||'0').replace(/[^0-9]/g,''))||0;if($('#catAdj'))d.adj=parseInt(($('#catAdj').value||'0').replace(/[^0-9-]/g,''))||0;}
+function toggleCatFund(f){readCatDraft();const d=state.catDraft;d.funds=d.funds.includes(f)?d.funds.filter(x=>x!==f):d.funds.concat([f]);renderCatModal();}
+function renderCatModal(){const d=state.catDraft;
+ const fundRows=FUNDS.map(f=>{const on=d.funds.includes(f.name);const b=bb(f.name);return '<div class="optrow '+(on?'on':'')+'" onclick="toggleCatFund(\''+f.name+'\')"><div class="ck">'+(on?ic('check',13):'')+'</div><div style="flex:1"><div style="font-weight:700;color:var(--navy)">'+esc(f.name)+'</div><div class="t-sub">'+esc(f.tag)+' · BB actuals '+usdK(b.actuals)+' · pledges '+usdK(b.pledges)+' · designated '+usdK(b.designated)+'</div></div></div>';}).join('');
+ const r=catDraftRoll();const fcast=r.actuals+r.pledges+r.designated+(d.adj||0);
+ openModal('<div class="modal wide"><div class="modal-h">'+ic('list',20)+'<div><b>'+(d.idx!=null?'Edit category':'New forecast category')+'</b><div class="sub">Choose which Blackbaud fund types roll up here</div></div><button class="mx" onclick="closeModal()">'+ic('x',18)+'</button></div><div class="modal-b">'
+  +'<div class="grid2"><label class="fld"><span class="lk">Category code</span><input class="input" id="catCode" value="'+esc(d.code)+'" placeholder="e.g. 12K"></label><label class="fld"><span class="lk">Category name</span><input class="input" id="catName" value="'+esc(d.name)+'" placeholder="e.g. Annual &amp; Unrestricted"></label></div>'
+  +'<div class="grid2"><label class="fld"><span class="lk">Goal</span><input class="input" id="catGoal" value="'+usd(d.goal)+'"></label><label class="fld"><span class="lk">Manual adjustment (+/−)</span><input class="input" id="catAdj" value="'+usd(d.adj)+'"></label></div>'
+  +'<div class="lk" style="margin:4px 0 8px">Blackbaud fund types in this category</div>'+fundRows
+  +'<div class="note-banner" style="margin-top:12px">Rolls up from Blackbaud — actuals '+usd(r.actuals)+' · pledges '+usd(r.pledges)+' · designated '+usd(r.designated)+' → forecast <b style="color:var(--navy)">'+usd(fcast)+'</b></div>'
+  +'</div><div class="modal-f">'+(d.idx!=null?'<button class="btn btn-sec" onclick="deleteCat()" style="margin-right:auto">Delete</button>':'')+'<button class="btn btn-sec" onclick="closeModal()">Cancel</button><button class="btn btn-pri" onclick="saveCat()">'+ic('check',15)+'Save category</button></div></div>');
+}
+function saveCat(){readCatDraft();const d=state.catDraft;const fc=fcById(d.fcId);if(!fc)return;if(!d.code&&!d.name){toast('Add a code or name');return;}const cat={code:d.code||'—',name:d.name||d.code,funds:d.funds.slice(),goal:d.goal,adj:d.adj};if(d.idx!=null)fc.cats[d.idx]=cat;else fc.cats.push(cat);fc.updated='Just now · PT';closeModal();toast('Category saved · '+d.funds.length+' funds mapped','check');renderForecastRec();}
+function deleteCat(){const d=state.catDraft;const fc=fcById(d.fcId);if(fc&&d.idx!=null)fc.cats.splice(d.idx,1);closeModal();toast('Category removed');renderForecastRec();}
+
+/* ============================ ADVANCEMENT DASHBOARD (Analytics) ============================ */
+const ADV={
+ fy:'FY2026',asOf:'May 31, 2026',fyRange:'Aug 1 – Jul 31',
+ nfa:{ytd:14.25,goal:18.10,pace:14.80,prior:13.90,pacePct:96,goalPct:79,yoy:2.5},
+ cash:{ytd:13.48,goal:17.00,pace:13.00,prior:11.20,pacePct:104,goalPct:79,yoy:20.4},
+ donors:'9,850',gifts:'64,200',avgGift:'$222',medianGift:'$95',
+ months:['Aug','Sep','Oct','Nov','Dec','Jan','Feb','Mar','Apr','May','Jun','Jul'],
+ cumFY26:[0.7,1.6,3.0,3.6,5.2,5.6,8.0,12.8,13.4,14.25],
+ cumFY25:[0.65,1.5,2.8,3.4,4.8,5.2,7.2,11.5,12.2,13.0,14.5,16.0],
+ cumFY24:[0.5,1.1,2.2,2.7,3.8,4.2,5.8,9.0,9.6,10.5,12.0,13.5],
+ goalPace:[0.9,2.0,3.6,4.4,6.0,6.6,9.0,13.0,14.0,15.0,16.5,18.1],
+ byCategory:[['Zakat',5.20,4.90],['College Fund',4.10,4.90],['Capital',1.45,3.85],['Temp Restricted',2.20,3.00],['Endowment',1.10,1.45],['Scholarship',0.20,0.10]],
+ byGiftType:[['One-Time Gift',6.65],['Pledge',4.25],['Recurring Gift Payment',2.15],['Stock/Property (Sold)',0.62],['Planned Gift',0.35],['Gift-in-Kind',0.15],['Matching Gift Pledge',0.13]],
+ channels:[['Recurring Donor Program',5.60],['Spring Appeal',1.50],['Direct Mail',1.30],['Year-End Campaign',1.20],['Online Giving',0.95],['Major Gifts',0.82],['Monthly Giving',0.64],['Matching Gifts',0.42]],
+ retention:[['Overall retention',44,43.3],['New-donor retention',21,18.9],['Repeat-donor retention',61,59.3],['Recapture (reactivated)',4,3.0]],
+ lifecycle:[['New',3120],['Returning',5840],['Reactivated',890]],
+ lybunt:{donors:'2,410',val:'$0.82M'},sybunt:{donors:'4,180'},
+ pyramid:[['$100k +','18','$4.10M',4.10],['$25k–100k','46','$2.05M',2.05],['$10k–25k','128','$1.85M',1.85],['$1k–10k','1,640','$3.65M',3.65],['$250–1k','4,200','$1.45M',1.45],['Under $250','58,200','$1.15M',1.15]],
+ recurring:[['4,210','Active recurring donors'],['$2.15M','Recurring revenue (FY)'],['15%','% of total revenue'],['$42','Avg monthly gift'],['73%','12-mo sustainer retention']],
+ churn:'3.8%',
+ appeals:[['Ramadan 2026','18,400','6.1%','$118','2,950','11:1'],['Year-End 2025','9,200','4.8%','$142','1,480','8:1'],['Dhul Hijjah','3,100','5.2%','$96','640','9:1'],['Recurring Recruitment','2,050','2.1%','$38','2,050','6:1'],['Spring Direct Mail','4,600','4.4%','$87','520','4:1']],
+ mg:{open:'$22.55M',weighted:'$10.67M',coverage:'2.5x',conversion:'~9%',mgGoal:'$9.00M'},
+ mgCols:['Q1','Q2','Q3','Q4','Next FY','Future'],
+ mgStages:[
+  {name:'Planned',count:86,amt:'$12.40M',wt:'$2.48M',note:'4 overdue · $0.62M',q:[['14','$1.85M'],['22','$3.10M'],['19','$2.90M'],['17','$2.65M'],['9','$1.30M'],['5','$0.60M']]},
+  {name:'Response pending',count:31,amt:'$4.35M',wt:'$2.39M',note:'3 overdue · $0.41M',q:[['8','$1.10M'],['11','$1.60M'],['6','$0.90M'],['4','$0.55M'],['2','$0.20M'],['0','—']]},
+  {name:'Completed',count:42,amt:'$5.80M',wt:'$5.80M',note:'',q:[['13','$1.90M'],['12','$1.65M'],['10','$1.35M'],['7','$0.90M'],['0','—'],['0','—']]}
+ ],
+ portfolio:[['Identification',128],['Qualification',96],['Cultivation',74],['Solicitation',38],['Stewardship',112]],
+ timeSince:[['< 6 mo',46],['6–11 mo',31],['12–17 mo',18],['18+ mo',61]],
+ portStats:[['148','Avg portfolio size'],['62%','% with active next step'],['73','Not contacted 90+ days'],['41%','Qualified, not seen in FY']],
+ officer:[['Dollars raised (lagging)','$4.1M','$5.2M',79],['Commitments / asks closed','34','45',76],['Visits / meetings (leading)','312','360',87],['Qualification visits','58','75',77],['Solicitations made','96','120',80],['Proposals submitted','44','55',80],['Stewardship touches','210','240',88],['Proposal yield rate','9%','10%',90]]
+};
+function pct(x){return Math.round(x*100)+'%';}
+function availBadge(k){const m={live:['b-green','Live'],re:['b-blue','RE prospect'],ext:['b-amber','External']};const x=m[k]||m.live;return '<span class="badge '+x[0]+'">'+x[1]+'</span>';}
+function advLegend(){return '<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin:4px 0 16px;font-size:12px;color:var(--slate6)"><span style="font-weight:700;color:var(--slate5)">Data availability</span><span>'+availBadge('live')+' computable today</span><span>'+availBadge('re')+' needs RE prospect module</span><span>'+availBadge('ext')+' needs external source</span></div>';}
+function advLine(){
+ const W=760,H=260,padL=48,padR=18,padT=14,padB=28,MO=ADV.months,ymax=20;
+ const x=i=>padL+(i*(W-padL-padR)/(MO.length-1));const y=v=>padT+(1-v/ymax)*(H-padT-padB);
+ let grid='';for(let g=0;g<=4;g++){const gy=padT+(g/4)*(H-padT-padB);grid+='<line x1="'+padL+'" y1="'+gy+'" x2="'+(W-padR)+'" y2="'+gy+'" stroke="#E2E8F0"/><text x="'+(padL-8)+'" y="'+(gy+4)+'" text-anchor="end" font-size="10" fill="#94A3B8">$'+(ymax*(1-g/4)).toFixed(1)+'M</text>';}
+ let xl='';MO.forEach((mm,i)=>{xl+='<text x="'+x(i)+'" y="'+(H-8)+'" text-anchor="middle" font-size="10" fill="#94A3B8">'+mm+'</text>';});
+ const line=(d,c,dash,wd)=>'<polyline points="'+d.map((v,i)=>x(i)+','+y(v)).join(' ')+'" fill="none" stroke="'+c+'" stroke-width="'+(wd||2.5)+'" '+(dash?'stroke-dasharray="'+dash+'"':'')+'/>';
+ const dots=(d,c)=>d.map((v,i)=>'<circle cx="'+x(i)+'" cy="'+y(v)+'" r="3" fill="'+c+'"/>').join('');
+ return '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto" xmlns="http://www.w3.org/2000/svg">'+grid+xl+line(ADV.goalPace,'#EF4444','5 4',2)+line(ADV.cumFY24,'#CBD5E1','4 4',2)+line(ADV.cumFY25,'#C0A84B',false,2.5)+line(ADV.cumFY26,'#15803D',false,3)+dots(ADV.cumFY26,'#15803D')+'</svg>'
+  +'<div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:6px;font-size:12px;color:var(--slate6)"><span><i style="display:inline-block;width:18px;height:3px;background:#15803D;vertical-align:middle;margin-right:6px"></i>FY26</span><span><i style="display:inline-block;width:18px;height:3px;background:#C0A84B;vertical-align:middle;margin-right:6px"></i>FY25</span><span><i style="display:inline-block;width:18px;border-top:3px dashed #CBD5E1;vertical-align:middle;margin-right:6px"></i>FY24</span><span><i style="display:inline-block;width:18px;border-top:3px dashed #EF4444;vertical-align:middle;margin-right:6px"></i>FY26 goal pace</span></div>';
+}
+function barGoal(label,valK,goalK,maxK){const w=Math.max(2,valK/maxK*100),gx=goalK/maxK*100,hit=valK>=goalK;
+ return '<div class="bar-row"><div class="bl">'+esc(label)+'<small>'+usdK(valK*1000)+' of '+usdK(goalK*1000)+'</small></div><div class="bar" style="position:relative"><i style="width:'+w+'%;background:'+(hit?'linear-gradient(90deg,#34D399,#15803D)':'linear-gradient(90deg,#60A5FA,#2563EB)')+'"></i><span style="position:absolute;top:-3px;bottom:-3px;left:'+gx+'%;width:2px;background:#0F172A;opacity:.5"></span></div><div class="bv">'+Math.round(valK/goalK*100)+'%</div></div>';}
+function barK(label,valK,maxK){return '<div class="bar-row"><div class="bl">'+esc(label)+'</div><div class="bar"><i style="width:'+Math.max(2,valK/maxK*100)+'%"></i></div><div class="bv tnum">'+usdK(valK*1000)+'</div></div>';}
+function retCard(label,val,bench){const up=val>=bench;return '<div class="ic"><div class="l">'+esc(label)+'</div><div class="v tnum" style="color:'+(up?'var(--green-t)':'var(--amber-t)')+'">'+pct(val)+'</div><div class="t-sub">benchmark '+pct(bench)+' · '+(up?'+':'')+(Math.round((val-bench)*1000)/10)+' pts</div></div>';}
+function advQuarterCards(){
+ const qf=[700,1100,950,750];const cum=ADV.cumFY26;
+ const qa=[cum[2],cum[5]-cum[2],cum[8]-cum[5],cum[cum.length-1]-cum[8]];
+ const cards=QSPLIT.map((q,i)=>{const a=qa[i],f=qf[i],p=f?Math.round(a/f*100):0,ok=p>=100,partial=i===3;
+   return '<div style="background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 18px;box-shadow:var(--sh)">'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><div style="font-size:13px;font-weight:700;color:var(--slate6)">'+q[0]+'</div>'+(partial?'<span class="badge b-amber">In progress</span>':'<span class="badge b-green">Closed</span>')+'</div>'
+    +'<div class="tnum" style="font-size:26px;font-weight:800;color:var(--navy);margin-top:8px">'+usdK(a*1000)+'</div>'
+    +'<div class="t-sub" style="margin-top:3px">forecast '+usdK(f*1000)+' · <span style="font-weight:700;color:'+(ok?'var(--green-t)':'var(--amber-t)')+'">'+p+'% to plan</span></div>'
+    +'<div class="prob" style="margin-top:10px;height:7px"><i style="width:'+Math.min(100,p)+'%;background:'+(ok?'linear-gradient(90deg,#34D399,#15803D)':'linear-gradient(90deg,#60A5FA,#2563EB)')+'"></i></div></div>';
+ }).join('');
+ const tA=qa.reduce((s,x)=>s+x,0),tF=qf.reduce((s,x)=>s+x,0);
+ return '<div class="card" style="margin:6px 0 16px"><div class="card-h"><b>Quarterly roll-up · forecast vs actuals</b><span class="muted">'+ADV.fy+' · actuals '+usdK(tA*1000)+' of '+usdK(tF*1000)+' forecast</span></div><div class="card-b"><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">'+cards+'</div></div></div>';
+}
+function advHeader(){return '<div class="hrow"><div><div class="page-h">Advancement Dashboard</div><div class="page-sub">'+ADV.fy+' · as of '+ADV.asOf+' · FY runs '+ADV.fyRange+'</div></div><span class="badge b-slate">Sample / illustrative data</span></div>';}
+function renderAnalytics(){setHTML('#view',advHeader()+advDashHTML());}
+function renderAdvDash(){setHTML('#view',advHeader()+advDashHTML());}
+function m(x){return '$'+Number(x).toFixed(2)+'M';}
+function srcTag(k){if(k==='re')return '<span class="badge b-amber">Requires RE prospect data</span>';if(k==='ext')return '<span class="badge b-blue">External</span>';return '<span class="badge b-green">From gift data</span>';}
+function secHead(t,tag){return '<div style="display:flex;align-items:center;gap:10px;margin:26px 0 12px;flex-wrap:wrap"><div style="font-size:18px;font-weight:800;color:var(--navy)">'+t+'</div>'+(tag||'')+'</div>';}
+function advHero(label,d){const goalW=Math.min(100,d.ytd/d.goal*100),paceTick=Math.min(100,d.pace/d.goal*100);const col=d.pacePct>=100?'var(--green-t)':d.pacePct>=90?'var(--amber-t)':'var(--red-t)';const bar=d.pacePct>=100?'linear-gradient(90deg,#34D399,#15803D)':d.pacePct>=90?'linear-gradient(90deg,#FBBF24,#B45309)':'linear-gradient(90deg,#F87171,#B91C1C)';
+ return '<div class="card"><div class="card-b"><div style="font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--slate5)">'+label+'</div><div class="tnum" style="font-size:33px;font-weight:800;color:var(--navy);margin:4px 0">'+m(d.ytd)+'</div><div class="t-sub">Goal '+m(d.goal)+' · Pace target '+m(d.pace)+' · Prior FY '+m(d.prior)+'</div><div class="bar" style="position:relative;margin:12px 0 8px;height:12px"><i style="width:'+goalW+'%;background:'+bar+'"></i><span style="position:absolute;top:-3px;bottom:-3px;left:'+paceTick+'%;width:2px;background:#0F172A;opacity:.6"></span></div><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700"><span style="color:'+col+'">'+d.pacePct+'% of pace · '+d.goalPct+'% of goal</span><span style="color:var(--green-t)">+'+d.yoy+'% YoY</span></div></div></div>';}
+function advGoalCard(name,val,goal){const p=Math.round(val/goal*100),ok=p>=100,w=Math.min(100,val/goal*100);return '<div class="card"><div class="card-b"><div style="font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--slate6)">'+esc(name)+'</div><div class="tnum" style="font-size:23px;font-weight:800;color:var(--navy);margin:5px 0 2px">'+m(val)+'</div><div class="t-sub">of '+m(goal)+' goal</div><div class="bar" style="margin:10px 0 6px"><i style="width:'+w+'%;background:'+(ok?'linear-gradient(90deg,#34D399,#15803D)':'linear-gradient(90deg,#F87171,#B91C1C)')+'"></i></div><div style="text-align:right;font-weight:800;color:'+(ok?'var(--green-t)':'var(--red-t)')+'">'+p+'%</div></div></div>';}
+function advBarM(label,v,max){return '<div class="bar-row"><div class="bl">'+esc(label)+'</div><div class="bar"><i style="width:'+Math.max(2,v/max*100)+'%"></i></div><div class="bv tnum">'+m(v)+'</div></div>';}
+function advRetCard(label,val,sector){const up=val>=sector;return '<div class="card"><div class="card-b" style="text-align:center"><div class="tnum" style="font-size:30px;font-weight:800;color:'+(up?'var(--green-t)':'var(--amber-t)')+'">'+val+'%</div><div style="font-weight:700;color:var(--navy);margin-top:2px">'+esc(label)+'</div><div class="t-sub">sector '+sector+'%</div></div></div>';}
+function advDashHTML(){
+ var heroes='<div class="cols" style="grid-template-columns:1fr 1fr">'+advHero('New funds added (revenue)',ADV.nfa)+advHero('Cash (receipts)',ADV.cash)+'</div>';
+ var stats='<div class="impact" style="grid-template-columns:repeat(4,1fr);margin-top:16px">'+[['Donors',ADV.donors],['Gifts',ADV.gifts],['Avg gift',ADV.avgGift],['Median gift',ADV.medianGift]].map(s=>'<div class="ic" style="text-align:center"><div class="v tnum">'+s[1]+'</div><div class="l">'+s[0]+'</div></div>').join('')+'</div>';
+ var trend='<div class="card" style="margin-top:16px"><div class="card-h"><b>Cumulative NFA by month — FY26 vs prior years</b></div><div class="card-b">'+advLine()+'</div></div>';
+ var cats='<div class="tiles" style="grid-template-columns:repeat(3,1fr)">'+ADV.byCategory.map(x=>advGoalCard(x[0],x[1],x[2])).join('')+'</div>';
+ var gtMax=Math.max.apply(null,ADV.byGiftType.map(x=>x[1])),chMax=Math.max.apply(null,ADV.channels.map(x=>x[1]));
+ var gt='<div class="card"><div class="card-h"><b>NFA by gift type</b></div><div class="card-b">'+ADV.byGiftType.map(x=>advBarM(x[0],x[1],gtMax)).join('')+'</div></div>';
+ var ch='<div class="card"><div class="card-h"><b>Top channels</b></div><div class="card-b">'+ADV.channels.map(x=>advBarM(x[0],x[1],chMax)).join('')+'</div></div>';
+ var ret='<div class="tiles" style="grid-template-columns:repeat(4,1fr)">'+ADV.retention.map(r=>advRetCard(r[0],r[1],r[2])).join('')+'</div>';
+ var lcT=ADV.lifecycle.reduce(function(s,x){return s+x[1];},0);
+ var lc='<div class="card"><div class="card-h"><b>Donor life-cycle mix</b><span class="muted">'+lcT.toLocaleString()+' FY26 donors</span></div><div class="card-b">'+ADV.lifecycle.map(function(x,i){var col=['#2563EB','#0EA5E9','#94A3B8'][i];return '<div class="bar-row"><div class="bl">'+x[0]+'<small>'+Math.round(x[1]/lcT*100)+'% · '+x[1].toLocaleString()+'</small></div><div class="bar"><i style="width:'+(x[1]/lcT*100)+'%;background:'+col+'"></i></div><div class="bv">'+x[1].toLocaleString()+'</div></div>';}).join('')+'<div class="note-banner">LYBUNT: '+ADV.lybunt.donors+' donors ('+ADV.lybunt.val+' last-year value) · SYBUNT: '+ADV.sybunt.donors+' donors — re-solicitation lists.</div></div></div>';
+ var pyMax=Math.max.apply(null,ADV.pyramid.map(function(x){return x[3];}));
+ var py='<div class="card"><div class="card-h"><b>Gift-range distribution (donor pyramid)</b></div><table><thead><tr><th>Gift band</th><th class="r">Gifts</th><th class="r">$</th><th></th></tr></thead><tbody>'+ADV.pyramid.map(function(x){return '<tr><td class="t-name">'+esc(x[0])+'</td><td class="r tnum">'+x[1]+'</td><td class="r tnum">'+x[2]+'</td><td style="width:120px"><div class="bar" style="height:10px"><i style="width:'+Math.max(3,x[3]/pyMax*100)+'%"></i></div></td></tr>';}).join('')+'</tbody></table></div>';
+ var rec='<div class="card"><div class="card-h"><b>Recurring giving</b>'+srcTag('gift')+'</div><div class="card-b"><div class="impact" style="grid-template-columns:repeat(5,1fr)">'+ADV.recurring.map(function(r){return '<div class="ic" style="text-align:center"><div class="v tnum" style="font-size:18px">'+r[0]+'</div><div class="l">'+r[1]+'</div></div>';}).join('')+'</div><div class="ic" style="margin-top:12px;text-align:center"><div class="v tnum">'+ADV.churn+'</div><div class="l">Monthly churn</div></div></div></div>';
+ var camp='<div class="card"><div class="card-h"><b>Campaign / appeal scorecard</b>'+srcTag('gift')+'</div><div style="overflow-x:auto"><table><thead><tr><th>Appeal</th><th class="r">Gifts</th><th class="r">Resp</th><th class="r">Avg</th><th class="r">New</th><th class="r">ROI</th></tr></thead><tbody>'+ADV.appeals.map(function(a){return '<tr><td class="t-name">'+esc(a[0])+'</td><td class="r tnum">'+a[1]+'</td><td class="r">'+a[2]+'</td><td class="r tnum">'+a[3]+'</td><td class="r tnum">'+a[4]+'</td><td class="r">'+a[5]+'</td></tr>';}).join('')+'</tbody></table></div></div>';
+ var mgK='<div class="tiles">'+[['Total open pipeline',ADV.mg.open],['Weighted (prob-adjusted)',ADV.mg.weighted],['Coverage vs '+ADV.mg.mgGoal+' MG goal',ADV.mg.coverage],['Ask-to-gift conversion',ADV.mg.conversion]].map(function(k){return '<div class="tile"><div class="tl">'+k[0]+'</div><div class="tv tnum">'+k[1]+'</div></div>';}).join('')+'</div>';
+ var mgGrid=ADV.mgStages.map(function(s){var cells=s.q.map(function(qc,i){return '<div style="background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center"><div class="t-sub" style="font-size:11px">'+ADV.mgCols[i]+'</div><div class="tnum" style="font-size:17px;font-weight:800;color:var(--navy)">'+qc[0]+'</div><div class="t-sub" style="font-size:11.5px">'+qc[1]+'</div></div>';}).join('');var sum='<div style="background:var(--navy);color:#fff;border-radius:12px;padding:13px 14px"><div class="tnum" style="font-size:22px;font-weight:800">'+s.count+'</div><div style="font-size:11px;text-transform:uppercase;letter-spacing:.05em;opacity:.85">'+s.name+'</div><div style="margin-top:7px;font-weight:700">'+s.amt+'</div><div style="font-size:11.5px;opacity:.8">weighted '+s.wt+'</div>'+(s.note?'<div style="font-size:11px;opacity:.75;margin-top:4px">'+s.note+'</div>':'')+'</div>';return '<div style="display:grid;grid-template-columns:180px repeat(6,1fr);gap:10px;margin-bottom:10px;min-width:780px">'+sum+cells+'</div>';}).join('');
+ var mg='<div class="card"><div class="card-b">'+mgK+'<div style="overflow-x:auto;margin-top:6px">'+mgGrid+'</div></div></div>';
+ var port='<div class="card"><div class="card-h"><b>Prospect portfolio</b>'+srcTag('re')+'</div><div class="card-b"><div class="tiles" style="grid-template-columns:repeat(5,1fr);margin:0 0 14px">'+ADV.portfolio.map(function(p){return '<div class="ic" style="text-align:center"><div class="v tnum">'+p[1]+'</div><div class="l">'+p[0]+'</div></div>';}).join('')+'</div><div style="font-weight:700;color:var(--navy);margin:6px 0 8px;font-size:13px">Time since qualification w/o solicitation</div><div class="impact" style="grid-template-columns:repeat(4,1fr)">'+ADV.timeSince.map(function(t){return '<div class="ic" style="text-align:center"><div class="v tnum">'+t[1]+'</div><div class="l">'+t[0]+'</div></div>';}).join('')+'</div><div class="impact" style="grid-template-columns:repeat(4,1fr);margin-top:12px">'+ADV.portStats.map(function(s){return '<div class="ic" style="text-align:center"><div class="v tnum">'+s[0]+'</div><div class="l">'+s[1]+'</div></div>';}).join('')+'</div></div></div>';
+ var off='<div class="card"><div class="card-h"><b>Gift officer scorecard</b>'+srcTag('re')+'</div><div style="overflow-x:auto"><table><thead><tr><th>Metric</th><th class="r">Actual</th><th class="r">Goal</th><th>%</th></tr></thead><tbody>'+ADV.officer.map(function(o){var p=o[3];return '<tr><td class="t-name">'+esc(o[0])+'</td><td class="r tnum">'+o[1]+'</td><td class="r tnum">'+o[2]+'</td><td style="min-width:150px"><div style="display:flex;align-items:center;gap:8px"><div class="bar" style="flex:1"><i style="width:'+p+'%;background:'+(p>=90?'linear-gradient(90deg,#34D399,#15803D)':'linear-gradient(90deg,#FBBF24,#B45309)')+'"></i></div><span style="font-weight:700;min-width:38px;text-align:right;color:'+(p>=90?'var(--green-t)':'var(--amber-t)')+'">'+p+'%</span></div></td></tr>';}).join('')+'</tbody></table></div></div>';
+ return secHead('FY2026 fundraising totals',srcTag('gift'))+heroes+stats+trend
+  +secHead('NFA by fund category',srcTag('gift'))+cats
+  +secHead('Gift type &amp; channels',srcTag('gift'))+'<div class="cols">'+gt+ch+'</div>'
+  +secHead('Donor health &amp; retention',srcTag('gift'))+ret+'<div class="cols" style="margin-top:16px">'+lc+py+'</div>'
+  +secHead('Recurring &amp; campaigns',srcTag('gift'))+'<div class="cols">'+rec+camp+'</div>'
+  +secHead('Major-gift pipeline',srcTag('re'))+mg
+  +secHead('Prospect portfolio &amp; officer scorecard',srcTag('re'))+'<div class="cols">'+port+off+'</div>';
+}
+function anRevenue(){
+ const n=ADV.nfa,c=ADV.cash;
+ const tiles=[{l:'NFA · new funds added',v:usdK(n.ytd),d:Math.round(n.ytd/n.goal*100)+'% of '+usdK(n.goal)+' goal'},
+   {l:'Cash · receipts',v:usdK(c.ytd),d:Math.round(c.ytd/c.goal*100)+'% of '+usdK(c.goal)+' goal'},
+   {l:'Year over year',v:'+'+Math.round(n.yoy*100)+'%',d:'vs FY25 to date',up:true},
+   {l:'Pace vs target',v:Math.round(n.pace*100)+'%',d:n.pace>=1?'ahead of pace':'behind pace'}];
+ const catMax=Math.max.apply(null,ADV.byCategory.map(x=>Math.max(x[1],x[2])));
+ const catBars=ADV.byCategory.map(x=>barGoal(x[0],x[1],x[2],catMax)).join('');
+ const gtMax=Math.max.apply(null,ADV.byGiftType.map(x=>x[1]));
+ const gtBars=ADV.byGiftType.map(x=>barK(x[0],x[1],gtMax)).join('');
+ const dt=[['Donors',ADV.donors.toLocaleString()],['Gifts',ADV.gifts.toLocaleString()],['Average gift',usd(ADV.avgGift)],['Median gift',usd(ADV.medianGift)]];
+ return '<div class="tiles">'+tiles.map(tile).join('')+'</div>'
+  +'<div class="card"><div class="card-h"><b>Cumulative revenue trend</b><span class="muted">running NFA by fiscal month</span></div><div class="card-b">'+advLine()+'</div></div>'
+  +'<div class="cols"><div class="card"><div class="card-h"><b>NFA by fund category</b><span class="muted">bar vs goal tick</span></div><div class="card-b">'+catBars+'</div></div>'
+  +'<div class="card"><div class="card-h"><b>NFA by gift type</b></div><div class="card-b">'+gtBars+'</div></div></div>'
+  +'<div class="card"><div class="card-h"><b>Gift metrics</b><span class="muted">median ≪ mean — high online / recurring volume</span></div><div class="card-b"><div class="impact" style="grid-template-columns:repeat(4,1fr)">'+dt.map(d=>'<div class="ic"><div class="l">'+d[0]+'</div><div class="v tnum">'+d[1]+'</div></div>').join('')+'</div></div></div>';
+}
+function anDonor(){
+ const ret='<div class="impact" style="grid-template-columns:repeat(4,1fr)">'+ADV.retention.map(r=>retCard(r[0],r[1],r[2])).join('')+'</div>';
+ const lcT=ADV.lifecycle.reduce((s,x)=>s+x[1],0);
+ const lc=ADV.lifecycle.map((x,i)=>{const col=['#2563EB','#0EA5E9','#94A3B8'][i];return '<div class="bar-row"><div class="bl">'+x[0]+'<small>'+Math.round(x[1]/lcT*100)+'% · '+x[1].toLocaleString()+'</small></div><div class="bar"><i style="width:'+(x[1]/lcT*100)+'%;background:'+col+'"></i></div><div class="bv">'+x[1].toLocaleString()+'</div></div>';}).join('');
+ const pyMax=Math.max.apply(null,ADV.pyramid.map(x=>x[2]));
+ const py=ADV.pyramid.map(x=>'<div class="bar-row"><div class="bl">'+x[0]+'<small>'+x[1].toLocaleString()+' donors</small></div><div class="bar"><i style="width:'+Math.max(2,x[2]/pyMax*100)+'%"></i></div><div class="bv tnum">'+usdK(x[2]*1000)+'</div></div>').join('');
+ const rc=ADV.recurring;const rt=[['Active recurring donors',rc.active.toLocaleString()],['Recurring retention (12-mo)',pct(rc.retention)],['Monthly churn',pct(rc.churn)],['Recurring revenue',usdK(rc.revenue)]];
+ return '<div class="card"><div class="card-h"><b>Donor retention</b><span class="muted">vs Fundraising Effectiveness Project Q4 2025</span></div><div class="card-b">'+ret+'</div></div>'
+  +'<div class="cols"><div class="card"><div class="card-h"><b>Donor life-cycle mix</b><span class="muted">'+lcT.toLocaleString()+' FY26 donors</span></div><div class="card-b">'+lc+'</div></div>'
+  +'<div class="card"><div class="card-h"><b>LYBUNT / SYBUNT</b><span class="muted">re-solicitation pools</span></div><div class="card-b"><div class="impact"><div class="ic"><div class="l">LYBUNT donors</div><div class="v tnum">'+ADV.lybunt.donors.toLocaleString()+'</div><div class="t-sub">'+usdK(ADV.lybunt.dollars)+' gave last year</div></div><div class="ic"><div class="l">SYBUNT donors</div><div class="v tnum">'+ADV.sybunt.donors.toLocaleString()+'</div><div class="t-sub">'+usdK(ADV.sybunt.dollars)+' gave some year</div></div></div></div></div></div>'
+  +'<div class="card"><div class="card-h"><b>Gift-range donor pyramid</b><span class="muted">FY26 donor totals</span></div><div class="card-b">'+py+'</div></div>'
+  +'<div class="card"><div class="card-h"><b>Recurring giving</b><span class="muted">sustainers</span></div><div class="card-b"><div class="impact" style="grid-template-columns:repeat(4,1fr)">'+rt.map(d=>'<div class="ic"><div class="l">'+d[0]+'</div><div class="v tnum">'+d[1]+'</div></div>').join('')+'</div></div></div>';
+}
+function anPipeline(){
+ const total=pipelineTotal(),weighted=pipelineWeighted();const remaining=ADV.nfa.goal-ADV.nfa.ytd;const coverage=remaining>0?total/remaining:0;
+ const note='<div class="note-banner" style="margin-bottom:16px">'+availBadge('re')+' These panels need the Raiser’s Edge prospect/opportunity module — stage, ask amount, probability, solicitor. Shown here from Risely’s pipeline as a sample.</div>';
+ const tiles=[{l:'Open pipeline',v:usdK(total),d:prospects().length+' opportunities'},{l:'Weighted forecast',v:usdK(weighted),d:'ask × stage probability'},{l:'Coverage ratio',v:coverage.toFixed(1)+'×',d:'open ÷ '+usdK(remaining)+' to goal'},{l:'Conversion',v:pct(ADV.pipeline.conversion),d:'gifts ÷ asks'}];
+ const stg=STAGES.map(s=>{const items=prospects().filter(c=>c.stage===s.key);return {s:s,n:items.length,sum:items.reduce((a,c)=>a+c.ask,0)};});
+ const smax=Math.max.apply(null,stg.map(x=>x.sum))||1;
+ const funnel=stg.map(x=>'<div class="bar-row"><div class="bl">'+x.s.name+'<small>'+x.s.prob+'% · '+x.n+' deals</small></div><div class="bar"><i style="width:'+Math.max(2,x.sum/smax*100)+'%;background:'+x.s.color+'"></i></div><div class="bv tnum">'+usdK(x.sum)+'</div></div>').join('');
+ const off='<table><thead><tr><th>Gift officer</th><th class="r">Prospects</th><th class="r">Asks out</th><th class="r">Weighted</th><th class="r">Closed FY26</th></tr></thead><tbody>'+ADV.officers.map(o=>'<tr><td class="t-name">'+esc(o[0])+'</td><td class="r">'+o[1]+'</td><td class="r">'+o[2]+'</td><td class="r tnum">'+usdK(o[3])+'</td><td class="r tnum">'+usdK(o[4])+'</td></tr>').join('')+'</tbody></table>';
+ return note+'<div class="tiles">'+tiles.map(tile).join('')+'</div>'
+  +'<div class="card"><div class="card-h"><b>Pipeline by stage</b><span class="muted">weighted funnel</span></div><div class="card-b">'+funnel+'</div></div>'
+  +'<div class="cols"><div class="card"><div class="card-h"><b>Portfolio health</b></div><div class="card-b"><div class="impact"><div class="ic"><div class="l">Portfolio yield</div><div class="v tnum">'+ADV.pipeline.yield+' / 100</div><div class="t-sub">benchmark 8–10 per 100</div></div><div class="ic"><div class="l">Avg portfolio size</div><div class="v tnum">'+ADV.pipeline.portfolio+'</div><div class="t-sub">benchmark 75–150</div></div></div></div></div>'
+  +'<div class="card"><div class="card-h"><b>Gift-officer scorecard</b></div><div style="overflow-x:auto">'+off+'</div></div></div>';
+}
+function anCampaigns(){
+ const max=Math.max.apply(null,ADV.appeals.map(a=>a[1]));
+ const rows=ADV.appeals.map(a=>'<tr><td class="t-name">'+esc(a[0])+'</td><td class="r tnum">'+usdK(a[1]*1000)+'</td><td class="r">'+a[2].toLocaleString()+'</td><td class="r">'+a[3].toLocaleString()+'</td><td class="r tnum">'+usd(a[4])+'</td></tr>').join('');
+ const bars=ADV.appeals.slice().sort((a,b)=>b[1]-a[1]).map(a=>barK(a[0],a[1],max)).join('');
+ return '<div class="card"><div class="card-h"><b>Campaign / appeal scorecard</b><span class="muted">'+availBadge('live')+' FY26 NFA</span></div><div style="overflow-x:auto"><table><thead><tr><th>Appeal</th><th class="r">NFA</th><th class="r">Gifts</th><th class="r">Donors</th><th class="r">Avg gift</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>'
+  +'<div class="card"><div class="card-h"><b>NFA by appeal</b></div><div class="card-b">'+bars+'</div></div>'
+  +'<div class="card"><div class="card-h"><b>Response rate &amp; cost to raise a dollar</b>'+availBadge('ext')+'</div><div class="card-b"><div class="note-banner">'+availBadge('ext')+' Needs external data — pieces mailed / emails delivered per appeal (mail house + ESP) and fundraising expense by appeal (finance). Then response rate = gifts ÷ solicitations, and cost to raise a dollar = expense ÷ dollars raised (benchmark ≤ $0.20; major-gift programs $0.05–$0.10).</div></div></div>';
+}
+
+/* ============================ ANALYTICS ============================ */
+function ahmadTreeHTML(){
+ return '<div class="tree">'
+  +tnodeHTML('Ahmad Al-Rashid','Primary constituent · CEO · Foundation President','$640K lifetime','primary','user','#2563EB',null)
+  +'<div class="tchild">'
+   +tnodeHTML('Al-Rashid Household','Joint giving unit · Berkeley','$120K FY25','','home','#0EA5E9','household')
+   +'<div class="tchild">'
+    +tnodeHTML('Fatima Al-Rashid','Spouse · soft credit on joint gifts','$80K','','user','#2563EB','fatima')
+    +tnodeHTML('Zayd & Maryam','Minor children · do-not-solicit','','','user','#94A3B8',null)
+   +'</div>'
+   +tnodeHTML('Al-Rashid Holdings LLC','Corporate · 2:1 matching employer','$120K','','building','#B07A4B','holdings')
+   +tnodeHTML('Al-Rashid Family Foundation','Private foundation · grants','$400K','','heart','#2D6A4F','foundation')
+  +'</div></div>';
+}
+function barRow(label,v,max){return '<div class="bar-row"><div class="bl">'+esc(label)+'</div><div class="bar"><i style="width:'+(max?Math.max(4,v/max*100):0)+'%"></i></div><div class="bv tnum">'+usdK(v)+'</div></div>';}
+/* legacy analytics removed — replaced by the Advancement Dashboard renderAnalytics above */
+
+/* ============================ INBOX ============================ */
+function renderInbox(){
+ const me=memberByPersona(state.persona);const cat=state.inboxCat||'mentions';const showBulk=can('bulk');
+ const all=INBOX.filter(i=>i.to===me.persona);const unread=all.filter(i=>!i.read).length;
+ const cats='<div class="filters"><button class="fpill '+(cat==='mentions'?'on':'')+'" onclick="state.inboxCat=\'mentions\';render()">Mentions ('+unread+')</button>'+(showBulk?'<button class="fpill '+(cat==='bulk'?'on':'')+'" onclick="state.inboxCat=\'bulk\';render()">Bulk Sends ('+BULK_SENDS.length+')</button>':'')+'</div>';
+ let body;
+ if(cat==='bulk'&&showBulk){
+   if(!BULK_SENDS.length)body='<div class="card"><div class="empty"><div class="ei">'+ic('send',24)+'</div><div style="font-weight:700;color:var(--navy)">No bulk sends yet</div><div>Send a bulk message from Lists or a Constituents selection — it is logged here.</div></div></div>';
+   else body='<div class="card"><div class="card-h"><b>Bulk send history</b><span class="muted">'+BULK_SENDS.length+' sends</span></div><div style="overflow-x:auto"><table><thead><tr><th>Sent</th><th>Subject</th><th>Channel</th><th>List</th><th class="r">Recipients</th><th class="r">Action</th></tr></thead><tbody>'+BULK_SENDS.map(b=>{const f=TEAM.find(t=>t.id===b.by)||{name:'User'};return '<tr><td>'+esc(b.date)+'<div class="t-sub">'+esc(b.time)+' · '+esc(f.name)+'</div></td><td class="t-name">'+esc(b.subject)+'</td><td>'+esc(b.channel)+'</td><td>'+esc(b.list||'—')+'</td><td class="r tnum">'+b.recipients.length+'</td><td class="r"><button class="btn btn-sec btn-sm" onclick="viewBulk(\''+b.id+'\')">View recipients</button></td></tr>';}).join('')+'</tbody></table></div></div>';
+ }else{
+   const items=state.inboxFilter==='unread'?all.filter(i=>!i.read):all;
+   const fl='<div class="filters" style="margin-top:-4px"><button class="fpill '+(state.inboxFilter==='unread'?'on':'')+'" onclick="state.inboxFilter=\'unread\';render()">Unread ('+unread+')</button><button class="fpill '+(state.inboxFilter==='all'?'on':'')+'" onclick="state.inboxFilter=\'all\';render()">All ('+all.length+')</button></div>';
+   let mb;
+   if(!items.length)mb='<div class="card"><div class="empty"><div class="ei">'+ic('inbox',24)+'</div><div style="font-weight:700;color:var(--navy)">You’re all caught up</div><div>@mentions addressed to you will appear here for review.</div></div></div>';
+   else mb='<div class="card">'+items.map(it=>{const from=TEAM.find(t=>t.id===it.from)||{name:'User',initials:'U',color:'#64748B'};const c=byId(it.did);const gi=INBOX.indexOf(it);
+     return '<div class="note" style="padding:16px 20px;'+(!it.read?'background:var(--blue-l)':'')+'"><div class="na" style="background:'+from.color+'">'+from.initials+'</div><div class="nb"><div class="nh"><b>'+esc(from.name)+'</b><span class="nt">'+esc(it.time)+'</span>'+(!it.read?' <span class="badge b-blue">New</span>':'')+'</div><div class="ntext">'+fmtMentions(it.text)+'</div><div style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="t-sub">Re: '+(c?esc(c.name):'—')+'</span><button class="btn btn-pri btn-sm" onclick="reviewInbox('+gi+')">Review on record</button>'+(!it.read?'<button class="btn btn-sec btn-sm" onclick="markRead('+gi+')">Mark read</button>':'')+'</div></div></div>';
+   }).join('')+'</div>';
+   body=fl+mb;
+ }
+ setHTML('#view',header('Inbox','Mentions and bulk-send history for '+me.name)+cats+body);
+}
+function reviewInbox(i){const it=INBOX[i];if(!it)return;it.read=true;openRecord(it.did);}
+function markRead(i){const it=INBOX[i];if(it)it.read=true;render();}
+
+/* ============================ NOTES + @MENTION ============================ */
+function insertMention(name){const ta=$('#noteInput');if(!ta)return;ta.value+=(ta.value&&!/\s$/.test(ta.value)?' ':'')+'@'+name+' ';ta.focus();}
+function postNote(){
+ const ta=$('#noteInput');if(!ta)return;const text=ta.value.trim();if(!text){toast('Write a note first');return;}
+ const c=byId(state.recordId);const me=memberByPersona(state.persona);
+ c.notes=c.notes||[];c.notes.push({by:me.id,text:text,time:'Just now · PT'});
+ const mentioned=TEAM.filter(t=>t.persona!==state.persona&&text.indexOf('@'+t.name)>=0);
+ mentioned.forEach(m=>INBOX.unshift({to:m.persona,from:me.id,did:c.id,text:text,time:'Just now · PT',read:false}));
+ renderRecord();
+ toast(mentioned.length?'Note posted · '+mentioned.length+' teammate'+(mentioned.length>1?'s':'')+' notified in Inbox':'Note posted','send');
+}
+
+/* ============================ EMAIL ============================ */
+function openEmail(id){const c=byId(id);const me=memberByPersona(state.persona);
+ openModal('<div class="modal"><div class="modal-h">'+ic('mail',20)+'<div><b>New email</b><div class="sub">To '+esc(c.name)+'</div></div><button class="mx" onclick="closeModal()">'+ic('x',18)+'</button></div>'
+  +'<div class="modal-b"><label class="fld"><span class="lk">To</span><input class="input" id="emTo" value="'+esc(c.email)+'"></label>'
+  +'<label class="fld"><span class="lk">Subject</span><input class="input" id="emSub" value="Following up — Zaytuna College"></label>'
+  +'<label class="fld"><span class="lk">Message</span><textarea id="emBody" style="min-height:160px">Dear '+esc(c.name.split(' ')[0])+',\n\nThank you for your continued partnership with Zaytuna College. I would love to find time to share an opportunity I think will resonate with you.\n\nWarm regards,\n'+esc(me.name)+'\n'+esc(me.role)+'</textarea></label></div>'
+  +'<div class="modal-f"><button class="btn btn-sec" onclick="closeModal()">Cancel</button><button class="btn btn-pri" onclick="sendEmail(\''+id+'\')">'+ic('send',15)+'Send email</button></div></div>');
+}
+function sendEmail(id){const c=byId(id);const me=memberByPersona(state.persona);const sub=($('#emSub')?$('#emSub').value:'');
+ c.notes=c.notes||[];c.notes.push({by:me.id,text:'Sent email — “'+sub+'” to '+c.email,time:'Just now · PT'});
+ closeModal();toast('Email sent to '+c.email,'mail');
+ if(state.view==='record'&&state.tab==='notes')renderRecord();
+}
+
+/* ============================ PRESENTATION WIZARD ============================ */
+const SLIDE_OPTS=[
+ {k:'cover',t:'Cover',d:'Donor name, project, Zaytuna brand'},
+ {k:'profile',t:'Donor profile',d:'Relationship, roles, capacity'},
+ {k:'history',t:'Giving history',d:'Past gifts and cumulative impact'},
+ {k:'opp',t:'The opportunity',d:'Project narrative and vision'},
+ {k:'budget',t:'Budget & naming',d:'Cost breakdown and naming tiers'},
+ {k:'impact',t:'Impact',d:'Students served and outcomes'},
+ {k:'ask',t:'The ask',d:'Specific gift request'},
+ {k:'next',t:'Next steps',d:'Timeline and follow-up'}
+];
+function openWizard(id){const c=byId(id);
+ state.wizard={id:id,step:1,slides:SLIDE_OPTS.map(s=>s.k),
+   ctx:{prospect:c.name,
+     context:(c.fundInterest&&/Residence/.test(c.fundInterest))?'Acquisition of a residence to house Graduate Program women — the Rihla House':'Endowment to permanently fund student scholarships',
+     ask:c.ask||100000}};
+ renderWizard();
+}
+function renderWizard(){
+ const w=state.wizard;const c=byId(w.id);const labels=['Context','Slides','Generate'];
+ const steps='<div class="steps">'+labels.map((s,i)=>{const n=i+1;return '<div class="step '+(w.step===n?'on':(w.step>n?'done':''))+'"><span class="sn">'+(w.step>n?ic('check',13):n)+'</span>'+s+'</div>';}).join('')+'</div>';
+ let body,foot;
+ if(w.step===1){
+   body='<label class="fld"><span class="lk">Prospect</span><input class="input" id="wzProspect" value="'+esc(w.ctx.prospect)+'"></label>'
+    +'<label class="fld"><span class="lk">Opportunity context</span><textarea id="wzCtx">'+esc(w.ctx.context)+'</textarea></label>'
+    +'<label class="fld"><span class="lk">Ask amount</span><input class="input" id="wzAsk" value="'+usd(w.ctx.ask)+'"></label>'
+    +'<div class="note-banner">The wizard pulls '+esc(c.name)+'’s relationships, giving history and capacity from the record to pre-fill the proposal.</div>';
+   foot='<button class="btn btn-sec" onclick="closeModal()">Cancel</button><button class="btn btn-pri" onclick="wizardNext()">Continue</button>';
+ }else if(w.step===2){
+   body='<div style="font-weight:700;margin-bottom:12px;color:var(--navy)">Choose slides ('+w.slides.length+' selected)</div>'+SLIDE_OPTS.map(s=>{const on=w.slides.includes(s.k);return '<div class="optrow '+(on?'on':'')+'" onclick="toggleSlide(\''+s.k+'\')"><div class="ck">'+(on?ic('check',13):'')+'</div><div><div style="font-weight:700;color:var(--navy)">'+s.t+'</div><div class="t-sub">'+s.d+'</div></div></div>';}).join('');
+   foot='<button class="btn btn-sec" onclick="wizardBack()">Back</button><button class="btn btn-pri" onclick="wizardNext()">'+ic('spark',15)+'Generate deck</button>';
+ }else{
+   const idx=Math.min(w.slideIdx||0,w.slides.length-1);const sk=w.slides[idx];const ss=SLIDE_OPTS.find(x=>x.k===sk);
+   const dots=w.slides.map((kk,i)=>'<span onclick="wizGoto('+i+')" title="'+esc(SLIDE_OPTS.find(x=>x.k===kk).t)+'" style="display:inline-block;width:9px;height:9px;border-radius:50%;cursor:pointer;background:'+(i===idx?'var(--blue)':'var(--line)')+'"></span>').join('');
+   body='<div style="border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--sh)"><div style="background:linear-gradient(135deg,#1D4ED8,#2563EB);color:#fff;padding:26px 30px;min-height:118px;display:flex;flex-direction:column;justify-content:flex-end"><div style="font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;opacity:.85">Zaytuna College · Advancement · Slide '+(idx+1)+' of '+w.slides.length+'</div><div style="font-size:26px;font-weight:800;margin-top:8px">'+ss.t+'</div></div><div style="padding:24px 30px;font-size:16px;color:var(--slate7);min-height:108px">'+esc(slidePreview(sk,c,w))+'</div></div>'
+    +'<div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px"><button class="btn btn-sec btn-sm" '+(idx===0?'disabled':'')+' onclick="wizSlide(-1)">'+ic('back',14)+'Prev</button><div style="display:flex;gap:7px;align-items:center">'+dots+'</div><button class="btn btn-sec btn-sm" '+(idx>=w.slides.length-1?'disabled':'')+' onclick="wizSlide(1)">Next '+ic('chev',14)+'</button></div>'
+    +'<div class="note-banner" style="margin-top:14px">Generated a '+w.slides.length+'-slide proposal for '+esc(c.name)+' — step through slide by slide, then download, open in O365 or send.</div>';
+   foot='<button class="btn btn-sec" onclick="wizardBack()">Back</button><button class="btn btn-sec" onclick="downloadDeck()">'+ic('download',15)+'Download</button><button class="btn btn-sec" onclick="openO365()">'+ic('slides',15)+'Open in O365</button><button class="btn btn-sec" onclick="saveDeck()">Save</button><button class="btn btn-pri" onclick="sendDeck()">'+ic('send',15)+'Send to donor</button>';
+ }
+ openModal('<div class="modal wide"><div class="modal-h">'+ic('slides',20)+'<div><b>Donor presentation wizard</b><div class="sub">'+esc(c.name)+'</div></div><button class="mx" onclick="closeModal()">'+ic('x',18)+'</button></div><div class="modal-b">'+steps+body+'</div><div class="modal-f">'+foot+'</div></div>');
+}
+function slidePreview(k,c,w){
+ if(k==='cover')return 'Zaytuna College · '+w.ctx.context.split('—')[0].trim();
+ if(k==='profile')return c.title+' · '+c.capacity+' capacity · '+c.rel+' relationships';
+ if(k==='history')return (c.giving||[]).length+' gifts · '+usd((c.giving||[]).reduce((s,x)=>s+x.amount,0))+' lifetime to date';
+ if(k==='opp')return w.ctx.context;
+ if(k==='budget')return 'Naming tiers from '+usd(Math.round(w.ctx.ask*0.5))+' to '+usd(w.ctx.ask);
+ if(k==='impact')return 'Graduate women housed, scholarships funded, lasting community impact';
+ if(k==='ask')return 'Proposed gift: '+usd(w.ctx.ask);
+ if(k==='next')return 'Campus visit · gift agreement · stewardship plan';
+ return '';
+}
+function readWizardCtx(){const w=state.wizard;if($('#wzProspect'))w.ctx.prospect=$('#wzProspect').value;if($('#wzCtx'))w.ctx.context=$('#wzCtx').value;if($('#wzAsk'))w.ctx.ask=parseInt(($('#wzAsk').value||'0').replace(/[^0-9]/g,''))||w.ctx.ask;}
+function wizardNext(){readWizardCtx();state.wizard.step++;state.wizard.slideIdx=0;renderWizard();}
+function wizardBack(){state.wizard.step--;renderWizard();}
+function wizSlide(d){const w=state.wizard;if(!w)return;w.slideIdx=Math.max(0,Math.min((w.slideIdx||0)+d,w.slides.length-1));renderWizard();}
+function wizGoto(i){const w=state.wizard;if(!w)return;w.slideIdx=i;renderWizard();}
+function toggleSlide(k){const w=state.wizard;w.slides=w.slides.includes(k)?w.slides.filter(x=>x!==k):SLIDE_OPTS.map(s=>s.k).filter(x=>w.slides.includes(x)||x===k);renderWizard();}
+function saveDeck(){const w=state.wizard;const c=byId(w.id);const me=memberByPersona(state.persona);c.presentations=c.presentations||[];c.presentations.push({title:w.ctx.context,by:me.id,date:'Just now · PT',status:'Saved',ask:w.ctx.ask});c.notes=c.notes||[];c.notes.push({by:me.id,text:'Created a '+w.slides.length+'-slide proposal deck — “'+w.ctx.context+'” (ask '+usd(w.ctx.ask)+')',time:'Just now · PT'});closeModal();toast('Deck saved to '+c.name+'’s record','slides');state.tab='presentations';if(state.view==='record')renderRecord();}
+function downloadDeck(){const w=state.wizard;const c=byId(w.id);const me=memberByPersona(state.persona);c.presentations=c.presentations||[];c.presentations.push({title:w.ctx.context,by:me.id,date:'Just now · PT',status:'Downloaded',ask:w.ctx.ask});downloadBlob('Risely_'+c.name.replace(/[^A-Za-z0-9]+/g,'_')+'_Proposal.html',deckHTML(c,w),'text/html');toast('Proposal downloaded · '+w.slides.length+' slides','download');}
+function sendDeck(){const w=state.wizard;const c=byId(w.id);const me=memberByPersona(state.persona);c.presentations=c.presentations||[];c.presentations.push({title:w.ctx.context,by:me.id,date:'Just now · PT',status:'Sent',ask:w.ctx.ask});c.notes=c.notes||[];c.notes.push({by:me.id,text:'Sent proposal deck to '+c.name+' — “'+w.ctx.context+'”',time:'Just now · PT'});closeModal();toast('Deck sent to '+c.name,'send');state.tab='presentations';if(state.view==='record')renderRecord();else openRecord(c.id);}
+function openO365(){const w=state.wizard;const c=w?byId(w.id):null;const me=memberByPersona(state.persona);if(c){c.presentations=c.presentations||[];c.presentations.push({title:w.ctx.context,by:me.id,date:'Just now · PT',status:'In O365',ask:w.ctx.ask});}toast('Opening deck in PowerPoint for the web (Microsoft 365)…','slides');}
+function deckHTML(c,w){
+ const slides=w.slides.map((k,i)=>{const s=SLIDE_OPTS.find(x=>x.k===k);return '<section style="min-height:88vh;padding:64px;border-bottom:1px solid #e2e8f0;page-break-after:always"><div style="color:#2563EB;font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:12px">Zaytuna College · Advancement · Slide '+(i+1)+'</div><h1 style="font-size:44px;color:#0f172a;margin:14px 0 18px;letter-spacing:-.02em">'+s.t+'</h1><p style="font-size:21px;color:#334155;max-width:780px;line-height:1.5">'+esc(slidePreview(k,c,w))+'</p></section>';}).join('');
+ return '<!doctype html><html><head><meta charset="utf-8"><title>'+esc(c.name)+' — Proposal</title><style>body{font-family:Segoe UI,system-ui,sans-serif;margin:0;color:#0f172a;background:#fff}</style></head><body>'+slides+'</body></html>';
+}
+
+/* ============================ VOICE NOTE ============================ */
+function fmtTime(s){return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
+function openVoice(id){state.voice={id:id,sec:0,recording:false,done:false,timer:null,transcript:''};renderVoice();}
+function renderVoice(){
+ const v=state.voice;const c=byId(v.id);let body,foot;
+ if(!v.done){
+   body='<div style="text-align:center;padding:12px 0"><button class="recbtn '+(v.recording?'rec':'')+'" onclick="toggleRec()">'+ic(v.recording?'x':'mic',30)+'</button>'
+    +'<div id="vnTimer" class="tnum" style="font-weight:800;font-size:24px;margin-top:12px">'+fmtTime(v.sec)+'</div>'
+    +'<div class="t-sub">'+(v.recording?'Recording… tap to stop':'Tap the mic to start recording')+'</div></div>';
+   foot='<button class="btn btn-sec" onclick="closeModal()">Cancel</button>'+(v.recording?'<button class="btn btn-pri" onclick="stopRec()">Stop & transcribe</button>':'');
+ }else{
+   body='<div class="note-banner" style="margin-bottom:12px">Auto-transcribed ('+fmtTime(v.sec)+'). Edit before saving.</div><textarea id="vnText" style="min-height:160px">'+esc(v.transcript)+'</textarea>';
+   foot='<button class="btn btn-sec" onclick="closeModal()">Discard</button><button class="btn btn-pri" onclick="saveVoice()">'+ic('check',15)+'Save voice note</button>';
+ }
+ openModal('<div class="modal"><div class="modal-h">'+ic('mic',20)+'<div><b>Voice note</b><div class="sub">'+esc(c.name)+'</div></div><button class="mx" onclick="closeModal()">'+ic('x',18)+'</button></div><div class="modal-b">'+body+'</div><div class="modal-f">'+foot+'</div></div>');
+}
+function toggleRec(){const v=state.voice;if(v.recording){stopRec();return;}v.recording=true;renderVoice();v.timer=setInterval(()=>{v.sec++;const el=$('#vnTimer');if(el)el.textContent=fmtTime(v.sec);},1000);}
+function stopRec(){const v=state.voice;clearInterval(v.timer);v.recording=false;v.done=true;if(v.sec<2)v.sec=37;v.transcript=voiceScript(byId(v.id));renderVoice();}
+function voiceScript(c){
+ if(c.id==='omar')return 'Met Dr. Siddiqui for coffee in Palo Alto. He is enthusiastic about naming the Graduate Women’s Residence in memory of his mother. Wants floor plans and a naming gift agreement. Capacity confirmed at $1M+. Next steps: send the proposal deck and schedule a campus visit.';
+ return 'Quick debrief after meeting '+c.name.split(' ')[0]+'. Strong affinity for Zaytuna’s mission and interest in '+(c.fundInterest||'the Annual Fund')+'. Capacity around '+c.capacity+'. Next: send a tailored proposal and loop in the team.';
+}
+function saveVoice(){const v=state.voice;const c=byId(v.id);const me=memberByPersona(state.persona);const txt=$('#vnText')?$('#vnText').value:v.transcript;c.voice=c.voice||[];c.voice.push({by:me.id,time:'Just now · PT',dur:fmtTime(v.sec),transcript:txt});closeModal();toast('Voice note saved to '+c.name+'’s record','mic');if(state.view==='record'){state.tab='notes';renderRecord();}}
+
+/* ============================ BOOT ============================ */
+function boot(){
+ $('.search').innerHTML=ic('search',16)+'<input id="globalSearch" placeholder="Search constituents...">';
+ $('#bellBtn').innerHTML=ic('bell',18)+'<span class="badge-dot" id="bellBadge" style="display:none">0</span>';
+ $('#bellBtn').onclick=()=>go('inbox');
+ const gs=$('#globalSearch');
+ gs.addEventListener('keydown',e=>{if(e.key==='Enter'){const q=gs.value.trim().toLowerCase();if(!q)return;const hit=C.find(c=>c.name.toLowerCase().indexOf(q)>=0);if(hit){openRecord(hit.id);gs.value='';}else toast('No constituent matches “'+gs.value+'”');}});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeDrawer();}});
+ render();
+}
+boot();
+</script>
+</body>
+</html>
