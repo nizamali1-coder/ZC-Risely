@@ -1004,13 +1004,15 @@ function renderConstituents(){
   +'<div class="tiles">'+tiles.map(tile).join('')+'</div>'
   +'<div class="filters">'+fl.map(function(x,i){return '<button class="fpill '+(f===x[0]?'on':'')+'" onclick="state.cFilter=\''+x[0]+'\';render()">'+x[1]+'</button>'+(i===0?lifetimeMenu():'');}).join('')+'</div>'
   +selToolbar()
-  +'<div class="card"><div class="card-h"><b>'+(f==='all'?'All constituents':fl.find(x=>x[0]===f)[1])+(state.cLifetime?' · ≥ '+usdK(state.cLifetime):'')+'</b><span class="muted">'+rows.length+' shown · 12,480 total</span></div>'
+  +'<div class="card" style="overflow:visible"><div class="card-h"><b>'+(f==='all'?'All constituents':fl.find(x=>x[0]===f)[1])+(state.cLifetime?' · ≥ '+usdK(state.cLifetime):'')+'</b><span class="muted">'+rows.length+' shown · 12,480 total</span></div>'
   +'<table><thead><tr>'+headCb+'<th>Name</th><th>Type</th><th>Relationships</th><th>Capacity</th><th class="r">Lifetime giving</th><th>Last gift</th><th class="r">Action</th></tr></thead><tbody>'
   +rows.map(c=>{
     const cb=selectable?'<td onclick="event.stopPropagation()"><input type="checkbox" '+(sel.has(c.id)?'checked':'')+' onclick="toggleSel(\''+c.id+'\')"></td>':'';
-    let acts='<button class="btn btn-sec btn-sm" onclick="event.stopPropagation();openDrawer(\''+c.id+'\')">Preview</button>';
-    if(can('email'))acts+=' <button class="btn btn-sec btn-sm icononly" title="Send email" onclick="event.stopPropagation();openEmail(\''+c.id+'\')">'+ic('mail',15)+'</button>';
-    if(can('deck'))acts+=' <button class="btn btn-sec btn-sm icononly" title="Create presentation" onclick="event.stopPropagation();openWizard(\''+c.id+'\')">'+ic('slides',15)+'</button>';
+    const items=[{l:'Preview',ic:'user',fn:'openDrawer(\''+c.id+'\')'},{l:'Open record',ic:'grid',fn:'openRecord(\''+c.id+'\')'},{l:'Pre-meeting prep',ic:'spark',fn:'openPrep(\''+c.id+'\')'}];
+    if(can('email'))items.push({l:'Send email',ic:'mail',fn:'openEmail(\''+c.id+'\')'});
+    if(can('deck'))items.push({l:'Create deck',ic:'slides',fn:'openWizard(\''+c.id+'\')'});
+    if(can('gift'))items.push({l:'Add gift',ic:'gift',fn:'openGiftModal(\''+c.id+'\')'});
+    const acts='<details class="menu" onclick="event.stopPropagation()"><summary class="btn btn-sec btn-sm" style="display:inline-flex;align-items:center;gap:6px">Actions<span style="display:inline-flex;transform:rotate(90deg)">'+ic('chev',12)+'</span></summary><div class="menu-pop" style="right:0;left:auto">'+items.map(it=>'<div class="menu-item" onclick="this.closest(\'details\').open=false;'+it.fn+'">'+ic(it.ic,15)+it.l+'</div>').join('')+'</div></details>';
     return '<tr class="clk" onclick="openDrawer(\''+c.id+'\')">'+cb
      +'<td><div class="t-name">'+esc(c.name)+'</div><div class="t-sub">'+esc(c.title)+'</div></td>'
      +'<td>'+typeBadge(c.type)+'</td>'
