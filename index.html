@@ -280,6 +280,22 @@ input[type=checkbox]{accent-color:var(--blue);width:16px;height:16px;cursor:poin
 .nba-count{margin-left:auto;background:var(--blue);color:#fff;font-weight:800;border-radius:999px;min-width:30px;height:26px;display:inline-flex;align-items:center;justify-content:center;padding:0 10px;font-size:14px}
 .rt-desc{font-size:12.5px;color:var(--slate6);margin-top:5px;line-height:1.45}
 .tchip{font-size:10.5px;font-weight:800;letter-spacing:.02em;border-radius:20px;padding:2px 9px;white-space:nowrap}
+.tagwrap{display:flex;flex-wrap:wrap;gap:4px;max-width:240px}
+.sig-zip{color:#7C3AED;background:#F3E8FF;border-color:#E9D5FF}
+.cellsel{font-size:12px;font-weight:600;color:var(--navy);background:#fff;border:1px solid var(--line);border-radius:8px;padding:5px 8px;max-width:150px;cursor:pointer}
+.cellsel:hover{border-color:var(--blue)}
+.cellsel.un{color:var(--slate5);font-weight:500}
+.askbar{display:flex;gap:10px}
+.askbar .input{flex:1}
+.askq{display:flex;gap:8px;align-items:center;font-weight:700;color:var(--navy);font-size:14px}
+.askq svg{color:var(--slate5);flex:none}
+.aska{display:flex;gap:10px;margin-top:13px;padding-top:13px;border-top:1px solid var(--line2)}
+.aska>svg{color:#7C3AED;flex:none;margin-top:2px}
+.aians{font-size:14px;color:var(--slate7);line-height:1.55}
+.aiul,.aiol{margin:8px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:5px}
+.aimore{margin-top:10px;font-size:13px;color:var(--slate6)}
+.ailink{color:var(--blue-d);font-weight:700;cursor:pointer;text-decoration:underline}
+.uav{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;color:#fff;font-size:11px;font-weight:800;margin-right:9px;vertical-align:middle}
 .scorepill{display:inline-flex;align-items:center;justify-content:center;min-width:32px;height:24px;border:1.5px solid;border-radius:7px;font-weight:800;font-size:13px}
 .hstats{display:flex;gap:10px;flex-wrap:wrap}
 .hstat{background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 15px;box-shadow:var(--sh);text-align:left;min-width:118px}
@@ -413,13 +429,13 @@ function memberByPersona(p){return TEAM.find(t=>t.persona===p);}
 
 /* ---------- Personas ---------- */
 const PERSONAS={
- admin:{label:'Admin',sub:'Gift Entry',color:'#B07A4B',views:['dashboard','constituents','gifts','payments','forecast','inbox'],
+ admin:{label:'Admin',sub:'Gift Entry',color:'#B07A4B',views:['dashboard','constituents','gifts','payments','forecast','askai','inbox','users','settings'],
    actions:['note','gift']},
- officer:{label:'Gift Officer',sub:'Major Gifts',color:'#2563EB',views:['dashboard','constituents','pipeline','nba','gifts','lists','forecast','inbox'],
+ officer:{label:'Gift Officer',sub:'Major Gifts',color:'#2563EB',views:['dashboard','constituents','pipeline','nba','gifts','lists','forecast','askai','inbox'],
    actions:['note','email','deck','voice','gift','bulk','list']},
- director:{label:'Gift Director',sub:'Advancement',color:'#2D6A4F',views:['dashboard','constituents','pipeline','nba','gifts','payments','lists','analytics','forecast','inbox'],
+ director:{label:'Gift Director',sub:'Advancement',color:'#2D6A4F',views:['dashboard','constituents','pipeline','nba','gifts','payments','lists','analytics','forecast','askai','inbox','users','settings'],
    actions:['note','email','deck','voice','gift','bulk','list']},
- marketing:{label:'Marketing',sub:'Engagement',color:'#9333EA',views:['dashboard','constituents','lists','events','bookstore','courses','inbox'],
+ marketing:{label:'Marketing',sub:'Engagement',color:'#9333EA',views:['dashboard','constituents','lists','events','bookstore','courses','askai','inbox'],
    actions:['note','bulk','list']}
 };
 const NAV=[
@@ -437,7 +453,12 @@ const NAV=[
  {sec:'Insights',items:[
    {k:'lists',label:'Lists',icon:'list'},
    {k:'analytics',label:'Analytics',icon:'chart'},
-   {k:'forecast',label:'Forecast',icon:'trend'}
+   {k:'forecast',label:'Forecast',icon:'trend'},
+   {k:'askai',label:'Ask AI',icon:'spark'}
+ ]},
+ {sec:'Administrative',items:[
+   {k:'users',label:'Users',icon:'user'},
+   {k:'settings',label:'Settings',icon:'gear'}
  ]}
 ];
 
@@ -664,7 +685,7 @@ let BULK_SENDS=[
 
 /* ---------- State ---------- */
 const state={persona:'admin',view:'dashboard',recordId:null,tab:'overview',drawerId:null,
- cFilter:'all',cLifetime:0,gFilter:'all',gFund:'all',gSize:0,gRange:'all',pSource:'all',pRange:'all',pSize:0,nbaType:'all',dashSeg:'nba',dpStage:'all',dplStatus:'all',dgFund:'all',dashFilter:'fy26',inboxFilter:'unread',selected:new Set(),bulk:null,forecastId:null,fcFilter:'all',catDraft:null,anTab:'revenue',fcExpanded:new Set(),catExpanded:new Set(),inboxCat:'mentions',settings:{tz:'America/Los_Angeles',inbox:null},
+ cFilter:'all',cLifetime:0,gFilter:'all',gFund:'all',gSize:0,gRange:'all',pSource:'all',pRange:'all',pSize:0,nbaType:'all',nbaAction:'all',nbaSignal:'all',nbaAssign:{},askLog:[],dashSeg:'nba',dpStage:'all',dplStatus:'all',dgFund:'all',dashFilter:'fy26',inboxFilter:'unread',selected:new Set(),bulk:null,forecastId:null,fcFilter:'all',catDraft:null,anTab:'revenue',fcExpanded:new Set(),catExpanded:new Set(),inboxCat:'mentions',settings:{tz:'America/Los_Angeles',inbox:null},
  wizard:null,voice:null,list:{type:'all',minLt:0,fund:'all',zip:'',recency:'all',ev:false,books:false,course:false,result:null}};
 
 /* ---------- Money helpers ---------- */
@@ -691,8 +712,8 @@ function closeModal(){const r=$('#modalRoot');r.classList.remove('on');r.innerHT
 
 /* ---------- Badge helper for status ---------- */
 function statusBadge(s){
- if(s==='Receipted')return '<span class="badge b-green">'+ic('check',12)+'Receipted</span>';
- if(s==='Pending')return '<span class="badge b-amber">Pending receipt</span>';
+ if(s==='Receipted')return '<span class="badge b-green">'+ic('check',12)+'Posted</span>';
+ if(s==='Pending')return '<span class="badge b-amber">Pending</span>';
  return '<span class="badge b-slate">'+esc(s)+'</span>';
 }
 function creditBadge(c){
@@ -744,7 +765,7 @@ function renderSidebar(){
      h+='<div class="navitem '+(on?'on':'')+'" onclick="go(\''+i.k+'\')">'+ic(i.icon)+'<span>'+i.label+'</span>'+badge+'</div>';
    });
  });
- h+='<div class="navspacer"></div><div class="sb-foot"><div class="navitem '+(state.view==='settings'?'on':'')+'" onclick="go(\'settings\')">'+ic('gear')+'<span>Settings</span></div><div class="navitem" onclick="toast(\'Prototype — sign out is illustrative\')">'+ic('logout')+'<span>Sign out</span></div></div>';
+ h+='<div class="navspacer"></div><div class="sb-foot"><div class="navitem" onclick="toast(\'Prototype — sign out is illustrative\')">'+ic('logout')+'<span>Sign out</span></div></div>';
  $('#sidebar').innerHTML=h;
 }
 
@@ -754,7 +775,7 @@ function setPersona(p){
  if(!PERSONAS[p])return;
  state.persona=p;
  // keep current view if allowed; record view always allowed (constituents in every persona)
- if(state.view!=='record' && state.view!=='settings' && state.view!=='forecastRec' && !PERSONAS[p].views.includes(state.view))state.view='dashboard';
+ if(state.view!=='record' && state.view!=='forecastRec' && !PERSONAS[p].views.includes(state.view))state.view='dashboard';
  closeDrawer();render();
  toast('Now viewing as '+PERSONAS[p].label+' — '+PERSONAS[p].sub,'user');
 }
@@ -773,6 +794,8 @@ function render(){
  if(v==='courses')return renderCourses();
  if(v==='lists')return renderLists();
  if(v==='analytics')return renderAnalytics();
+ if(v==='askai')return renderAskAI();
+ if(v==='users')return renderUsers();
  if(v==='inbox')return renderInbox();
  if(v==='forecast')return renderForecast();
  if(v==='forecastRec')return renderForecastRec();
@@ -807,7 +830,7 @@ function renderDashboard(){
    const pd=PLEDGES.filter(p=>p.status!=='Scheduled');
    headBtn='<button class="btn btn-pri" onclick="openGiftModal(null)">'+ic('plus',16)+'New gift</button>';
    tiles=[{l:'Pledges due',v:pd.length,d:usd(pd.reduce((s,p)=>s+p.amount,0))+' · next 60d'},
-     {l:'Pending receipts',v:pendingCount(),d:'Awaiting send'},
+     {l:'Avg gift size',v:usdK(totalRaised()/GIFTS.length),d:'FY26'},
      {l:'Gifts this month',v:GIFTS.length,d:'Entered & posted'},
      {l:'Processed FY26',v:usdK(totalRaised()),d:'All funds'}];
    body=pledgesDueCard();
@@ -857,7 +880,7 @@ function dashTiles(){
 }
 function dashHeadStats(){const me=memberByPersona(state.persona);const mine=state.persona==='officer';
  const gq=giftsInRange('qtd',mine?me.name:null),gy=giftsInRange('ytd',mine?me.name:null);
- const stat=(l,n,amt)=>'<div class="hstat"><div class="hl">'+l+'</div><div class="hv tnum">'+n+'<span> · '+usdK(amt)+'</span></div></div>';
+ const stat=(l,n,amt)=>'<div class="hstat"><div class="hl">'+l+'</div><div class="hv tnum">'+usdK(amt)+'<span> · '+n+' gift'+(n===1?'':'s')+'</span></div></div>';
  return '<div class="hstats">'+stat('Gifts closed QTD',gq.length,gq.reduce((s,g)=>s+g.amount,0))+stat('Gifts closed YTD',gy.length,gy.reduce((s,g)=>s+g.amount,0))+'</div>';
 }
 function dashTable(){const seg=state.dashSeg||'nba';
@@ -872,14 +895,21 @@ function giftDate(g){return new Date(g.date);}
 function giftsInRange(range,officerName){const start=range==='qtd'?new Date('2026-04-01'):new Date('2025-08-01');let r=GIFTS.filter(g=>giftDate(g)>=start);if(officerName)r=r.filter(g=>{const c=byId(g.did);return c&&c.officer===officerName;});return r;}
 function nbaTypeChip(t){const col=nbaTypeColor(t);return '<span class="tchip" style="color:'+col+';background:'+col+'22">'+esc(t)+'</span>';}
 function nbaTableCard(){
- const byType={};NBA.forEach(x=>{byType[x.type]=(byType[x.type]||0)+1;});
- const f=state.nbaType||'all';const types=['all'].concat(Object.keys(byType));
- const pills='<div class="filters">'+types.map(t=>'<button class="fpill '+(f===t?'on':'')+'" onclick="state.nbaType=\''+t+'\';render()">'+(t==='all'?'All ('+NBA.length+')':esc(t)+' ('+byType[t]+')')+'</button>').join('')+'</div>';
- let rows=NBA.slice().sort((a,b)=>b.score-a.score);if(f!=='all')rows=rows.filter(x=>x.type===f);
+ const action=state.nbaAction||'all',signal=state.nbaSignal||'all';
+ const types=[];NBA.forEach(x=>{if(types.indexOf(x.type)<0)types.push(x.type);});
+ const sigSet=[];NBA.forEach(x=>nbaTags(x).forEach(t=>{if(t!==x.type&&sigSet.indexOf(t)<0)sigSet.push(t);}));
+ const cntA=t=>NBA.filter(x=>x.type===t).length,cntS=t=>NBA.filter(x=>nbaTags(x).indexOf(t)>=0).length;
+ const aOpts=[['all','All types']].concat(types.sort().map(t=>[t,t+' ('+cntA(t)+')']));
+ const sOpts=[['all','All signals']].concat(sigSet.sort((a,b)=>cntS(b)-cntS(a)).map(t=>[t,t+' ('+cntS(t)+')']));
+ let rows=NBA.slice().sort((a,b)=>b.score-a.score);
+ if(action!=='all')rows=rows.filter(x=>x.type===action);
+ if(signal!=='all')rows=rows.filter(x=>nbaTags(x).indexOf(signal)>=0);
+ const clear=(action!=='all'||signal!=='all')?'<button class="fpill" onclick="nbaClear()">'+ic('x',12)+'Clear</button>':'';
+ const pills='<div class="filters">'+payMenu('Type',action,aOpts,'setNbaAction')+payMenu('Signal',signal,sOpts,'setNbaSignal')+clear+'</div>';
  return '<div class="card" style="overflow:visible"><div class="card-h"><b>Next Best Action</b><span class="muted">'+rows.length+' of '+NBA.length+'</span></div>'
   +'<div class="card-b" style="padding-bottom:0">'+pills+'</div>'
-  +'<table><thead><tr><th>Score</th><th>Donor</th><th class="r">Lifetime</th><th>Recommended action</th><th>Type</th><th>Gift type</th><th class="r">Action</th></tr></thead><tbody>'
-  +rows.map(x=>{const i=NBA.indexOf(x);return '<tr '+(x.did?'class="clk" onclick="openRecord(\''+x.did+'\')"':'')+'><td><span class="scorepill" style="color:'+scoreColor(x.score)+';border-color:'+scoreColor(x.score)+'55">'+x.score+'</span></td><td class="t-name">'+esc(x.name)+'</td><td class="r tnum">'+usdK(x.lifetime)+'</td><td style="max-width:330px"><div class="t-sub" style="white-space:normal;line-height:1.45">'+esc(x.desc)+'</div></td><td>'+nbaTypeChip(x.type)+'</td><td>'+esc(x.gift)+'</td><td class="r" style="white-space:nowrap">'+nbaActions(x,i)+'</td></tr>';}).join('')
+  +'<table><thead><tr><th>Score</th><th>Donor</th><th class="r">Lifetime</th><th>Recommended action</th><th>Type / Signal</th><th>Gift type</th><th>Assignment</th><th class="r">Action</th></tr></thead><tbody>'
+  +rows.map(x=>{const i=NBA.indexOf(x);const tg=nbaTags(x);return '<tr '+(x.did?'class="clk" onclick="openRecord(\''+x.did+'\')"':'')+'><td><span class="scorepill" style="color:'+scoreColor(x.score)+';border-color:'+scoreColor(x.score)+'55">'+x.score+'</span></td><td class="t-name">'+esc(x.name)+'</td><td class="r tnum">'+usdK(x.lifetime)+'</td><td style="max-width:300px"><div class="t-sub" style="white-space:normal;line-height:1.45">'+esc(x.desc)+'</div></td><td><div class="tagwrap">'+tg.map((t,j)=>j===0?nbaTypeChip(t):'<span class="sig'+(t==='High-capacity ZIP'?' sig-zip':'')+'">'+esc(t)+'</span>').join('')+'</div></td><td>'+esc(x.gift)+'</td><td onclick="event.stopPropagation()">'+nbaAssignCell(x,i)+'</td><td class="r" style="white-space:nowrap">'+nbaActions(x,i)+'</td></tr>';}).join('')
   +'</tbody></table></div>';
 }
 function prospectTableCard(){
@@ -930,7 +960,7 @@ function giftsTableCard(title,rows,canReceipt){
  return '<div class="card"><div class="card-h"><b>'+title+'</b><span class="muted">'+rows.length+' gifts</span></div>'
  +'<table><thead><tr><th>Donor</th><th>Date</th><th>Fund</th><th class="r">Amount</th><th>Credit</th><th>Status</th><th class="r">Action</th></tr></thead><tbody>'
  +rows.map(g=>'<tr class="clk" onclick="openRecord(\''+g.did+'\')"><td class="t-name">'+esc(g.donor)+'</td><td>'+g.date+'</td><td>'+esc(g.fund)+'</td><td class="r tnum">'+usd(g.amount)+'</td><td>'+creditBadge(g.credit)+'</td><td>'+statusBadge(g.status)+'</td>'
-   +'<td class="r">'+(canReceipt&&g.status==='Pending'?'<button class="btn btn-pri btn-sm" onclick="event.stopPropagation();sendReceipt(\''+g.id+'\')">'+ic('receipt',14)+'Send receipt</button>':'<button class="btn btn-sec btn-sm" onclick="event.stopPropagation();openRecord(\''+g.did+'\')">Open</button>')+'</td></tr>').join('')
+   +'<td class="r"><button class="btn btn-sec btn-sm" onclick="event.stopPropagation();openRecord(\''+g.did+'\')">Open</button></td></tr>').join('')
  +'</tbody></table></div>';
 }
 function portfolioCard(){
@@ -1253,16 +1283,27 @@ function sendSMS(did){const c=byId(did);const me=memberByPersona(state.persona);
 
 /* ============================ NEXT BEST ACTION ============================ */
 const NBA=[
- {name:'Layla Hassan',did:'layla',lifetime:60000,score:88,type:'Upgrade',gift:'Major Gift',desc:'Capacity $250K but only $60K to date. Attended the Rihla lecture and her pledge is overdue — move her to solicitation with a $150K ask.'},
- {name:'Nizam Ali',lifetime:50000,score:86,type:'Re-target',gift:'Capital Campaign',desc:'Engaged 24 months ago around funding the residence (he saw the deck), then we lost touch. Strong prior intent — revive the conversation.'},
- {name:'Dr. Omar Siddiqui',did:'omar',lifetime:250000,score:84,type:'Advance',gift:'Capital Campaign',desc:'The $750K ask is out for the Graduate Women’s Residence. Send floor plans and the naming agreement before the next meeting.'},
- {name:'Ahmad Al-Rashid',did:'ahmad',lifetime:640000,score:80,type:'Pledge reminder',gift:'Endowment',desc:'$50K pledge installment due Jul 1. Confirm the wire and steward the foundation grant before year-end statements run.'},
- {name:'Aisha Rahman',did:'aisha',lifetime:8000,score:78,type:'Re-engage',gift:'Annual Fund',desc:'Attended two events and bought books, but her annual gift is lapsing. Re-engage with a modest, warm ask.'},
- {name:'Hana Yusuf',lifetime:5000,score:75,type:'Recover',gift:'Recurring',desc:'Monthly sustainer for three years; her card expired and the last recurring gift failed. Recover the lapsed recurring gift.'},
- {name:'Yusuf Karim',did:'yusuf',lifetime:12000,score:72,type:'First ask',gift:'Major Gift',desc:'Alumnus ’16 with two Thinkific courses and a reunion RSVP, but never received a major-gift ask. Qualify him this quarter.'},
- {name:'Mariam Farouk',did:'mariam',lifetime:30000,score:71,type:'Planned giving',gift:'Planned Giving',desc:'Planned-giving signals plus a theology course. A strong bequest candidate — introduce the legacy society.'},
- {name:'Crescent Charitable Foundation',did:'crescent',lifetime:300000,score:69,type:'Re-target',gift:'Endowment',desc:'Grant cycle opens in August and the last gift was January. Submit a letter of inquiry for the endowment match.'}
+ {name:'Layla Hassan',did:'layla',lifetime:60000,score:88,type:'Upgrade',tags:['Capacity gap','Pledge overdue'],gift:'Major Gift',desc:'Capacity $250K but only $60K to date. Attended the Rihla lecture and her pledge is overdue — move her to solicitation with a $150K ask.'},
+ {name:'Dr. Khalid Mansour',lifetime:15000,score:85,type:'Upgrade',tags:['High-capacity ZIP','Wealth screen'],gift:'Major Gift',desc:'Atherton (94027) — wealth screen flags $2M+ capacity against only $15K lifetime. High-value upgrade surfaced by ZIP targeting.'},
+ {name:'Nizam Ali',lifetime:50000,score:86,type:'Re-target',tags:['Lost touch'],gift:'Capital Campaign',desc:'Engaged 24 months ago around funding the residence (he saw the deck), then we lost touch. Strong prior intent — revive the conversation.'},
+ {name:'Dr. Omar Siddiqui',did:'omar',lifetime:250000,score:84,type:'Advance',tags:['Ask out'],gift:'Capital Campaign',desc:'The $750K ask is out for the Graduate Women’s Residence. Send floor plans and the naming agreement before the next meeting.'},
+ {name:'Ahmad Al-Rashid',did:'ahmad',lifetime:640000,score:80,type:'Pledge reminder',tags:['Major donor'],gift:'Endowment',desc:'$50K pledge installment due Jul 1. Confirm the wire and steward the foundation grant before year-end statements run.'},
+ {name:'The Rahman Family',lifetime:40000,score:79,type:'Re-target',tags:['High-capacity ZIP','Lapsed'],gift:'Capital Campaign',desc:'Los Altos Hills (94022) — major-capacity ZIP; gave $40K through 2023, then lapsed. Re-engage for the campaign.'},
+ {name:'Aisha Rahman',did:'aisha',lifetime:8000,score:78,type:'Re-engage',tags:['Lapsing','Event'],gift:'Annual Fund',desc:'Attended two events and bought books, but her annual gift is lapsing. Re-engage with a modest, warm ask.'},
+ {name:'Hana Yusuf',lifetime:5000,score:75,type:'Recover',tags:['Recurring'],gift:'Recurring',desc:'Monthly sustainer for three years; her card expired and the last recurring gift failed. Recover the lapsed recurring gift.'},
+ {name:'Yusuf Karim',did:'yusuf',lifetime:12000,score:72,type:'First ask',tags:['Alumni','Courses'],gift:'Major Gift',desc:'Alumnus ’16 with two Thinkific courses and a reunion RSVP, but never received a major-gift ask. Qualify him this quarter.'},
+ {name:'Mariam Farouk',did:'mariam',lifetime:30000,score:71,type:'Planned giving',tags:['Bequest'],gift:'Planned Giving',desc:'Planned-giving signals plus a theology course. A strong bequest candidate — introduce the legacy society.'},
+ {name:'Crescent Charitable Foundation',did:'crescent',lifetime:300000,score:69,type:'Re-target',tags:['Grant cycle'],gift:'Endowment',desc:'Grant cycle opens in August and the last gift was January. Submit a letter of inquiry for the endowment match.'}
 ];
+const HIGH_ZIPS={'94027':'Atherton','94022':'Los Altos Hills','94028':'Portola Valley','94301':'Palo Alto','94920':'Belvedere','94703':'Berkeley · near campus','94704':'Berkeley · near campus'};
+function nbaTags(x){let t=[x.type].concat(x.tags||[]);const c=x.did?byId(x.did):null;if(c&&HIGH_ZIPS[c.zip]&&t.indexOf('High-capacity ZIP')<0)t.push('High-capacity ZIP');return t;}
+function setNbaAction(v){state.nbaAction=v;render();}
+function setNbaSignal(v){state.nbaSignal=v;render();}
+function nbaClear(){state.nbaAction='all';state.nbaSignal='all';render();}
+const OFFICERS=['Imran Patel','Shams Khan','Yasmin Haddad','Tariq Mahmood'];
+function assignFor(x,i){if(state.nbaAssign[i]!==undefined)return state.nbaAssign[i];const c=x.did?byId(x.did):null;return (c&&c.officer)?c.officer:'Unassigned';}
+function nbaAssignCell(x,i){const cur=assignFor(x,i);const opts=OFFICERS.concat(['Unassigned']);const list=opts.indexOf(cur)<0?[cur].concat(opts):opts;return '<select class="cellsel'+(cur==='Unassigned'?' un':'')+'" onclick="event.stopPropagation()" onchange="setNbaAssign('+i+',this.value)">'+list.map(o=>'<option'+(o===cur?' selected':'')+'>'+esc(o)+'</option>').join('')+'</select>';}
+function setNbaAssign(i,v){state.nbaAssign[i]=v;toast(v==='Unassigned'?'Unassigned':'Assigned to '+v,'check');render();}
 function nbaTypeColor(t){return {'Re-target':'#7C3AED','Upgrade':'#2563EB','Advance':'#1D4ED8','Re-engage':'#B07A4B','First ask':'#0EA5E9','Planned giving':'#2D6A4F','Pledge reminder':'#D97706','Recover':'#DC2626','Steward':'#0E7490'}[t]||'#475569';}
 function nbaActions(x,i){
  if(x.did)return '<button class="btn btn-sec btn-sm" onclick="event.stopPropagation();aiEmail(\''+x.did+'\')">'+ic('mail',14)+'Email</button><button class="btn btn-sec btn-sm" onclick="event.stopPropagation();aiSMS(\''+x.did+'\')">'+ic('phone',14)+'SMS</button><button class="btn btn-pri btn-sm" onclick="event.stopPropagation();openRecord(\''+x.did+'\')">Open</button>';
@@ -1292,11 +1333,10 @@ function nbaCard(){const n=NBA.length;const top=NBA.slice().sort((a,b)=>b.score-
   +'<div class="card-b" style="border-top:1px solid var(--line2);padding-top:12px"><button class="btn btn-pri btn-sm" onclick="go(\'nba\')">'+ic('list',14)+'Review all '+n+' actions</button></div></div>';
 }
 function renderNBA(){
- const byType={};NBA.forEach(x=>{byType[x.type]=(byType[x.type]||0)+1;});
+ const zipN=NBA.filter(x=>nbaTags(x).indexOf('High-capacity ZIP')>=0).length;
  const ret=NBA.filter(x=>x.type==='Re-target').length;
  const laps=NBA.filter(x=>x.type==='Recover'||x.type==='Re-engage').length;
- const pled=NBA.filter(x=>x.type==='Pledge reminder').length;
- const tiles=[{l:'Recommended actions',v:NBA.length,d:'AI-prioritized'},{l:'Re-targets',v:ret,d:'Lost-touch revivals'},{l:'Lapsed / recover',v:laps,d:'Win-backs'},{l:'Pledges due',v:pled,d:'Reminders'}];
+ const tiles=[{l:'Recommended actions',v:NBA.length,d:'AI-prioritized'},{l:'High-capacity ZIP',v:zipN,d:'ZIP-screened'},{l:'Re-targets',v:ret,d:'Lost-touch revivals'},{l:'Lapsed / recover',v:laps,d:'Win-backs'}];
  setHTML('#view','<button class="backlink" onclick="go(\'dashboard\')">'+ic('back',16)+'Dashboard</button>'
   +header('Next Best Action','AI-prioritized actions across your portfolio — work the highest-impact donors first, no new hires needed')
   +'<div class="tiles">'+tiles.map(tile).join('')+'</div>'+nbaTableCard());
@@ -1315,15 +1355,14 @@ function giftFundMenu(){const opts=[['all','All funds']].concat(FUNDS.map(f=>[f.
 function giftSizeMenu(){const opts=[[0,'Any size'],[1000,'≥ $1K'],[25000,'≥ $25K'],[50000,'≥ $50K'],[100000,'≥ $100K']];const a=state.gSize||0;const cur=opts.find(o=>o[0]===a)||opts[0];return '<details class="menu"><summary class="fpill '+(a?'on':'')+'" style="display:inline-flex;align-items:center;gap:6px">'+(a?'Gift '+cur[1]:'Gift size')+'<span style="display:inline-flex;transform:rotate(90deg)">'+ic('chev',13)+'</span></summary><div class="menu-pop" style="left:0;right:auto">'+opts.map(o=>'<div class="menu-item" onclick="this.closest(\'details\').open=false;setGiftSize('+o[0]+')">'+(a===o[0]?ic('check',14):'<span style="display:inline-block;width:14px"></span>')+o[1]+'</div>').join('')+'</div></details>';}
 function renderGifts(){
  const rows=giftRows();
- const tiles=[{l:'Gifts this month',v:GIFTS.length,d:'Posted'},{l:'Pending receipts',v:pendingCount(),d:'Awaiting send'},{l:'Processed FY26',v:usdK(totalRaised()),d:'All funds'},{l:'Avg gift',v:usdK(totalRaised()/GIFTS.length),d:'FY26'}];
+ const tiles=[{l:'Gifts this month',v:GIFTS.length,d:'Posted'},{l:'Closed this quarter',v:giftsInRange('qtd',null).length,d:usdK(giftsInRange('qtd',null).reduce((s,g)=>s+g.amount,0))},{l:'Processed FY26',v:usdK(totalRaised()),d:'All funds'},{l:'Avg gift',v:usdK(totalRaised()/GIFTS.length),d:'FY26'}];
  const btn=can('gift')?'<button class="btn btn-pri" onclick="openGiftModal(null)">'+ic('plus',16)+'New gift</button>':'';
- const sp=[['all','All'],['pending','Pending receipt'],['receipted','Receipted']];
- const pills='<div class="filters">'+sp.map(x=>'<button class="fpill '+(state.gFilter===x[0]?'on':'')+'" onclick="setGiftStatus(\''+x[0]+'\')">'+x[1]+'</button>').join('')+payMenu('Date',state.gRange||'all',RNG_OPTS,'setGiftRange')+giftFundMenu()+giftSizeMenu()+'</div>';
- setHTML('#view',header('Gifts','Gift entry, credit allocation and receipt routing',btn)
+ const pills='<div class="filters">'+payMenu('Date',state.gRange||'all',RNG_OPTS,'setGiftRange')+giftFundMenu()+giftSizeMenu()+'</div>';
+ setHTML('#view',header('Gifts','Gift entry and credit allocation',btn)
   +'<div class="tiles">'+tiles.map(tile).join('')+'</div>'+pills
   +'<div class="card"><div class="card-h"><b>All gifts</b><span class="muted">'+rows.length+' of '+GIFTS.length+'</span></div>'
   +'<table><thead><tr><th>Donor</th><th>Date</th><th>Fund</th><th class="r">Amount</th><th>Credit</th><th>Status</th><th class="r">Action</th></tr></thead><tbody>'
-  +(rows.length?rows.map(g=>'<tr class="clk" onclick="openRecord(\''+g.did+'\')"><td class="t-name">'+esc(g.donor)+'</td><td>'+g.date+'</td><td>'+esc(g.fund)+'</td><td class="r tnum">'+usd(g.amount)+'</td><td>'+creditBadge(g.credit)+'</td><td>'+statusBadge(g.status)+'</td><td class="r">'+(g.status==='Pending'&&can('gift')?'<button class="btn btn-pri btn-sm" onclick="event.stopPropagation();sendReceipt(\''+g.id+'\')">'+ic('receipt',14)+'Send receipt</button>':'<button class="btn btn-sec btn-sm" onclick="event.stopPropagation();openRecord(\''+g.did+'\')">Open</button>')+'</td></tr>').join(''):'<tr><td colspan="7"><div class="t-sub" style="padding:8px">No gifts match these filters.</div></td></tr>')
+  +(rows.length?rows.map(g=>'<tr class="clk" onclick="openRecord(\''+g.did+'\')"><td class="t-name">'+esc(g.donor)+'</td><td>'+g.date+'</td><td>'+esc(g.fund)+'</td><td class="r tnum">'+usd(g.amount)+'</td><td>'+creditBadge(g.credit)+'</td><td>'+statusBadge(g.status)+'</td><td class="r"><button class="btn btn-sec btn-sm" onclick="event.stopPropagation();openRecord(\''+g.did+'\')">Open</button></td></tr>').join(''):'<tr><td colspan="7"><div class="t-sub" style="padding:8px">No gifts match these filters.</div></td></tr>')
   +'</tbody></table></div>');
 }
 /* ============================ EVENTS (Marketing) ============================ */
@@ -1556,6 +1595,73 @@ function saveRel(id){const c=byId(id);const name=($('#relName')?$('#relName').va
 }
 
 /* ---- Settings ---- */
+/* ============================ ASK AI (Insights) ============================ */
+function aiAnswer(q){
+ const s=(q||'').toLowerCase();
+ if(s.includes('priorit')||s.includes('next best')||s.includes('who should')||s.includes('focus')||s.includes('work on')){
+   const top=NBA.slice().sort((a,b)=>b.score-a.score).slice(0,4);
+   return 'Your highest-impact next actions right now:<ol class="aiol">'+top.map(x=>'<li><b>'+esc(x.name)+'</b> · '+x.score+' match · '+esc(x.type)+' — '+esc(x.desc)+'</li>').join('')+'</ol><div class="aimore">Open <a class="ailink" onclick="go(\'nba\')">Next Best Action</a> to work the full list.</div>';
+ }
+ if(s.includes('zip')||s.includes('high-capacity')||s.includes('high capacity')||s.includes('wealth')||s.includes('capacity')){
+   const z=NBA.filter(x=>nbaTags(x).indexOf('High-capacity ZIP')>=0);
+   return z.length+' people are flagged in high-capacity ZIP codes (Atherton, Los Altos Hills, Palo Alto, Belvedere, Berkeley):<ul class="aiul">'+z.map(x=>'<li><b>'+esc(x.name)+'</b> — '+esc(x.desc)+'</li>').join('')+'</ul><div class="aimore">Filter <a class="ailink" onclick="go(\'nba\')">Next Best Action</a> by the “High-capacity ZIP” signal.</div>';
+ }
+ if(s.includes('rais')||s.includes('qtd')||s.includes('ytd')||s.includes('this quarter')||s.includes('this year')||s.includes('how much')||s.includes('total')){
+   const qg=giftsInRange('qtd',null),yg=giftsInRange('ytd',null);
+   return 'Across all funds: <b>'+usd(qg.reduce((a,g)=>a+g.amount,0))+'</b> closed this quarter ('+qg.length+' gifts) and <b>'+usd(yg.reduce((a,g)=>a+g.amount,0))+'</b> year to date ('+yg.length+' gifts).';
+ }
+ if(s.includes('laps')||s.includes('re-engage')||s.includes('reengage')||s.includes('churn')||s.includes('win back')||s.includes('win-back')||s.includes('cold')){
+   const l=NBA.filter(x=>['Lapsing','Lapsed','Recover','Re-engage'].some(t=>nbaTags(x).indexOf(t)>=0));
+   return 'Donors worth a re-engagement touch:<ul class="aiul">'+l.map(x=>'<li><b>'+esc(x.name)+'</b> — '+esc(x.desc)+'</li>').join('')+'</ul>';
+ }
+ if(s.includes('pledge')||s.includes('overdue')||s.includes('due')){
+   const pd=PLEDGES.filter(p=>p.status!=='Scheduled'),od=pd.filter(p=>p.status==='Overdue');
+   return pd.length+' pledges are coming due ('+usd(pd.reduce((a,p)=>a+p.amount,0))+' total'+(od.length?', '+od.length+' overdue':'')+'):<ul class="aiul">'+pd.map(p=>'<li><b>'+esc(p.donor)+'</b> — '+usd(p.amount)+' '+esc(p.fund)+' · due '+esc(p.due)+' · '+esc(p.status)+'</li>').join('')+'</ul>';
+ }
+ if(s.includes('pipeline')||s.includes('forecast')||s.includes('weighted')||s.includes('solicit')){
+   return 'Pipeline is <b>'+usdK(pipelineTotal())+'</b> across '+prospects().length+' opportunities, with a probability-weighted forecast of <b>'+usdK(pipelineWeighted())+'</b>. '+C.filter(c=>c.stage==='solicitation').length+' asks are out now. Open the <a class="ailink" onclick="go(\'pipeline\')">Pipeline</a>.';
+ }
+ if(s.includes('recurring')||s.includes('mrr')||s.includes('sustain')||s.includes('monthly')){
+   return 'Recurring giving: <b>'+usd(REC.mrr)+'</b> MRR from '+REC.active.toLocaleString()+' active monthly donors (≈ '+usdK(REC.annual)+' annual run-rate). +'+REC.newM+' new and −'+REC.churnedM+' churned this month.';
+ }
+ if(s.includes('event')||s.includes('bookstore')||s.includes('course')||s.includes('thinkific')||s.includes('attend')||s.includes('engag')){
+   const ev=C.filter(c=>(c.events||[]).length).length,bk=C.filter(c=>(c.books||[]).length).length,co=C.filter(c=>(c.courses||[]).length).length;
+   return ev+' constituents have attended an event, '+bk+' have bought from the bookstore, and '+co+' are enrolled in a course (all matched by email). Build a segment in <a class="ailink" onclick="go(\'lists\')">Lists</a>.';
+ }
+ if(s.includes('list')||s.includes('segment')||s.includes('mailchimp')||s.includes('blast')){
+   return 'Use <a class="ailink" onclick="go(\'lists\')">Lists</a> to segment by type, lifetime giving, ZIP, or engagement signal — then push to Mailchimp or send a bulk message.';
+ }
+ const named=C.find(c=>s.includes(c.name.toLowerCase())||(c.name.split(' ')[0].length>=4&&s.includes(c.name.split(' ')[0].toLowerCase())));
+ if(named){const c=named;
+   return 'Snapshot of <a class="ailink" onclick="openRecord(\''+c.id+'\')">'+esc(c.name)+'</a>:<ul class="aiul"><li>Lifetime giving '+usd(c.lifetime)+' · FY25 '+usd(c.fy25)+'</li><li>Capacity '+esc(c.capacity)+(HIGH_ZIPS[c.zip]?' · <b>High-capacity ZIP</b> ('+esc(HIGH_ZIPS[c.zip])+')':'')+'</li>'+(c.stage?'<li>Pipeline: '+stageObj(c.stage).name+' · '+usd(c.ask)+' for '+esc(c.fundInterest)+'</li>':'')+'<li>Engagement: '+(c.events||[]).length+' events · '+(c.courses||[]).length+' courses · '+(c.books||[]).length+' bookstore</li>'+(c.officer?'<li>Gift officer: '+esc(c.officer)+'</li>':'')+'</ul>';
+ }
+ return 'I can answer questions about donors, pipeline, gifts, pledges, recurring giving, engagement, and high-capacity ZIP prospects. Try “Who should I prioritize this week?”, “How much have we raised this quarter?”, or “Summarize Ahmad Al-Rashid.”';
+}
+function askSubmit(q){q=(q||'').trim();if(!q)return;state.askLog.unshift({q:q,a:aiAnswer(q)});render();}
+function askFromInput(){const el=$('#askIn');askSubmit(el?el.value:'');}
+function renderAskAI(){
+ const sugg=['Who should I prioritize this week?','Which donors are in high-capacity ZIP codes?','How much have we raised this quarter?','Who are my lapsing donors?','What pledges are overdue?','Summarize Ahmad Al-Rashid'];
+ const box='<div class="card"><div class="card-b">'
+  +'<div class="askbar"><input class="input" id="askIn" placeholder="Ask anything about your donors, pipeline, or giving…" onkeydown="if(event.key===\'Enter\')askFromInput()"><button class="btn btn-pri" onclick="askFromInput()">'+ic('spark',15)+'Ask</button></div>'
+  +'<div class="filters" style="margin-top:12px">'+sugg.map(q=>'<button class="fpill" onclick="askSubmit(\''+q+'\')">'+esc(q)+'</button>').join('')+'</div></div></div>';
+ const log=state.askLog.length?state.askLog.map(e=>'<div class="card"><div class="card-b"><div class="askq">'+ic('search',14)+'<span>'+esc(e.q)+'</span></div><div class="aska">'+ic('spark',16)+'<div class="aians">'+e.a+'</div></div></div></div>').join(''):'<div class="card"><div class="empty"><div class="ei">'+ic('spark',24)+'</div><div style="font-weight:700;color:var(--navy)">Ask Risely anything</div><div>Natural-language answers grounded in your live donor, pipeline and giving data. Responses here are illustrative.</div></div></div>';
+ setHTML('#view',header('Ask AI','Plain-English answers across your advancement data — available to everyone')+box+log);
+}
+/* ============================ USERS (Administrative) ============================ */
+function renderUsers(){
+ const rows=TEAM.map(t=>({name:t.name,role:t.role,email:t.name.toLowerCase().replace(/[^a-z]+/g,'.')+'@zaytuna.edu',status:'Active',last:'Today',init:t.initials,color:t.color}))
+  .concat([{name:'Yasmin Haddad',role:'Gift Officer',email:'yasmin.haddad@zaytuna.edu',status:'Active',last:'2 days ago',init:'YH',color:'#0EA5E9'},
+   {name:'Tariq Mahmood',role:'Gift Officer',email:'tariq.mahmood@zaytuna.edu',status:'Invited',last:'—',init:'TM',color:'#B07A4B'}]);
+ const tiles=[{l:'Users',v:rows.length,d:'Active & invited'},{l:'Gift officers',v:rows.filter(r=>/Officer/.test(r.role)).length,d:'Carrying portfolios'},{l:'Elevated access',v:rows.filter(r=>/Admin|Director/.test(r.role)).length,d:'Admin / Director'},{l:'Pending invites',v:rows.filter(r=>r.status==='Invited').length,d:'Awaiting sign-in'}];
+ const btn='<button class="btn btn-pri" onclick="toast(\'Invite flow is illustrative in this prototype\',\'check\')">'+ic('plus',16)+'Invite user</button>';
+ const roleOpts=['Admin','Gift Director','Gift Officer','Marketing'];
+ setHTML('#view',header('Users','Manage who can access Risely and their role',btn)
+  +'<div class="tiles">'+tiles.map(tile).join('')+'</div>'
+  +'<div class="card"><div class="card-h"><b>Team</b><span class="muted">'+rows.length+' users</span></div><div style="overflow-x:auto"><table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Last active</th><th class="r">Action</th></tr></thead><tbody>'
+  +rows.map(r=>{const sel='<select class="cellsel" onchange="toast(\'Role updated to \'+this.value+\' — illustrative\',\'check\')">'+roleOpts.map(o=>{const on=(r.role===o)||(o==='Admin'&&/Admin/.test(r.role))||(o==='Gift Director'&&/Director/.test(r.role))||(o==='Marketing'&&/Marketing/.test(r.role));return '<option'+(on?' selected':'')+'>'+o+'</option>';}).join('')+'</select>';
+    return '<tr><td class="t-name"><span class="uav" style="background:'+r.color+'">'+r.init+'</span>'+esc(r.name)+'</td><td>'+esc(r.email)+'</td><td>'+sel+'</td><td>'+(r.status==='Active'?'<span class="badge b-green">Active</span>':'<span class="badge b-amber">Invited</span>')+'</td><td>'+esc(r.last)+'</td><td class="r" style="white-space:nowrap"><button class="btn btn-sec btn-sm" onclick="toast(\''+(r.status==='Invited'?'Invite resent':'User managed')+' — illustrative\',\'check\')">'+(r.status==='Invited'?'Resend':'Manage')+'</button></td></tr>';}).join('')
+  +'</tbody></table></div></div>');
+}
 function renderSettings(){const s=state.settings;const me=memberByPersona(state.persona);
  const tzs=[['America/Los_Angeles','Pacific Time (PT)'],['America/Denver','Mountain Time (MT)'],['America/Chicago','Central Time (CT)'],['America/New_York','Eastern Time (ET)'],['UTC','UTC']];
  const inbox=s.inbox;
