@@ -352,7 +352,10 @@ const IC={
  link:'<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
  globe:'<circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>',
  trend:'<path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/>',
- chev:'<path d="m9 18 6-6-6-6"/>'
+ chev:'<path d="m9 18 6-6-6-6"/>',
+ cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+ book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+ cap:'<path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1 2.5 2.5 6 2.5s6-1.5 6-2.5v-5"/>'
 };
 function ic(n,s){s=s||18;return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(IC[n]||'')+'</svg>';}
 
@@ -367,20 +370,25 @@ function memberByPersona(p){return TEAM.find(t=>t.persona===p);}
 
 /* ---------- Personas ---------- */
 const PERSONAS={
- admin:{label:'Admin',sub:'Gift Entry',color:'#B07A4B',views:['dashboard','constituents','forecast','inbox'],
+ admin:{label:'Admin',sub:'Gift Entry',color:'#B07A4B',views:['dashboard','constituents','gifts','forecast','inbox'],
    actions:['note','gift']},
- officer:{label:'Gift Officer',sub:'Major Gifts',color:'#2563EB',views:['dashboard','constituents','pipeline','lists','forecast','inbox'],
+ officer:{label:'Gift Officer',sub:'Major Gifts',color:'#2563EB',views:['dashboard','constituents','pipeline','gifts','lists','forecast','inbox'],
    actions:['note','email','deck','voice','gift','bulk','list']},
- director:{label:'Gift Director',sub:'Advancement',color:'#2D6A4F',views:['dashboard','constituents','pipeline','lists','analytics','forecast','inbox'],
+ director:{label:'Gift Director',sub:'Advancement',color:'#2D6A4F',views:['dashboard','constituents','pipeline','gifts','lists','analytics','forecast','inbox'],
    actions:['note','email','deck','voice','gift','bulk','list']},
- marketing:{label:'Marketing',sub:'Engagement',color:'#9333EA',views:['dashboard','constituents','lists','inbox'],
+ marketing:{label:'Marketing',sub:'Engagement',color:'#9333EA',views:['dashboard','constituents','lists','events','bookstore','courses','inbox'],
    actions:['note','bulk','list']}
 };
 const NAV=[
  {sec:'Workspace',items:[
    {k:'dashboard',label:'Dashboard',icon:'grid'},
    {k:'constituents',label:'Constituents',icon:'users'},
-   {k:'pipeline',label:'Pipeline',icon:'target'},   {k:'inbox',label:'Inbox',icon:'inbox'}
+   {k:'pipeline',label:'Pipeline',icon:'target'},
+   {k:'gifts',label:'Gifts',icon:'gift'},
+   {k:'events',label:'Events',icon:'cal'},
+   {k:'bookstore',label:'Bookstore',icon:'book'},
+   {k:'courses',label:'Courses',icon:'cap'},
+   {k:'inbox',label:'Inbox',icon:'inbox'}
  ]},
  {sec:'Insights',items:[
    {k:'lists',label:'Lists',icon:'list'},
@@ -599,7 +607,7 @@ let BULK_SENDS=[
 
 /* ---------- State ---------- */
 const state={persona:'admin',view:'dashboard',recordId:null,tab:'overview',drawerId:null,
- cFilter:'all',cLifetime:0,dashFilter:'fy26',inboxFilter:'unread',selected:new Set(),bulk:null,forecastId:null,fcFilter:'all',catDraft:null,anTab:'revenue',fcExpanded:new Set(),catExpanded:new Set(),inboxCat:'mentions',settings:{tz:'America/Los_Angeles',inbox:null},
+ cFilter:'all',cLifetime:0,gFilter:'all',gFund:'all',gSize:0,dashFilter:'fy26',inboxFilter:'unread',selected:new Set(),bulk:null,forecastId:null,fcFilter:'all',catDraft:null,anTab:'revenue',fcExpanded:new Set(),catExpanded:new Set(),inboxCat:'mentions',settings:{tz:'America/Los_Angeles',inbox:null},
  wizard:null,voice:null,list:{type:'all',minLt:0,fund:'all',zip:'',recency:'all',result:null}};
 
 /* ---------- Money helpers ---------- */
@@ -701,6 +709,9 @@ function render(){
  if(v==='constituents')return renderConstituents();
  if(v==='pipeline')return renderPipeline();
  if(v==='gifts')return renderGifts();
+ if(v==='events')return renderEvents();
+ if(v==='bookstore')return renderBookstore();
+ if(v==='courses')return renderCourses();
  if(v==='lists')return renderLists();
  if(v==='analytics')return renderAnalytics();
  if(v==='inbox')return renderInbox();
@@ -740,7 +751,7 @@ function renderDashboard(){
      {l:'Pending receipts',v:pendingCount(),d:'Awaiting send'},
      {l:'Gifts this month',v:GIFTS.length,d:'Entered & posted'},
      {l:'Processed FY26',v:usdK(totalRaised()),d:'All funds'}];
-   body=pledgesDueCard()+giftsTableCard('All gifts',GIFTS,true);
+   body=pledgesDueCard();
  }else if(state.persona==='officer'){
    const u=INBOX.filter(i=>i.to==='officer'&&!i.read).length;const pd=PLEDGES.filter(p=>p.status!=='Scheduled');
    banner='<div class="banner"><div class="bi">'+ic('inbox')+'</div><div class="btext"><b>'+u+' @mentions awaiting your review.</b> Shams asked about moving Layla to solicitation.</div><div class="bx"><button class="btn btn-pri btn-sm" onclick="go(\'inbox\')">Open Inbox</button></div></div>';
@@ -1024,18 +1035,64 @@ function renderPipeline(){
 }
 
 /* ============================ GIFTS ============================ */
+function giftRows(){let r=GIFTS.slice();if(state.gFilter==='pending')r=r.filter(g=>g.status==='Pending');else if(state.gFilter==='receipted')r=r.filter(g=>g.status==='Receipted');if(state.gFund&&state.gFund!=='all')r=r.filter(g=>g.fund===state.gFund);if(state.gSize)r=r.filter(g=>g.amount>=state.gSize);return r;}
+function setGiftStatus(v){state.gFilter=v;render();}
+function setGiftFund(v){state.gFund=v;render();}
+function setGiftSize(v){state.gSize=v;render();}
+function giftFundMenu(){const opts=[['all','All funds']].concat(FUNDS.map(f=>[f.name,f.name]));const a=state.gFund||'all';const cur=opts.find(o=>o[0]===a)||opts[0];return '<details class="menu"><summary class="fpill '+(a!=='all'?'on':'')+'" style="display:inline-flex;align-items:center;gap:6px">'+(a==='all'?'Fund type':esc(cur[1]))+'<span style="display:inline-flex;transform:rotate(90deg)">'+ic('chev',13)+'</span></summary><div class="menu-pop" style="left:0;right:auto">'+opts.map(o=>'<div class="menu-item" onclick="this.closest(\'details\').open=false;setGiftFund(\''+o[0]+'\')">'+(a===o[0]?ic('check',14):'<span style="display:inline-block;width:14px"></span>')+esc(o[1])+'</div>').join('')+'</div></details>';}
+function giftSizeMenu(){const opts=[[0,'Any size'],[1000,'≥ $1K'],[25000,'≥ $25K'],[50000,'≥ $50K'],[100000,'≥ $100K']];const a=state.gSize||0;const cur=opts.find(o=>o[0]===a)||opts[0];return '<details class="menu"><summary class="fpill '+(a?'on':'')+'" style="display:inline-flex;align-items:center;gap:6px">'+(a?'Gift '+cur[1]:'Gift size')+'<span style="display:inline-flex;transform:rotate(90deg)">'+ic('chev',13)+'</span></summary><div class="menu-pop" style="left:0;right:auto">'+opts.map(o=>'<div class="menu-item" onclick="this.closest(\'details\').open=false;setGiftSize('+o[0]+')">'+(a===o[0]?ic('check',14):'<span style="display:inline-block;width:14px"></span>')+o[1]+'</div>').join('')+'</div></details>';}
 function renderGifts(){
- const tiles=[{l:'Gifts this month',v:GIFTS.length,d:'Posted'},
-  {l:'Pending receipts',v:pendingCount(),d:'Awaiting send'},
-  {l:'Processed FY26',v:usdK(totalRaised()),d:'All funds'},
-  {l:'Avg gift',v:usdK(totalRaised()/GIFTS.length),d:'FY26'}];
+ const rows=giftRows();
+ const tiles=[{l:'Gifts this month',v:GIFTS.length,d:'Posted'},{l:'Pending receipts',v:pendingCount(),d:'Awaiting send'},{l:'Processed FY26',v:usdK(totalRaised()),d:'All funds'},{l:'Avg gift',v:usdK(totalRaised()/GIFTS.length),d:'FY26'}];
  const btn=can('gift')?'<button class="btn btn-pri" onclick="openGiftModal(null)">'+ic('plus',16)+'New gift</button>':'';
+ const sp=[['all','All'],['pending','Pending receipt'],['receipted','Receipted']];
+ const pills='<div class="filters">'+sp.map(x=>'<button class="fpill '+(state.gFilter===x[0]?'on':'')+'" onclick="setGiftStatus(\''+x[0]+'\')">'+x[1]+'</button>').join('')+giftFundMenu()+giftSizeMenu()+'</div>';
  setHTML('#view',header('Gifts','Gift entry, credit allocation and receipt routing',btn)
-  +'<div class="tiles">'+tiles.map(tile).join('')+'</div>'
-  +'<div class="card"><div class="card-h"><b>All gifts</b><span class="muted">'+GIFTS.length+' records</span></div>'
+  +'<div class="tiles">'+tiles.map(tile).join('')+'</div>'+pills
+  +'<div class="card"><div class="card-h"><b>All gifts</b><span class="muted">'+rows.length+' of '+GIFTS.length+'</span></div>'
   +'<table><thead><tr><th>Donor</th><th>Date</th><th>Fund</th><th class="r">Amount</th><th>Credit</th><th>Status</th><th class="r">Action</th></tr></thead><tbody>'
-  +GIFTS.map(g=>'<tr class="clk" onclick="openRecord(\''+g.did+'\')"><td class="t-name">'+esc(g.donor)+'</td><td>'+g.date+'</td><td>'+esc(g.fund)+'</td><td class="r tnum">'+usd(g.amount)+'</td><td>'+creditBadge(g.credit)+'</td><td>'+statusBadge(g.status)+'</td><td class="r">'+(g.status==='Pending'&&can('gift')?'<button class="btn btn-pri btn-sm" onclick="event.stopPropagation();sendReceipt(\''+g.id+'\')">'+ic('receipt',14)+'Send receipt</button>':'<button class="btn btn-sec btn-sm" onclick="event.stopPropagation();openRecord(\''+g.did+'\')">Open</button>')+'</td></tr>').join('')
+  +(rows.length?rows.map(g=>'<tr class="clk" onclick="openRecord(\''+g.did+'\')"><td class="t-name">'+esc(g.donor)+'</td><td>'+g.date+'</td><td>'+esc(g.fund)+'</td><td class="r tnum">'+usd(g.amount)+'</td><td>'+creditBadge(g.credit)+'</td><td>'+statusBadge(g.status)+'</td><td class="r">'+(g.status==='Pending'&&can('gift')?'<button class="btn btn-pri btn-sm" onclick="event.stopPropagation();sendReceipt(\''+g.id+'\')">'+ic('receipt',14)+'Send receipt</button>':'<button class="btn btn-sec btn-sm" onclick="event.stopPropagation();openRecord(\''+g.did+'\')">Open</button>')+'</td></tr>').join(''):'<tr><td colspan="7"><div class="t-sub" style="padding:8px">No gifts match these filters.</div></td></tr>')
   +'</tbody></table></div>');
+}
+/* ============================ EVENTS (Marketing) ============================ */
+const EVENTS=[
+ {name:'Ramadan Iftar Series',date:'Mar 14, 2026',type:'Community',reg:840,cap:900,rev:21000,status:'Past'},
+ {name:'Founders Dinner 2026',date:'Apr 30, 2026',type:'Gala',reg:120,cap:120,rev:60000,status:'Past'},
+ {name:'Rihla Spring Lecture',date:'May 18, 2026',type:'Lecture',reg:212,cap:250,rev:0,status:'Past'},
+ {name:'Commencement 2026',date:'Jun 14, 2026',type:'Ceremony',reg:680,cap:800,rev:0,status:'Upcoming'},
+ {name:'Alumni Reunion — Bay Area',date:'Jul 12, 2026',type:'Alumni',reg:96,cap:150,rev:4800,status:'Upcoming'},
+ {name:'Annual Fundraising Gala',date:'Sep 20, 2026',type:'Gala',reg:34,cap:300,rev:0,status:'Open'}
+];
+function renderEvents(){
+ const totalReg=EVENTS.reduce(function(s,e){return s+e.reg;},0);const up=EVENTS.filter(function(e){return e.status!=='Past';}).length;const rev=EVENTS.reduce(function(s,e){return s+e.rev;},0);const fill=Math.round(EVENTS.reduce(function(s,e){return s+e.reg/e.cap;},0)/EVENTS.length*100);
+ const tiles=[{l:'Total registrations',v:totalReg.toLocaleString(),d:'All events'},{l:'Upcoming events',v:up,d:'Open / scheduled'},{l:'Avg fill rate',v:fill+'%',d:'Registered ÷ capacity'},{l:'Event revenue',v:usdK(rev),d:'Tickets · FY26'}];
+ setHTML('#view',header('Events','Event registrations — a sync source for engagement lists')
+  +'<div class="tiles">'+tiles.map(tile).join('')+'</div>'
+  +'<div class="card"><div class="card-h"><b>Events &amp; registrations</b><span class="muted">'+EVENTS.length+' events</span></div><div style="overflow-x:auto"><table><thead><tr><th>Event</th><th>Date</th><th>Type</th><th>Registered</th><th class="r">Revenue</th><th>Status</th><th class="r">Action</th></tr></thead><tbody>'
+  +EVENTS.map(function(e){var p=Math.round(e.reg/e.cap*100);var sb=e.status==='Past'?'<span class="badge b-slate">Past</span>':e.status==='Open'?'<span class="badge b-green">Open</span>':'<span class="badge b-blue">Upcoming</span>';return '<tr><td class="t-name">'+esc(e.name)+'</td><td>'+esc(e.date)+'</td><td>'+esc(e.type)+'</td><td style="min-width:170px"><div style="display:flex;align-items:center;gap:8px"><div class="bar" style="flex:1"><i style="width:'+Math.min(100,p)+'%"></i></div><span class="t-sub" style="white-space:nowrap">'+e.reg+' / '+e.cap+'</span></div></td><td class="r tnum">'+(e.rev?usd(e.rev):'—')+'</td><td>'+sb+'</td><td class="r" style="white-space:nowrap"><button class="btn btn-sec btn-sm" onclick="toast(\'Registrant list ready — '+e.reg+' people\')">Registrants</button>'+(can('bulk')?' <button class="btn btn-sec btn-sm" onclick="toast(\'Message queued to '+e.reg+' attendees\',\'mail\')">Message</button>':'')+'</td></tr>';}).join('')
+  +'</tbody></table></div></div>');
+}
+/* ============================ BOOKSTORE (Marketing) ============================ */
+const BOOKSTORE={revenue:84200,orders:1310,units:2940,aov:64,trend:[9.8,11.2,12.5,14.1,18.6,18.0],trendM:['Dec','Jan','Feb','Mar','Apr','May']};
+const BOOK_TOP=[['Purification of the Heart',420,8400],['The Prayer of the Oppressed',360,9100],['Being Muslim: A Practical Guide',310,6200],['Agenda to Change Our Condition',280,5600],['Zaytuna Curriculum Reader',260,9800],['Suns of Scripture',180,3600]];
+function renderBookstore(){
+ const b=BOOKSTORE;
+ const tiles=[{l:'Bookstore revenue',v:usdK(b.revenue),d:'FY26'},{l:'Orders',v:b.orders.toLocaleString(),d:'FY26'},{l:'Units sold',v:b.units.toLocaleString(),d:'FY26'},{l:'Avg order value',v:usd(b.aov),d:'Per order'}];
+ const max=Math.max.apply(null,b.trend);const bars=b.trend.map(function(v,i){return '<div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px"><div style="width:60%;background:linear-gradient(180deg,#60A5FA,#2563EB);border-radius:5px 5px 0 0;height:'+Math.round(v/max*80)+'px"></div><div class="t-sub" style="font-size:10px">'+b.trendM[i]+'</div></div>';}).join('');
+ const tmax=Math.max.apply(null,BOOK_TOP.map(function(t){return t[2];}));
+ setHTML('#view',header('Bookstore','Bookstore sales — Zaytuna publications & course texts')
+  +'<div class="tiles">'+tiles.map(tile).join('')+'</div>'
+  +'<div class="cols"><div class="card"><div class="card-h"><b>Top titles</b><span class="muted">FY26 by revenue</span></div><table><thead><tr><th>Title</th><th class="r">Units</th><th class="r">Revenue</th><th></th></tr></thead><tbody>'+BOOK_TOP.map(function(t){return '<tr><td class="t-name">'+esc(t[0])+'</td><td class="r tnum">'+t[1]+'</td><td class="r tnum">'+usd(t[2])+'</td><td style="width:110px"><div class="bar" style="height:10px"><i style="width:'+Math.max(4,t[2]/tmax*100)+'%"></i></div></td></tr>';}).join('')+'</tbody></table></div>'
+  +'<div class="card"><div class="card-h"><b>Monthly sales</b><span class="muted">revenue ($K)</span></div><div class="card-b"><div style="display:flex;align-items:flex-end;gap:8px;height:100px">'+bars+'</div><div class="t-sub" style="margin-top:8px">Last 6 months</div><div class="note-banner" style="margin-top:12px">Recent buyers can be pulled into Lists for cross-promotion.</div></div></div></div>');
+}
+/* ============================ COURSES (Thinkific) ============================ */
+const COURSES=[['Foundations of Islamic Theology','Spring 2026',128,'In progress'],['Arabic I — Grammar','Spring 2026',96,'In progress'],['Seerah of the Prophet ﷺ','Spring 2026',210,'In progress'],['Islamic Law: An Introduction','Winter 2026',74,'Completed'],['Quranic Sciences','Self-paced',340,'Open'],['Logic & Critical Thinking','Self-paced',156,'Open']];
+function renderCourses(){
+ const totalEnroll=COURSES.reduce(function(s,c){return s+c[2];},0);const active=COURSES.filter(function(c){return c[3]==='In progress';}).length;
+ const tiles=[{l:'Total enrollments',v:totalEnroll.toLocaleString(),d:'Thinkific'},{l:'Active courses',v:active,d:'In progress'},{l:'Catalog',v:COURSES.length,d:'Courses offered'},{l:'Completion rate',v:'68%',d:'Last 12 mo'}];
+ setHTML('#view',header('Courses','Thinkific students & enrollments — an engagement source')
+  +'<div class="tiles">'+tiles.map(tile).join('')+'</div>'
+  +'<div class="card"><div class="card-h"><b>Courses &amp; enrollments</b><span class="muted">'+COURSES.length+' courses</span></div><div style="overflow-x:auto"><table><thead><tr><th>Course</th><th>Term</th><th class="r">Students</th><th>Status</th><th class="r">Action</th></tr></thead><tbody>'+COURSES.map(function(c){var sb=c[3]==='In progress'?'<span class="badge b-blue">In progress</span>':c[3]==='Open'?'<span class="badge b-green">Open</span>':'<span class="badge b-slate">Completed</span>';return '<tr><td class="t-name">'+esc(c[0])+'</td><td>'+esc(c[1])+'</td><td class="r tnum">'+c[2]+'</td><td>'+sb+'</td><td class="r"><button class="btn btn-sec btn-sm" onclick="toast(\'Roster ready — '+c[2]+' students\')">Roster</button></td></tr>';}).join('')+'</tbody></table></div></div>');
 }
 function sendReceipt(id){const g=GIFTS.find(x=>x.id===id);if(!g)return;g.status='Receipted';const c=byId(g.did);if(c&&c.giving){const gi=c.giving.find(x=>x.amount===g.amount&&x.fund===g.fund);if(gi)gi.receipt='Receipted';}toast('Receipt sent to '+(c?c.email:'donor')+' · PT','receipt');render();}
 function pledgeBadge(s){if(s==='Overdue')return '<span class="badge" style="background:var(--red-b);color:var(--red-t)">Overdue</span>';if(s==='Due soon')return '<span class="badge b-amber">Due soon</span>';return '<span class="badge b-slate">Scheduled</span>';}
