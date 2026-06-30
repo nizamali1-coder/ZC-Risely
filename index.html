@@ -770,82 +770,84 @@ function renderTop(){
 /* ---- Requirements modal ---- */
 const REQ={
  admin:{title:'Gift Entry Admin',color:'#B07A4B',
-  summary:'Owns data integrity and the gift pipeline — every dollar received must be verified, posted, and synced before it counts toward revenue.',
+  summary:'The operational backbone of Advancement — every dollar received flows through this persona. The Admin owns data integrity, gift pipeline accuracy, and the integrations that keep Blackbaud, Stripe, and Risely in perfect lockstep.',
   workflows:[
-   {icon:'gift',label:'Gift entry & batch processing',desc:'Manual entry, batch posting, pledge scheduling, receipt generation, and full audit trail.'},
-   {icon:'users',label:'Constituent management',desc:'Merge duplicates, manage relationships, maintain organizational hierarchy and household records.'},
-   {icon:'upload',label:'Data ingestion',desc:'CSV imports and donor interest form uploads with field mapping, dedup, and conflict resolution.'},
-   {icon:'gear',label:'System administration',desc:'User roles, field-level permissions, Blackbaud sync configuration, and email preference scoping.'}
+   {icon:'gift',label:'Gift entry & batch processing',desc:'Post individual gifts, pledges, and recurring giving plans. Run end-of-day batch with full audit trail — every entry timestamped, source-coded, and designation-locked before it counts toward revenue.'},
+   {icon:'users',label:'Constituent management',desc:'Resolve duplicates, merge household records, maintain org hierarchy, and manage relationship chains. One clean record per person, with every touchpoint attached — gifts, events, communications, notes.'},
+   {icon:'upload',label:'Data ingestion',desc:'Import CSV donor lists and process donor interest form scans (PDF or image). Field mapping wizard normalizes inbound data, dedup engine runs before any record is created, and conflict queue surfaces every exception.'},
+   {icon:'gear',label:'System configuration',desc:'Provision users, assign persona-level roles, set field-level data permissions, configure Blackbaud sync schedules, and manage payment processor credential mappings. Full change log on every admin action.'}
   ],
   ai:[
-   {label:'Smart gift entry',desc:'AI pre-fills fund, amount class, and campaign from donor history — reducing manual keystrokes by ~60%.'},
-   {label:'Duplicate detection',desc:'Knowledge graph matches inbound records against existing constituents by name, email, and address proximity before creating new records.'},
-   {label:'Data quality scoring',desc:'AI flags incomplete or inconsistent records — missing email, mismatched address, stale capacity — and queues them for admin review.'}
+   {label:'Smart gift entry auto-fill',desc:'AI reads donor history to pre-fill fund designation, campaign code, amount class, and solicitation method — reducing manual keystrokes by ~60% per entry and eliminating the most common coding errors.'},
+   {label:'Constituent deduplication at ingestion',desc:'Before any new record is written, AI cross-references name, email, phone, and address against the knowledge graph. Fuzzy matches surface with a confidence score and suggested merge action — no human has to hunt for duplicates.'},
+   {label:'Data quality surveillance',desc:'Continuous background scoring flags records with missing emails, mismatched address blocks, stale wealth ratings, or orphaned pledges. Queued in a daily exception list with one-click resolution — quality stays above threshold without manual audits.'},
+   {label:'Receipt & acknowledgment drafting',desc:'AI generates gift acknowledgment letters personalized to the fund, ask level, and donor history — reducing a 30-minute drafting task to a one-click review-and-send.'}
   ],
   kg:[
-   {label:'Blackbaud reverse-sync',desc:'Constituent records, gift history, and pledge balances stream in from RE/NXT nightly with automated conflict resolution.'},
-   {label:'Payment processor reconciliation',desc:'Stripe transactions auto-reconcile against posted gifts — unmatched payments surface as exceptions for admin action.'},
-   {label:'CSV & form ingestion',desc:'Inbound donation lists and interest forms are normalized through the knowledge graph to match or create constituent records.'}
+   {label:'Blackbaud RE/NXT bidirectional sync',desc:'Constituent records, gift history, pledge schedules, and fund balances stream nightly from RE/NXT. Changes made in Risely — new gifts, updated profiles, merged records — write back on the same schedule. One source of truth, no manual exports.'},
+   {label:'Stripe payment reconciliation',desc:'Every Stripe transaction is auto-matched against an open gift record by amount, date, and donor email. Unmatched payments surface as exceptions within minutes. No end-of-month reconciliation scramble.'},
+   {label:'CSV & PDF form ingestion pipeline',desc:'Inbound donor lists and interest form uploads are normalized through the knowledge graph — validated against existing constituents, flagged for review if capacity data conflicts, and posted cleanly without creating phantom records.'},
+   {label:'Audit trail & compliance layer',desc:'Every create, update, merge, and delete action is logged with user, timestamp, and before/after values. Full chain of custody for every gift record — SOX-ready, auditor-ready, always.'}
   ]},
  officer:{title:'Gift Officer',color:'#2563EB',
-  summary:'Manages a portfolio of major gift prospects — moving them through discovery, cultivation, solicitation, and stewardship with AI-assisted precision.',
+  summary:'The front line of major gift fundraising. A Gift Officer carries a portfolio of 50–150 prospects and moves them from first signal of interest to a transformative gift — powered by AI-generated intelligence that would otherwise take hours to compile manually.',
   workflows:[
-   {icon:'target',label:'Pipeline management',desc:'Track prospects from identification to close with stage, ask amount, probability, and next step logged on every record.'},
-   {icon:'users',label:'Constituent deep-dive',desc:'Full giving history, wealth indicators, relationships, engagement signals, and AI-generated briefing documents.'},
-   {icon:'mail',label:'Outreach & proposals',desc:'AI-drafted emails, donor presentations, and voice notes — all automatically attached to the constituent record.'},
-   {icon:'list',label:'NBA-driven daily workflow',desc:'AI-prioritized Next Best Action queue surfaces the right 5 conversations every morning ranked by predicted conversion.'}
+   {icon:'target',label:'Portfolio & pipeline management',desc:'Track every prospect from identification through close with stage gate, probability, ask amount, and next step logged on every record. Pipeline view weighted by AI probability — no inflated pipelines, no surprise misses at year-end.'},
+   {icon:'users',label:'Constituent intelligence deep-dive',desc:'Full giving history, wealth indicators, relationships, event attendance, course enrollments, and bookstore activity — unified in a single scrollable profile. No jumping between Blackbaud and spreadsheets to prep for a call.'},
+   {icon:'mail',label:'Outreach, proposals & voice notes',desc:'AI-drafted emails, personalized donor decks, and field call notes all attached directly to the constituent record the moment they\'re created. Every touchpoint logged without double-entry.'},
+   {icon:'list',label:'AI-prioritized daily action queue',desc:'Each morning, the NBA engine delivers a ranked list of the 5–10 most important conversations — scored on capacity × engagement × recency × days-since-contact. No decision fatigue about who to call first.'}
   ],
   ai:[
-   {label:'Next Best Action engine',desc:'Scores every prospect on capacity × engagement × recency — surfaces top actions ranked by predicted gift conversion likelihood.'},
-   {label:'AI outreach drafts',desc:'One-click emails and donor decks personalized from giving history, stated interests, and relationship depth.'},
-   {label:'Ask amount optimizer',desc:'ML model recommends ask range based on capacity rating, peer giving benchmarks, and stage velocity in the portfolio.'},
-   {label:'Donor prep briefs',desc:'AI synthesizes engagement history, news signals, and past interactions into a one-page brief before a major cultivation meeting.'}
+   {label:'Next Best Action (NBA) engine',desc:'Scores every portfolio prospect daily on four dimensions: estimated giving capacity, current engagement trajectory, recency of last touchpoint, and stage velocity. Surfaces the right conversations at the right moment — before momentum goes cold.'},
+   {label:'AI outreach drafting',desc:'One click generates a personalized email or donor deck grounded in the prospect\'s giving history, stated fund interests, relationship depth, and news signals. Officer reviews and sends — no staring at a blank screen.'},
+   {label:'Ask amount optimizer',desc:'ML model recommends a ask range and opening figure based on peer giving benchmarks, capacity rating, upgrade history, and stage. Prevents low-ball asks that leave money on the table and high asks that damage relationships.'},
+   {label:'Pre-meeting donor briefing',desc:'AI synthesizes the last 12 months of engagement — gifts, events attended, emails opened, courses taken, bookstore purchases — into a one-page brief 24 hours before a cultivation meeting. Officer walks in fully prepared.'}
   ],
   kg:[
-   {label:'Wealth screening (Target Analytics)',desc:'Real estate, business interests, stock holdings, and affinity scores layered onto every constituent from Blackbaud TA.'},
-   {label:'Event attendance graph',desc:'Every event check-in enriches engagement score — a prospect attending 3+ events in 12 months earns NBA priority boost.'},
-   {label:'Bookstore + course enrollment',desc:'Alumni who buy books and take courses surface as high-affinity prospects even without a prior gift history.'},
-   {label:'Relationship graph',desc:'Household, foundation, and board connections reveal warm introduction paths between officers and cold prospects.'}
+   {label:'Target Analytics wealth screening',desc:'Real estate holdings, business interests, stock ownership, political giving, and charitable affinity scores from Blackbaud Target Analytics are layered onto every constituent — updating quarterly so capacity ratings stay current.'},
+   {label:'Event attendance engagement graph',desc:'Every event check-in — lectures, dinners, campus tours, online webinars — adds weight to the engagement score. A prospect attending 3+ events in 12 months earns an automatic NBA priority boost and officer alert.'},
+   {label:'Bookstore & Thinkific course graph',desc:'Alumni who buy books from the ZC bookstore or complete courses on Thinkific are surfaced as high-affinity prospects even without a prior gift — their intellectual engagement is a leading indicator of giving intent.'},
+   {label:'Relationship & household connection graph',desc:'Household links, board affiliations, foundation connections, and shared geography reveal warm introduction paths. Officer sees exactly who in their portfolio can introduce them to a cold major gift prospect — no cold outreach needed.'}
   ]},
  director:{title:'Gift Director',color:'#2D6A4F',
-  summary:'Runs the full advancement operation — portfolio health, pipeline forecasting, team performance, and strategic resource allocation.',
+  summary:'Owns the full advancement operation — fund performance, portfolio health, team productivity, and long-range fiscal forecasting. The Director has a single source of truth for every metric that matters, updated in real time across all systems.',
   workflows:[
-   {icon:'chart',label:'Analytics & reporting',desc:'Fund performance, officer scorecards, donor retention rates, LYBUNT/SYBUNT analysis, and board-ready dashboards.'},
-   {icon:'trend',label:'Pipeline forecasting',desc:'Probability-weighted pipeline, discount models, and FY projection vs. target with scenario planning.'},
-   {icon:'send',label:'Bulk operations',desc:'Multi-select constituent actions — bulk event prep, batch bio generation, mass re-engagement campaigns launched in one step.'},
-   {icon:'gear',label:'Team & access management',desc:'User provisioning, persona-level view scoping, and field-level data access controls.'}
+   {icon:'chart',label:'Analytics, reports & board dashboards',desc:'Live fund performance, officer scorecards, donor retention curves, LYBUNT/SYBUNT analysis, acquisition cost per donor, and upgrade rates — all available as self-serve dashboards and one-click board-ready exports.'},
+   {icon:'trend',label:'FY pipeline forecasting & scenario planning',desc:'Probability-weighted pipeline with AI discounting by stage. Run best-case, expected, and floor scenarios against FY goal. Director can model impact of a single large pledge slipping a quarter — in real time, not a day later.'},
+   {icon:'send',label:'Bulk constituent operations',desc:'Multi-select constituents across any segment and trigger bulk actions: generate event prep briefs, assign to officer, add to solicitation queue, or launch a re-engagement campaign — all in a single workflow, not a series of one-offs.'},
+   {icon:'gear',label:'Team management & system governance',desc:'Provision staff accounts, set persona-level data access, review system change logs, configure sync schedules, and monitor integration health. Full visibility into who touched what and when.'}
   ],
   ai:[
-   {label:'Pipeline discounting model',desc:'AI discounts each ask by stage probability and historical close rate — producing a realistic weighted forecast vs. gross pipeline.'},
-   {label:'Retention risk scoring',desc:'Flags major donors likely to lapse based on engagement decline, recency drop, and life-event signals before the gift is lost.'},
-   {label:'Bulk bio generation',desc:'For events and board prep: AI generates personalized briefing paragraphs for 50+ attendees in one action — saving hours of staff time.'},
-   {label:'Strategic AI assistant',desc:'Ask AI queries the full data model in plain English: "show me lapsed $10K+ donors in Berkeley who attended an event."'}
+   {label:'Stage-adjusted pipeline discounting',desc:'AI applies per-stage discount rates calibrated to ZC\'s actual historical close rates — so a "90% confident" ask in Solicitation is discounted to its statistically accurate expected value. FY forecast is honest, not aspirational.'},
+   {label:'Major donor retention risk scoring',desc:'Monitors each major donor\'s engagement trajectory — email opens, event attendance, giving recency, officer contact cadence. Flags donors likely to lapse 90 days before the risk becomes irreversible. Director can intervene before it\'s too late.'},
+   {label:'Bulk AI briefing generation',desc:'Select 50 event attendees, click Generate Briefs — AI produces a personalized one-paragraph profile for each in under 30 seconds. Staff time saved per event: 3–5 hours. Quality: uniform and grounded in real data.'},
+   {label:'Plain-English data querying',desc:'Ask AI questions directly against the full data model: "Show me lapsed $10K+ donors in the Bay Area who attended an event this fiscal year but haven\'t been contacted in 60 days." No SQL. No analyst. Instant answer.'}
   ],
   kg:[
-   {label:'Full cross-system constituent view',desc:'Every constituent\'s giving, engagement, events, courses, and bookstore activity unified in one record — zero silos.'},
-   {label:'Mailchimp engagement feedback loop',desc:'Email open rates, click-throughs, and list membership flow back into the knowledge graph to inform retention scoring.'},
-   {label:'Living forecast model',desc:'Combines pledges, designations, historical patterns, and pipeline velocity to produce a FY projection updated in real-time.'},
-   {label:'Event ROI attribution',desc:'Links event attendance to subsequent gift conversions — measuring which events drive the most pipeline growth.'}
+   {label:'Unified cross-system constituent record',desc:'Every constituent\'s giving history, event attendance, course completions, bookstore purchases, email engagement, wealth screening, and officer notes are unified in a single record — the first time ZC has had zero data silos across systems.'},
+   {label:'Mailchimp engagement feedback into scoring',desc:'Email open rates, click-through rates, and list membership from Mailchimp campaigns flow back into the knowledge graph within 24 hours — directly updating the engagement scores that drive retention risk and NBA prioritization.'},
+   {label:'Living FY forecast model',desc:'Combines posted gifts, active pledges, pipeline probability weights, seasonal patterns, and historical conversion rates to produce a rolling FY projection — updated nightly, not just at month-end reviews.'},
+   {label:'Event-to-gift attribution analysis',desc:'Links every event attendance record to subsequent gift conversions within 12 months. Director sees exactly which events produce the highest pipeline yield — enabling smarter event investment decisions with real ROI data.'}
   ]},
  marketing:{title:'Marketing',color:'#9333EA',
-  summary:'Builds and activates donor and community segments — connecting online engagement to giving intent through intelligent, data-unified list-building.',
+  summary:'Bridges community engagement and giving intent — building precise donor and prospect segments from every signal across ZC\'s ecosystem. When Marketing and Advancement share one data model, the right message reaches the right person at the right moment.',
   workflows:[
-   {icon:'list',label:'Segment builder',desc:'Filter by constituent type, lifetime giving, ZIP, fund interest, and engagement signals to build precise audiences in seconds.'},
-   {icon:'spark',label:'AI-powered list building',desc:'Describe your audience in plain English — AI queries the knowledge graph and returns a matching segment instantly.'},
-   {icon:'mail',label:'Bulk messaging & Mailchimp sync',desc:'One-click bulk outreach or export to Mailchimp — lists stay in sync automatically on a nightly schedule.'},
-   {icon:'cal',label:'Event & community engagement',desc:'Track event attendance, bookstore activity, and course enrollment as rich engagement signals for segmentation.'}
+   {icon:'list',label:'Precision segment builder',desc:'Filter constituents by any combination of: giving history, lifetime value, ZIP code, fund affinity, event attendance, course completions, bookstore activity, and email engagement. Build a list in seconds that would take hours to pull from Blackbaud alone.'},
+   {icon:'spark',label:'Natural language list building',desc:'Describe your audience in plain English and AI does the querying: "alumni in Northern California who completed a course and gave to the Annual Fund in the last 2 years." The matched list appears instantly — no filter UI required.'},
+   {icon:'mail',label:'Mailchimp sync & bulk outreach',desc:'Push any segment directly to a Mailchimp audience with one click. Lists stay in sync on a nightly schedule — constituents added or removed from the segment automatically flow through. No manual exports, no stale lists.'},
+   {icon:'cal',label:'Engagement signal tracking',desc:'Every event check-in, bookstore purchase, course completion, and email interaction is logged as an engagement signal visible in the segment builder. Marketing has the richest behavioral data of any persona in the system.'}
   ],
   ai:[
-   {label:'Natural language segmentation',desc:'"Find alumni in Berkeley who gave to the Annual Fund and attended an event this year" — AI returns the matching list in 2 seconds.'},
-   {label:'Re-engagement scoring',desc:'AI identifies lapsed community members most likely to respond to outreach based on historical engagement decay patterns.'},
-   {label:'Content personalization signals',desc:'Knowledge graph surfaces whether a donor is a book buyer, course taker, or event-goer — enabling precise message tailoring.'},
-   {label:'Upgrade opportunity detection',desc:'AI flags recurring small donors showing capacity signals — auto-referring them to a Gift Officer for major gift cultivation.'}
+   {label:'Conversational list querying',desc:'"Find people who attended the Seerah lecture series, bought at least one book this year, and haven\'t given since 2023" — AI queries the unified knowledge graph and returns the matched segment in under 3 seconds with a count and preview. No analyst required.'},
+   {label:'Lapsed donor re-engagement scoring',desc:'AI models each lapsed community member\'s likelihood of responding to outreach — factoring in engagement decay rate, time since last gift, historical response to similar campaigns, and current bookstore or course activity. Highest-probability targets rise to the top.'},
+   {label:'Content personalization signal layer',desc:'Knowledge graph surfaces whether each recipient is primarily a book buyer, course taker, event-goer, or annual fund donor — so Marketing can send a different message to each cohort within the same campaign, dramatically improving response rates.'},
+   {label:'Major gift upgrade referral engine',desc:'AI identifies recurring small donors ($100–$500/yr) who show capacity signals from wealth screening — and auto-creates a referral task for the assigned Gift Officer. Marketing fills the major gift pipeline without manual prospect research.'}
   ],
   kg:[
-   {label:'Thinkific course enrollment',desc:'Course completions matched by email — students of Islamic finance or leadership programs surface as high-affinity prospects.'},
-   {label:'Bookstore purchase history',desc:'Unified with the giving record — bookstore buyers are 3× more likely to donate in the following 12 months.'},
-   {label:'Mailchimp two-way sync',desc:'List membership, open rates, and click data flow back into Risely — enriching engagement scores used across every persona.'},
-   {label:'Event management',desc:'Attendance records from all events linked to constituent profiles — every check-in enriches the segmentation graph in real time.'}
+   {label:'Thinkific course enrollment & completion',desc:'Every Thinkific enrollment and course completion is matched to a Risely constituent by email. Students of Islamic finance, leadership programs, or Quran studies surface as high-affinity prospects — intellectual engagement is among the strongest leading indicators of major giving.'},
+   {label:'Bookstore purchase graph',desc:'Unified with the giving record and event graph — constituents who buy books are 3× more likely to donate within 12 months. Bookstore buyers who have never given are the highest-value cold audience for a first-gift campaign.'},
+   {label:'Mailchimp two-way engagement sync',desc:'List membership, open rates, click-through rates, and unsubscribes from every Mailchimp campaign flow back into Risely within 24 hours — enriching the engagement scores used by every persona, not just Marketing. Clicks that signal interest can trigger an NBA action for a Gift Officer.'},
+   {label:'Event & community attendance graph',desc:'Check-ins from every ZC event — campus dinners, online lectures, annual galas, alumni weekends — are linked to constituent records in real time. Attendance pattern is the single most predictive behavioral signal in the segmentation model.'}
   ]}
 };
 
