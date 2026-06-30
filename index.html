@@ -836,11 +836,12 @@ function renderDashboard(){
    banner='<div class="banner"><div class="bi">'+ic('spark')+'</div><div class="btext"><b>Blackbaud reverse-sync active.</b> Last constituent sync 6:00 AM PT · 0 conflicts.</div><div class="bx"><button class="btn btn-sec btn-sm" onclick="toast(\'Sync log is illustrative in this prototype\')">View log</button></div></div>';
    const pd=PLEDGES.filter(p=>p.status!=='Scheduled');
    headBtn='<button class="btn btn-pri" onclick="openGiftModal(null)">'+ic('plus',16)+'New gift</button>';
-   tiles=[{l:'Pledges due',v:pd.length,d:usd(pd.reduce((s,p)=>s+p.amount,0))+' · next 60d'},
-     {l:'Avg gift size',v:usdK(totalRaised()/GIFTS.length),d:'FY26'},
-     {l:'Gifts this month',v:GIFTS.length,d:'Entered & posted'},
-     {l:'Processed FY26',v:usdK(totalRaised()),d:'All funds'}];
-   body=pledgesDueCard();
+   tiles=[{seg:'pledgesDue',l:'Pledges due',v:pd.length,d:usd(pd.reduce((s,p)=>s+p.amount,0))+' · next 60d'},
+     {seg:'avgGift',l:'Avg gift size',v:usdK(totalRaised()/GIFTS.length),d:'FY26'},
+     {seg:'giftsMonth',l:'Gifts this month',v:GIFTS.length,d:'Entered & posted'},
+     {seg:'giftsYTD',l:'Processed FY26',v:usdK(totalRaised()),d:'All funds'}];
+   if(!state.dashSeg||state.dashSeg==='nba')state.dashSeg='pledgesDue';
+   body=adminDashTable();
  }else if(state.persona==='officer'){
    const u=INBOX.filter(i=>i.to==='officer'&&!i.read).length;const pd=PLEDGES.filter(p=>p.status!=='Scheduled');
    banner='<div class="banner"><div class="bi">'+ic('inbox')+'</div><div class="btext"><b>'+u+' @mentions awaiting your review.</b> Shams asked about moving Layla to solicitation.</div><div class="bx"><button class="btn btn-pri btn-sm" onclick="go(\'inbox\')">Open Inbox</button></div></div>';
@@ -897,6 +898,12 @@ function dashTable(){const seg=state.dashSeg||'nba';
  if(seg==='giftsQTD')return giftRangeCard('qtd');
  if(seg==='giftsYTD')return giftRangeCard('ytd');
  return nbaTableCard();
+}
+function adminDashTable(){const seg=state.dashSeg||'pledgesDue';
+ if(seg==='avgGift')return giftRangeCard('ytd');
+ if(seg==='giftsMonth')return giftRangeCard('qtd');
+ if(seg==='giftsYTD')return giftRangeCard('ytd');
+ return pledgesDueCard();
 }
 function giftDate(g){return new Date(g.date);}
 function giftsInRange(range,officerName){const start=range==='qtd'?new Date('2026-04-01'):new Date('2025-08-01');let r=GIFTS.filter(g=>giftDate(g)>=start);if(officerName)r=r.filter(g=>{const c=byId(g.did);return c&&c.officer===officerName;});return r;}
@@ -1006,7 +1013,7 @@ function renderConstituents(){
   +'<div class="filters">'+fl.map(function(x,i){return '<button class="fpill '+(f===x[0]?'on':'')+'" onclick="state.cFilter=\''+x[0]+'\';render()">'+x[1]+'</button>'+(i===0?lifetimeMenu():'');}).join('')+'</div>'
   +selToolbar()
   +'<div class="card" style="overflow:visible"><div class="card-h"><b>'+(f==='all'?'All constituents':fl.find(x=>x[0]===f)[1])+(state.cLifetime?' · ≥ '+usdK(state.cLifetime):'')+'</b><span class="muted">'+rows.length+' shown · 12,480 total</span></div>'
-  +'<table><thead><tr>'+headCb+'<th>Name</th><th>Type</th><th>Relationships</th><th class="r">Lifetime giving</th><th>Last gift</th><th class="r">Action</th></tr></thead><tbody>'
+  +'<table><thead><tr>'+headCb+'<th>Name</th><th>Type</th><th>Relationships</th><th class="r">Lifetime giving</th><th class="r">Capacity</th><th>Last gift</th><th class="r">Action</th></tr></thead><tbody>'
   +rows.map(c=>{
     const cb=selectable?'<td onclick="event.stopPropagation()"><input type="checkbox" '+(sel.has(c.id)?'checked':'')+' onclick="toggleSel(\''+c.id+'\')"></td>':'';
     const items=[{l:'Preview',ic:'user',fn:'openDrawer(\''+c.id+'\')'},{l:'Open record',ic:'grid',fn:'openRecord(\''+c.id+'\')'},{l:'Pre-meeting prep',ic:'spark',fn:'openPrep(\''+c.id+'\')'}];
@@ -1019,6 +1026,7 @@ function renderConstituents(){
      +'<td>'+typeBadge(c.type)+'</td>'
      +'<td><span class="relcell"><span class="ric">'+c.rel+'</span>'+(c.rel===1?'link':'links')+'</span></td>'
      +'<td class="r tnum">'+usd(c.lifetime)+'</td>'
+     +'<td class="r"><span class="badge '+(c.capNum>=500000?'b-purple':'b-blue')+'">'+esc(c.capacity)+'</span></td>'
      +'<td>'+c.last.date+'<div class="t-sub">'+usd(c.last.amount)+' · '+esc(c.last.fund)+'</div></td>'
      +'<td class="r" style="white-space:nowrap">'+acts+'</td></tr>';
   }).join('')
@@ -1112,8 +1120,22 @@ function tabOverview(c){
    impact='<div class="card"><div class="card-h"><b>Consolidated philanthropic impact</b><span class="muted">across all affiliated entities</span></div><div class="card-b">'
    +'<div class="impact">'+AHMAD_IMPACT.map(x=>'<div class="ic"><div class="l">'+esc(x.l)+'</div><div class="v tnum">'+usd(x.v)+'</div></div>').join('')
    +'<div class="ic tot" style="grid-column:1/-1"><div class="l">Total influence (hard + soft)</div><div class="v tnum">'+usd(total)+'</div></div></div>'
-   +'<div class="note-banner">Hard and soft credit are segregated to the correct entity records for CASE GRS, receipting and IRS purposes — while this view rolls up Ahmad’s total philanthropic influence.</div></div></div>';
+   +'<div class="note-banner">Hard and soft credit are segregated to the correct entity records for CASE GRS, receipting and IRS purposes — while this view rolls up Ahmad\'s total philanthropic influence.</div></div></div>';
  }
+ const screenSource='Blackbaud Target Analytics';const screenDate='Jun 15, 2026';
+ const wealthCard='<div class="card"><div class="card-h"><b>'+ic('target',15)+' Wealth screening</b><span class="muted">'+screenSource+' · '+screenDate+'</span></div><div class="card-b">'
+  +'<div class="impact" style="grid-template-columns:repeat(3,1fr)">'
+  +'<div class="ic"><div class="l">Capacity rating</div><div class="v"><span class="badge '+(c.capNum>=500000?'b-purple':'b-blue')+'">'+esc(c.capacity)+'</span></div></div>'
+  +'<div class="ic"><div class="l">Real estate</div><div class="v tnum">'+(c.capNum>=500000?usd(Math.round(c.capNum*0.6)):usd(Math.round(c.capNum*0.4)))+'</div></div>'
+  +'<div class="ic"><div class="l">Business interests</div><div class="v tnum">'+(c.capNum>=250000?usd(Math.round(c.capNum*0.3)):'—')+'</div></div>'
+  +'<div class="ic"><div class="l">Stock holdings</div><div class="v tnum">'+(c.capNum>=500000?usd(Math.round(c.capNum*0.2)):'—')+'</div></div>'
+  +'<div class="ic"><div class="l">Philanthropic giving</div><div class="v tnum">'+usd(Math.round((c.lifetime||0)*1.4))+'</div></div>'
+  +'<div class="ic"><div class="l">Affinity score</div><div class="v">'+(c.capNum>=500000?'92 / 100':c.capNum>=250000?'78 / 100':'61 / 100')+'</div></div>'
+  +'</div><div class="note-banner" style="margin-top:12px">Data sourced from Blackbaud Target Analytics. Refresh available quarterly or on-demand.</div></div></div>';
+ const atts=c.attachments||[];
+ const attRows=atts.map(a=>'<tr><td class="t-name">'+esc(a.name)+'</td><td>'+esc(a.type)+'</td><td>'+esc(a.date)+'</td><td>'+esc(a.by)+'</td><td class="r"><button class="btn btn-sec btn-sm" onclick="toast(\'Downloading '+esc(a.name)+'\')">'+ic('download',13)+'Download</button></td></tr>').join('');
+ const attCard='<div class="card"><div class="card-h"><b>'+ic('file',15)+' Attachments</b><div style="display:flex;gap:10px;align-items:center"><span class="muted">'+atts.length+' file'+(atts.length!==1?'s':'')+'</span><button class="btn btn-sec btn-sm" onclick="openAttachModal('+c.id+')">'+ic('plus',13)+'Upload</button></div></div>'
+  +(atts.length?'<table><thead><tr><th>File</th><th>Type</th><th>Date</th><th>Added by</th><th class="r">Action</th></tr></thead><tbody>'+attRows+'</tbody></table>':'<div class="card-b"><div class="t-sub">No attachments yet. Upload scanned checks, correspondence, or supporting documents.</div></div>')+'</div>';
  return '<div class="cols"><div class="card"><div class="card-h"><b>Constituent details</b></div><div class="card-b">'
   +'<div class="kv">'
   +'<div class="k">Constituent ID</div><div class="v">'+esc(c.cid)+'</div>'
@@ -1127,7 +1149,23 @@ function tabOverview(c){
   +'<div class="k">FY25 giving</div><div class="v tnum">'+usd(c.fy25)+'</div>'
   +(c.stage?'<div class="k">Pipeline</div><div class="v">'+stageObj(c.stage).name+' · ask '+usd(c.ask)+' · '+esc(c.fundInterest)+'</div>':'')
   +'</div></div></div>'
-  +'<div>'+impact+(c.hierarchy?'':'<div class="card"><div class="card-h"><b>Quick stats</b></div><div class="card-b"><div class="impact"><div class="ic"><div class="l">Lifetime</div><div class="v tnum">'+usd(c.lifetime)+'</div></div><div class="ic"><div class="l">FY25</div><div class="v tnum">'+usd(c.fy25)+'</div></div><div class="ic"><div class="l">Relationships</div><div class="v">'+c.rel+'</div></div><div class="ic"><div class="l">Gifts</div><div class="v">'+(c.giving||[]).length+'</div></div></div></div></div>')+engageMiniCard(c)+'</div></div>';
+  +'<div>'+wealthCard+attCard+impact+(c.hierarchy?'':'<div class="card"><div class="card-h"><b>Quick stats</b></div><div class="card-b"><div class="impact"><div class="ic"><div class="l">Lifetime</div><div class="v tnum">'+usd(c.lifetime)+'</div></div><div class="ic"><div class="l">FY25</div><div class="v tnum">'+usd(c.fy25)+'</div></div><div class="ic"><div class="l">Relationships</div><div class="v">'+c.rel+'</div></div><div class="ic"><div class="l">Gifts</div><div class="v">'+(c.giving||[]).length+'</div></div></div></div></div>')+engageMiniCard(c)+'</div></div>';
+}
+function openAttachModal(id){
+ openModal('<div class="modal"><div class="modal-h">'+ic('file',20)+'<div><b>Upload attachment</b><div class="sub">Scanned checks, correspondence, or documents</div></div><button class="mx" onclick="closeModal()">'+ic('x',18)+'</button></div>'
+  +'<div class="modal-b"><label class="fld"><span class="lk">File type</span><select class="input" id="attType"><option>Scanned check</option><option>Correspondence</option><option>Legal document</option><option>Other</option></select></label>'
+  +'<label class="fld"><span class="lk">File name</span><input class="input" id="attName" placeholder="e.g. Check_OmarSiddiqui_Jun2026.pdf"></label>'
+  +'<div class="note-banner">In the full system, this opens a file picker. The attachment is stored securely and linked to this constituent record.</div>'
+  +'</div><div class="modal-f"><button class="btn btn-sec" onclick="closeModal()">Cancel</button><button class="btn btn-pri" onclick="saveAttachment('+id+')">'+ic('check',15)+'Save attachment</button></div></div>');
+}
+function saveAttachment(id){
+ const c=byId(id);const me=memberByPersona(state.persona);
+ const name=$('#attName')?$('#attName').value:'Document.pdf';
+ const type=$('#attType')?$('#attType').value:'Other';
+ c.attachments=c.attachments||[];
+ c.attachments.push({name:name||'Attachment.pdf',type:type,date:'Jun 30, 2026',by:me.name});
+ closeModal();toast('Attachment saved to '+c.name+'\'s record','file');
+ if(state.view==='record')renderRecord();
 }
 function engageScore(c){let s=0;s+=(c.events||[]).length*12;s+=(c.courses||[]).length*15;s+=(c.books||[]).length*8;s+=Math.min(40,Math.round((c.fy25||0)/2500));return Math.min(99,s);}
 function engageMiniCard(c){const ev=(c.events||[]).length,co=(c.courses||[]).length,bk=(c.books||[]).length;const sc=engageScore(c);
@@ -1185,15 +1223,32 @@ function tabGiving(c){
 }
 function tabNotes(c){
  const me=memberByPersona(state.persona);
+ const noteType=state.noteType||'note';
+ const oppOpts=(c.giving||[]).length?c.giving.slice(0,5).map(g=>'<option>'+esc(g.fund)+' pledge · '+g.date+'</option>').join(''):'<option>New opportunity</option>';
  const chips=TEAM.filter(t=>t.persona!==state.persona).map(t=>'<button class="chip" onclick="insertMention(\''+t.name+'\')"><span class="ca">'+t.initials+'</span>@'+t.name.split(' ')[0]+'</button>').join('');
- const composer='<div class="composer"><textarea id="noteInput" placeholder="Write a note about '+esc(c.name)+'... type @ to mention a teammate"></textarea>'
-   +'<div class="mentionbar"><span class="ml">Mention</span>'+chips+'<button class="btn btn-pri btn-sm" style="margin-left:auto" onclick="postNote()">'+ic('send',14)+'Post note</button></div></div>';
- const notes=(c.notes||[]).slice().reverse().map(n=>{
+ const typeTabs='<div style="display:flex;gap:8px;margin-bottom:12px">'
+  +'<button class="btn '+(noteType==='note'?'btn-pri':'btn-sec')+' btn-sm" onclick="state.noteType=\'note\';renderRecord()">'+ic('edit',13)+'Note</button>'
+  +'<button class="btn '+(noteType==='action'?'btn-pri':'btn-sec')+' btn-sm" onclick="state.noteType=\'action\';renderRecord()">'+ic('target',13)+'Action (linked to opportunity)</button>'
+  +'</div>';
+ const oppField=noteType==='action'?'<label class="fld" style="margin-bottom:10px"><span class="lk">Linked opportunity</span><select class="input" id="noteOpp"><option value="">— Select or create opportunity —</option>'+oppOpts+'<option value="new">+ Create new opportunity</option></select></label>':'' ;
+ const placeholder=noteType==='action'?'Describe the action taken or planned... (e.g. called donor, scheduled visit, sent proposal)':'Write a note about '+esc(c.name)+'... type @ to mention a teammate';
+ const composer='<div class="composer">'+typeTabs+oppField+'<textarea id="noteInput" placeholder="'+placeholder+'"></textarea>'
+   +'<div class="mentionbar"><span class="ml">Mention</span>'+chips+'<button class="btn btn-pri btn-sm" style="margin-left:auto" onclick="postNote()">'+ic('send',14)+'Post '+(noteType==='action'?'action':'note')+'</button></div></div>';
+ const allItems=(c.notes||[]).slice().reverse();
+ const noteItems=allItems.filter(n=>!n.actionType||n.actionType==='note');
+ const actionItems=allItems.filter(n=>n.actionType==='action');
+ const renderItem=n=>{
    const m=TEAM.find(t=>t.id===n.by)||{name:'User',initials:'U',color:'#64748B'};
-   return '<div class="note"><div class="na" style="background:'+m.color+'">'+m.initials+'</div><div class="nb"><div class="nh"><b>'+esc(m.name)+'</b><span class="nt">'+esc(n.time)+'</span></div><div class="ntext">'+fmtMentions(n.text)+'</div></div></div>';
- }).join('')||'<div class="t-sub" style="padding:8px 0">No notes yet — be the first to log activity.</div>';
- const voices=(c.voice||[]).length?'<div class="card-h" style="border-top:1px solid var(--line2)"><b>Voice notes</b></div><div class="card-b">'+(c.voice||[]).map(v=>'<div class="voice"><div class="vp">'+ic('play',15)+'</div><div style="flex:1"><div style="font-weight:700;color:var(--navy);font-size:13px">'+esc((TEAM.find(t=>t.id===v.by)||{name:'User'}).name)+' · '+esc(v.time)+' · '+v.dur+'</div><div class="wave" style="margin-top:6px"></div><div class="ntext" style="margin-top:7px">'+esc(v.transcript)+'</div></div></div>').join('')+'</div>':'';
- return '<div class="card"><div class="card-b">'+composer+'</div><div class="card-h" style="border-top:1px solid var(--line2)"><b>Activity</b><span class="muted">'+(c.notes||[]).length+' notes</span></div><div class="card-b">'+notes+'</div>'+voices+'</div>';
+   const isAction=n.actionType==='action';
+   return '<div class="note" style="'+(isAction?'border-left:3px solid var(--blue);padding-left:12px':'')+'"><div class="na" style="background:'+m.color+'">'+m.initials+'</div><div class="nb"><div class="nh"><b>'+esc(m.name)+'</b>'+(isAction?'<span class="badge b-blue" style="margin-left:6px">'+ic('target',11)+'Action</span>':'')+(n.opportunity?'<span class="badge b-sky" style="margin-left:4px">'+esc(n.opportunity)+'</span>':'')+'<span class="nt">'+esc(n.time)+'</span></div><div class="ntext">'+fmtMentions(n.text)+'</div></div></div>';
+ };
+ const renderedNotes=noteItems.map(renderItem).join('')||'<div class="t-sub" style="padding:8px 0">No notes yet.</div>';
+ const renderedActions=actionItems.map(renderItem).join('')||'<div class="t-sub" style="padding:8px 0">No linked actions yet.</div>';
+ const voices=(c.voice||[]).length?'<div class="card-h" style="border-top:1px solid var(--line2)"><b>'+ic('mic',14)+' Voice notes</b><span class="muted">'+(c.voice||[]).length+'</span></div><div class="card-b">'+(c.voice||[]).map(v=>'<div class="voice"><div class="vp">'+ic('play',15)+'</div><div style="flex:1"><div style="font-weight:700;color:var(--navy);font-size:13px">'+esc((TEAM.find(t=>t.id===v.by)||{name:'User'}).name)+' · '+esc(v.time)+' · '+v.dur+'</div><div class="wave" style="margin-top:6px"></div><div class="ntext" style="margin-top:7px">'+esc(v.transcript)+'</div></div></div>').join('')+'</div>':'';
+ return '<div class="card"><div class="card-b">'+composer+'</div>'
+  +'<div class="card-h" style="border-top:1px solid var(--line2)"><b>'+ic('target',14)+' Actions (linked to opportunities)</b><span class="muted">'+actionItems.length+'</span></div><div class="card-b">'+renderedActions+'</div>'
+  +'<div class="card-h" style="border-top:1px solid var(--line2)"><b>'+ic('edit',14)+' Notes</b><span class="muted">'+noteItems.length+'</span></div><div class="card-b">'+renderedNotes+'</div>'
+  +voices+'</div>';
 }
 function tabReceipts(c){
  if(c.hierarchy){
@@ -1202,7 +1257,12 @@ function tabReceipts(c){
    +ROUTING.map(r=>'<tr><td class="t-name">'+esc(r.entity)+'</td><td>'+esc(r.gift)+'</td><td>'+esc(r.hard)+'</td><td>'+esc(r.soft)+'</td><td><span style="color:var(--blue-d);font-weight:600">'+esc(r.imm)+'</span></td><td>'+esc(r.ye)+'</td></tr>').join('')
    +'</tbody></table><div class="card-b"><div class="note-banner">Every entity × event combination has independently configurable recipients (personal, household, corporate billing, CFO, CPA). This is RFP §Q — receipt & acknowledgement routing.</div></div></div>';
  }
- return '<div class="card"><div class="card-h"><b>Receipt preferences</b></div><div class="card-b"><div class="kv">'
+ const gifts=c.giving||[];
+ const receiptRows=gifts.map(g=>'<tr><td>'+esc(g.date)+'</td><td>'+esc(g.fund)+'</td><td class="r tnum">'+usd(g.amount)+'</td><td>'+creditBadge(g.credit)+'</td><td><span class="badge '+(g.receipt==='Posted'||g.receipt==='Sent'?'b-green':'b-amber')+'">'+esc(g.receipt||'Pending')+'</span></td><td class="r" style="white-space:nowrap"><button class="btn btn-sec btn-sm" onclick="toast(\'Downloading receipt PDF for '+esc(g.fund)+'...\')" style="margin-right:6px">'+ic('download',13)+' PDF</button><button class="btn btn-sec btn-sm" onclick="toast(\'Receipt emailed to '+esc(c.email)+'\')">'+ic('mail',13)+' Email</button></td></tr>').join('');
+ return '<div class="card" style="margin-bottom:16px"><div class="card-h"><b>'+ic('file',15)+' Gift receipts</b><div style="display:flex;gap:10px;align-items:center"><span class="muted">'+gifts.length+' gifts</span><button class="btn btn-sec btn-sm" onclick="toast(\'Year-end statement PDF downloading...\')">'+ic('download',13)+'Year-end statement</button></div></div>'
+  +(gifts.length?'<table><thead><tr><th>Date</th><th>Fund</th><th class="r">Amount</th><th>Credit</th><th>Status</th><th class="r">Download / Send</th></tr></thead><tbody>'+receiptRows+'</tbody></table>':'<div class="card-b"><div class="t-sub">No gift receipts on record.</div></div>')
+  +'</div>'
+  +'<div class="card"><div class="card-h"><b>Receipt preferences</b></div><div class="card-b"><div class="kv">'
   +'<div class="k">Immediate receipt to</div><div class="v">'+esc(c.email)+'</div>'
   +'<div class="k">Year-end statement to</div><div class="v">'+esc(c.email)+'</div>'
   +'<div class="k">Format</div><div class="v">PDF on institutional letterhead</div>'
@@ -1417,13 +1477,15 @@ const EVENTS=[
  {name:'Alumni Reunion — Bay Area',date:'Jul 12, 2026',type:'Alumni',reg:96,cap:150,rev:4800,status:'Upcoming'},
  {name:'Annual Fundraising Gala',date:'Sep 20, 2026',type:'Gala',reg:34,cap:300,rev:0,status:'Open'}
 ];
+function eventReg(n){toast('Registrant list ready — '+n+' people');}
+function eventMsg(n){toast('Message queued to '+n+' attendees','mail');}
 function renderEvents(){
  const totalReg=EVENTS.reduce(function(s,e){return s+e.reg;},0);const up=EVENTS.filter(function(e){return e.status!=='Past';}).length;const rev=EVENTS.reduce(function(s,e){return s+e.rev;},0);const fill=Math.round(EVENTS.reduce(function(s,e){return s+e.reg/e.cap;},0)/EVENTS.length*100);
  const tiles=[{l:'Total registrations',v:totalReg.toLocaleString(),d:'All events'},{l:'Upcoming events',v:up,d:'Open / scheduled'},{l:'Avg fill rate',v:fill+'%',d:'Registered ÷ capacity'},{l:'Event revenue',v:usdK(rev),d:'Tickets · FY26'}];
  setHTML('#view',header('Events','Event registrations — a sync source for engagement lists')
   +'<div class="tiles">'+tiles.map(tile).join('')+'</div>'
-  +'<div class="card"><div class="card-h"><b>Events &amp; registrations</b><span class="muted">'+EVENTS.length+' events</span></div><div style="overflow-x:auto"><table><thead><tr><th>Event</th><th>Date</th><th>Type</th><th>Registered</th><th class="r">Revenue</th><th>Status</th><th class="r">Action</th></tr></thead><tbody>'
-  +EVENTS.map(function(e){var p=Math.round(e.reg/e.cap*100);var sb=e.status==='Past'?'<span class="badge b-slate">Past</span>':e.status==='Open'?'<span class="badge b-green">Open</span>':'<span class="badge b-blue">Upcoming</span>';return '<tr><td class="t-name">'+esc(e.name)+'</td><td>'+esc(e.date)+'</td><td>'+esc(e.type)+'</td><td style="min-width:170px"><div style="display:flex;align-items:center;gap:8px"><div class="bar" style="flex:1"><i style="width:'+Math.min(100,p)+'%"></i></div><span class="t-sub" style="white-space:nowrap">'+e.reg+' / '+e.cap+'</span></div></td><td class="r tnum">'+(e.rev?usd(e.rev):'—')+'</td><td>'+sb+'</td><td class="r" style="white-space:nowrap"><button class="btn btn-sec btn-sm" onclick="toast(\'Registrant list ready — '+e.reg+' people\')">Registrants</button>'+(can('bulk')?' <button class="btn btn-sec btn-sm" onclick="toast(\'Message queued to '+e.reg+' attendees\',\'mail\')">Message</button>':'')+'</td></tr>';}).join('')
+  +'<div class="card" style="overflow:visible"><div class="card-h"><b>Events &amp; registrations</b><span class="muted">'+EVENTS.length+' events</span></div><div><table><thead><tr><th>Event</th><th>Date</th><th>Type</th><th>Registered</th><th class="r">Revenue</th><th>Status</th><th class="r">Action</th></tr></thead><tbody>'
+  +EVENTS.map(function(e){var p=Math.round(e.reg/e.cap*100);var sb=e.status==='Past'?'<span class="badge b-slate">Past</span>':e.status==='Open'?'<span class="badge b-green">Open</span>':'<span class="badge b-blue">Upcoming</span>';return '<tr><td class="t-name">'+esc(e.name)+'</td><td>'+esc(e.date)+'</td><td>'+esc(e.type)+'</td><td style="min-width:170px"><div style="display:flex;align-items:center;gap:8px"><div class="bar" style="flex:1"><i style="width:'+Math.min(100,p)+'%"></i></div><span class="t-sub" style="white-space:nowrap">'+e.reg+' / '+e.cap+'</span></div></td><td class="r tnum">'+(e.rev?usd(e.rev):'—')+'</td><td>'+sb+'</td><td class="r" style="white-space:nowrap">'+rowMenu([{l:'View registrants',ic:'users',fn:'eventReg('+e.reg+')'}].concat(can('bulk')?[{l:'Message attendees',ic:'mail',fn:'eventMsg('+e.reg+')'}]:[]))+'</td></tr>';}).join('')
   +'</tbody></table></div></div>');
 }
 /* ============================ BOOKSTORE (Marketing) ============================ */
@@ -1510,6 +1572,13 @@ function renderPayments(){
   +(rows.length?rows.map(function(p){return '<tr class="clk" onclick="openRecord(\''+p.did+'\')"><td class="t-name">'+esc(p.donor)+'</td><td>'+esc(p.date)+'</td><td class="r tnum">'+usd(p.amount)+'</td><td>'+sourceBadge(p.source)+'</td><td class="r">'+rowMenu([{l:'Open record',ic:'user',fn:'openRecord(\''+p.did+'\')'},{l:'Pre-meeting prep',ic:'spark',fn:'openPrep(\''+p.did+'\')'}])+'</td></tr>';}).join(''):'<tr><td colspan="5"><div class="t-sub" style="padding:8px">No payments match these filters.</div></td></tr>')
   +'</tbody></table></div></div>');
 }
+
+const EVENT_PAYMENTS=[
+ {donor:'Crescent Charitable Foundation',did:'crescent',date:'Jun 20, 2026',amount:5000,event:'Rihla Alumni Lecture Series',source:'BBMS'},
+ {donor:'Ahmad Al-Rashid',did:'ahmad',date:'Jun 18, 2026',amount:1500,event:'Annual Iftar Gala',source:'Stripe'},
+ {donor:'Layla Hassan',did:'layla',date:'Jun 15, 2026',amount:250,event:'Annual Iftar Gala',source:'PayPal'},
+ {donor:'Yusuf Rahman',did:'yusuf',date:'Jun 10, 2026',amount:500,event:'Rihla Alumni Lecture Series',source:'Venmo'},
+];
 const REC={active:1180,mrr:49500,newM:42,churnedM:18,annual:594000,trend:[44,45.5,46.2,47.8,48.6,49.5],trendM:['Dec','Jan','Feb','Mar','Apr','May']};
 function prospectsCard(){
  const rows=prospects().filter(c=>c.stage!=='stewardship');
@@ -1746,6 +1815,33 @@ function renderUsers(){
     return '<tr><td class="t-name"><span class="uav" style="background:'+r.color+'">'+r.init+'</span>'+esc(r.name)+'</td><td>'+esc(r.email)+'</td><td>'+sel+'</td><td>'+(r.status==='Active'?'<span class="badge b-green">Active</span>':'<span class="badge b-amber">Invited</span>')+'</td><td>'+esc(r.last)+'</td><td class="r" style="white-space:nowrap"><button class="btn btn-sec btn-sm" onclick="toast(\''+(r.status==='Invited'?'Invite resent':'User managed')+' — illustrative\',\'check\')">'+(r.status==='Invited'?'Resend':'Manage')+'</button></td></tr>';}).join('')
   +'</tbody></table></div></div>');
 }
+
+function fieldPermCard(){
+ const roles=[
+  {role:'Admin',fields:['All fields','Gift entry','Batch management','Constituent records','Capacity data','Wealth screening','Receipts','Attachments','Users & permissions']},
+  {role:'Gift Officer',fields:['Constituent records','Capacity data (read-only)','Gift history','Notes & actions','Pipeline','Presentations','Inbox']},
+  {role:'Gift Director',fields:['All fields','Analytics','Forecast','Pipeline','Constituent records','Capacity data','Reports']},
+  {role:'Marketing',fields:['Constituent name','Email address (own record only)','Event history','Communication preferences (own record only)']},
+ ];
+ const rows=roles.map(r=>'<tr><td class="t-name">'+esc(r.role)+'</td><td><div class="tagwrap">'+r.fields.map(f=>'<span class="badge b-blue" style="font-size:11px">'+esc(f)+'</span>').join('')+'</div></td><td class="r"><button class="btn btn-sec btn-sm" onclick="toast(\'Field permissions for '+esc(r.role)+' — edit in full admin panel\')">'+ic('edit',13)+'Edit</button></td></tr>').join('');
+ return '<div class="card" style="margin-top:18px"><div class="card-h"><b>'+ic('lock',15)+' Field-level permissions</b><span class="muted">Scope data access by role</span></div>'
+  +'<table><thead><tr><th>Role</th><th>Accessible fields</th><th class="r">Action</th></tr></thead><tbody>'+rows+'</tbody></table>'
+  +'<div class="card-b"><div class="note-banner">'+ic('info',13)+' Field-level permissions restrict which data fields each role can view or edit — independent of page-level access. Changes take effect immediately.</div></div></div>';
+}
+function emailPrefCard(){
+ return '<div class="card" style="margin-top:18px"><div class="card-h"><b>'+ic('mail',15)+' Constituent email preferences</b><span class="muted">Marketing role scoping</span></div><div class="card-b">'
+  +'<div class="kv" style="margin-bottom:16px">'
+  +'<div class="k">Marketing role can edit</div><div class="v">Email communication preferences only (own record)</div>'
+  +'<div class="k">Marketing role cannot edit</div><div class="v">Name, address, giving history, capacity data, relationships</div>'
+  +'<div class="k">Constituent self-service</div><div class="v">Constituents may update their own email opt-in/out via portal</div>'
+  +'</div>'
+  +'<div style="display:flex;gap:9px;flex-wrap:wrap">'
+  +'<button class="btn btn-sec btn-sm" onclick="toast(\'Email preference scoping saved\')">'+ic('check',13)+'Save preference settings</button>'
+  +'<button class="btn btn-sec btn-sm" onclick="toast(\'Opening constituent portal preview...\')">'+ic('user',13)+'Preview constituent portal</button>'
+  +'</div>'
+  +'<div class="note-banner" style="margin-top:12px">'+ic('info',13)+' Constituents can only opt in/out of communications — they cannot access or modify their full donor record.</div>'
+  +'</div></div>';
+}
 function renderSettings(){const s=state.settings;const me=memberByPersona(state.persona);
  const tzs=[['America/Los_Angeles','Pacific Time (PT)'],['America/Denver','Mountain Time (MT)'],['America/Chicago','Central Time (CT)'],['America/New_York','Eastern Time (ET)'],['UTC','UTC']];
  const inbox=s.inbox;
@@ -1756,7 +1852,9 @@ function renderSettings(){const s=state.settings;const me=memberByPersona(state.
  setHTML('#view',header('Settings','Workspace preferences · signed in as '+me.name)
   +'<div class="cols"><div class="card"><div class="card-h"><b>Time zone</b></div><div class="card-b"><label class="fld"><span class="lk">Show all dates and times in</span><select class="input" onchange="setTz(this.value)">'+tzs.map(t=>'<option value="'+t[0]+'" '+(s.tz===t[0]?'selected':'')+'>'+t[1]+'</option>').join('')+'</select></label><div class="note-banner">Risely renders every timestamp in this zone. Default is Pacific Time.</div></div></div>'
   +'<div class="card"><div class="card-h"><b>Sending inbox</b>'+(inbox?'<span class="badge b-green">Connected</span>':'<span class="badge b-amber">Not connected</span>')+'</div><div class="card-b">'+inboxCard+'</div></div></div>'
-  +'<div class="card"><div class="card-h"><b>Account</b></div><div class="card-b"><div class="kv"><div class="k">Signed in as</div><div class="v">'+esc(me.name)+'</div><div class="k">Role</div><div class="v">'+esc(me.role)+'</div><div class="k">Active persona</div><div class="v">'+PERSONAS[state.persona].label+' · '+PERSONAS[state.persona].sub+'</div></div></div></div>');
+  +'<div class="card"><div class="card-h"><b>Account</b></div><div class="card-b"><div class="kv"><div class="k">Signed in as</div><div class="v">'+esc(me.name)+'</div><div class="k">Role</div><div class="v">'+esc(me.role)+'</div><div class="k">Active persona</div><div class="v">'+PERSONAS[state.persona].label+' · '+PERSONAS[state.persona].sub+'</div></div></div></div>'
+  +fieldPermCard()
+  +emailPrefCard());
 }
 function setTz(tz){state.settings.tz=tz;toast('Time zone set to '+tz,'globe');}
 function connectInbox(p){state.settings.inbox=p;toast(p+' connected — bulk email enabled','check');render();}
@@ -2202,10 +2300,9 @@ function boot(){
  $('#bellBtn').onclick=()=>go('inbox');
  const gs=$('#globalSearch');
  gs.addEventListener('keydown',e=>{if(e.key==='Enter'){const q=gs.value.trim().toLowerCase();if(!q)return;const hit=C.find(c=>c.name.toLowerCase().indexOf(q)>=0);if(hit){openRecord(hit.id);gs.value='';}else toast('No constituent matches “'+gs.value+'”');}});
- document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeDrawer();}});
- render();
+  render();
 }
-boot();
+if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',boot);}else{boot();}
 </script>
 </body>
 </html>
