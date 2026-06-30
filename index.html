@@ -36,6 +36,9 @@ a{color:inherit}
 .persona button .pdot{width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.45}
 .persona button.on{color:#fff;box-shadow:0 2px 7px rgba(37,99,235,.45)}
 .persona button.on .pdot{opacity:1;background:#fff}
+.req-pill{display:inline-flex;align-items:center;font-size:10px;font-weight:700;letter-spacing:.04em;padding:2px 7px;border-radius:999px;background:rgba(255,255,255,.25);color:inherit;margin-left:4px;cursor:pointer;border:1px solid rgba(255,255,255,.35);transition:.15s}
+.persona button:not(.on) .req-pill{background:var(--blue-l);color:var(--blue-d);border-color:var(--blue-l2)}
+.req-pill:hover{opacity:1;filter:brightness(1.1);transform:scale(1.06)}
 .persona button:not(.on):hover{color:var(--navy);background:#fff}
 .tr{margin-left:auto;display:flex;align-items:center;gap:11px}
 .search{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 12px;width:230px;color:var(--slate4)}
@@ -93,7 +96,7 @@ a{color:inherit}
 /* Card + table */
 .card{background:#fff;border:1px solid var(--line);border-radius:var(--r-card);box-shadow:var(--sh);overflow:hidden}
 .card+.card{margin-top:18px}
-.card-h{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 20px;border-bottom:1px solid var(--line2)}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 20px;border-bottom:1px solid var(--line2);position:relative;z-index:10}
 .card-h b{font-size:15px;font-weight:700;color:var(--navy)}
 .card-h .muted{color:var(--slate4);font-size:13px;font-weight:600}
 .card-b{padding:20px}
@@ -169,7 +172,7 @@ input[type=checkbox]{accent-color:var(--blue);width:16px;height:16px;cursor:poin
 .menu{position:relative;display:inline-block}
 .menu>summary{list-style:none;cursor:pointer}
 .menu>summary::-webkit-details-marker{display:none}
-.menu-pop{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh-lg);padding:6px;min-width:210px;z-index:40}
+.menu-pop{position:absolute;right:0;top:calc(100% + 6px);background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--sh-lg);padding:6px;min-width:210px;z-index:200}
 .menu-item{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:8px;font-size:13.5px;font-weight:600;color:var(--slate7);cursor:pointer;white-space:nowrap}
 .menu-item:hover{background:var(--bg);color:var(--navy)}
 
@@ -421,7 +424,9 @@ const IC={
  cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
  book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
  cap:'<path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1 2.5 2.5 6 2.5s6-1.5 6-2.5v-5"/>',
- phone:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>'
+ phone:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/>',
+ file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>',
+ upload:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>'
 };
 function ic(n,s){s=s||18;return '<svg width="'+s+'" height="'+s+'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+(IC[n]||'')+'</svg>';}
 
@@ -436,7 +441,7 @@ function memberByPersona(p){return TEAM.find(t=>t.persona===p);}
 
 /* ---------- Personas ---------- */
 const PERSONAS={
- admin:{label:'Admin',sub:'Gift Entry',color:'#B07A4B',views:['dashboard','constituents','gifts','payments','forecast','askai','inbox','users','settings'],
+ admin:{label:'Admin',sub:'Gift Entry',color:'#B07A4B',views:['dashboard','constituents','gifts','payments','forecast','askai','inbox','uploads','users','settings'],
    actions:['note','gift']},
  officer:{label:'Gift Officer',sub:'Major Gifts',color:'#2563EB',views:['dashboard','constituents','pipeline','nba','gifts','lists','forecast','askai','inbox'],
    actions:['note','email','deck','voice','gift','bulk','list']},
@@ -464,6 +469,7 @@ const NAV=[
    {k:'askai',label:'Ask AI',icon:'spark'}
  ]},
  {sec:'Administrative',items:[
+   {k:'uploads',label:'Uploads',icon:'upload'},
    {k:'users',label:'Users',icon:'user'},
    {k:'settings',label:'Settings',icon:'gear'}
  ]}
@@ -670,12 +676,12 @@ let PLEDGES=[
 
 /* Saved marketing lists */
 const SAVED_LISTS=[
- {name:'FY26 Major Donors ($25K+)',desc:'Lifetime giving over $25K',sync:'Synced 6:00 AM PT',members:['ahmad','omar','crescent','foundation','holdings','layla']},
- {name:'Berkeley Alumni',desc:'Constituents in 94703 / 94704 with alumni role',sync:'Not synced',members:['ahmad','fatima','aisha','yusuf']},
- {name:'Lapsed Annual Fund',desc:'No gift in 13+ months',sync:'Synced yesterday',members:['yusuf','aisha','mariam']}
+ {name:'FY26 Major Donors ($25K+)',desc:'Lifetime giving over $25K',sync:'Synced 6:00 AM PT',syncBB:true,syncMC:true,members:['ahmad','omar','crescent','foundation','holdings','layla']},
+ {name:'Berkeley Alumni',desc:'Constituents in 94703 / 94704 with alumni role',sync:'Not synced',syncBB:false,syncMC:true,members:['ahmad','fatima','aisha','yusuf']},
+ {name:'Lapsed Annual Fund',desc:'No gift in 13+ months',sync:'Synced yesterday',syncBB:true,syncMC:false,members:['yusuf','aisha','mariam']}
 ];
-SAVED_LISTS.unshift({name:'Bookstore buyers — FY26',desc:'Purchased from the bookstore this year',sync:'Not synced',members:C.filter(c=>(c.books||[]).length).map(c=>c.id)});
-SAVED_LISTS.unshift({name:'Event attendees — FY26',desc:'Attended ≥1 event this year',sync:'Not synced',members:C.filter(c=>(c.events||[]).length).map(c=>c.id)});
+SAVED_LISTS.unshift({name:'Bookstore buyers — FY26',desc:'Purchased from the bookstore this year',sync:'Not synced',syncBB:false,syncMC:true,members:C.filter(c=>(c.books||[]).length).map(c=>c.id)});
+SAVED_LISTS.unshift({name:'Event attendees — FY26',desc:'Attended ≥1 event this year',sync:'Not synced',syncBB:true,syncMC:false,members:C.filter(c=>(c.events||[]).length).map(c=>c.id)});
 SAVED_LISTS.forEach(l=>{l.count=(l.members||[]).length;});
 
 /* Inbox (@mention review queue) */
@@ -744,8 +750,11 @@ function renderTop(){
  // persona pill
  $('#persona').innerHTML=Object.keys(PERSONAS).map(p=>{
    const P=PERSONAS[p];const on=state.persona===p;
-   return '<button class="'+(on?'on':'')+'" style="'+(on?'background:'+P.color:'')+'" onclick="setPersona(\''+p+'\')">'
-     +'<span class="pdot"></span><span class="plabel">'+P.label+'</span></button>';
+   return '<button class="'+(on?'on':'')+'" style="'+(on?'background:'+P.color:'')
++'" onclick="setPersona(\''+p+'\')">'
+     +'<span class="pdot"></span><span class="plabel">'+P.label+'</span>'
+     +'<span class="req-pill" onclick="event.stopPropagation();openReqModal(\''+p+'\')" title="View requirements">req</span>'
+     +'</button>';
  }).join('');
  // me avatar
  const me=memberByPersona(state.persona);
@@ -757,6 +766,118 @@ function renderTop(){
 }
 
 /* ---------- Sidebar ---------- */
+
+/* ---- Requirements modal ---- */
+const REQ={
+ admin:{title:'Gift Entry Admin',color:'#B07A4B',
+  summary:'Owns data integrity and the gift pipeline — every dollar received must be verified, posted, and synced before it counts toward revenue.',
+  workflows:[
+   {icon:'gift',label:'Gift entry & batch processing',desc:'Manual entry, batch posting, pledge scheduling, receipt generation, and full audit trail.'},
+   {icon:'users',label:'Constituent management',desc:'Merge duplicates, manage relationships, maintain organizational hierarchy and household records.'},
+   {icon:'upload',label:'Data ingestion',desc:'CSV imports and donor interest form uploads with field mapping, dedup, and conflict resolution.'},
+   {icon:'gear',label:'System administration',desc:'User roles, field-level permissions, Blackbaud sync configuration, and email preference scoping.'}
+  ],
+  ai:[
+   {label:'Smart gift entry',desc:'AI pre-fills fund, amount class, and campaign from donor history — reducing manual keystrokes by ~60%.'},
+   {label:'Duplicate detection',desc:'Knowledge graph matches inbound records against existing constituents by name, email, and address proximity before creating new records.'},
+   {label:'Data quality scoring',desc:'AI flags incomplete or inconsistent records — missing email, mismatched address, stale capacity — and queues them for admin review.'}
+  ],
+  kg:[
+   {label:'Blackbaud reverse-sync',desc:'Constituent records, gift history, and pledge balances stream in from RE/NXT nightly with automated conflict resolution.'},
+   {label:'Payment processor reconciliation',desc:'Stripe transactions auto-reconcile against posted gifts — unmatched payments surface as exceptions for admin action.'},
+   {label:'CSV & form ingestion',desc:'Inbound donation lists and interest forms are normalized through the knowledge graph to match or create constituent records.'}
+  ]},
+ officer:{title:'Gift Officer',color:'#2563EB',
+  summary:'Manages a portfolio of major gift prospects — moving them through discovery, cultivation, solicitation, and stewardship with AI-assisted precision.',
+  workflows:[
+   {icon:'target',label:'Pipeline management',desc:'Track prospects from identification to close with stage, ask amount, probability, and next step logged on every record.'},
+   {icon:'users',label:'Constituent deep-dive',desc:'Full giving history, wealth indicators, relationships, engagement signals, and AI-generated briefing documents.'},
+   {icon:'mail',label:'Outreach & proposals',desc:'AI-drafted emails, donor presentations, and voice notes — all automatically attached to the constituent record.'},
+   {icon:'list',label:'NBA-driven daily workflow',desc:'AI-prioritized Next Best Action queue surfaces the right 5 conversations every morning ranked by predicted conversion.'}
+  ],
+  ai:[
+   {label:'Next Best Action engine',desc:'Scores every prospect on capacity × engagement × recency — surfaces top actions ranked by predicted gift conversion likelihood.'},
+   {label:'AI outreach drafts',desc:'One-click emails and donor decks personalized from giving history, stated interests, and relationship depth.'},
+   {label:'Ask amount optimizer',desc:'ML model recommends ask range based on capacity rating, peer giving benchmarks, and stage velocity in the portfolio.'},
+   {label:'Donor prep briefs',desc:'AI synthesizes engagement history, news signals, and past interactions into a one-page brief before a major cultivation meeting.'}
+  ],
+  kg:[
+   {label:'Wealth screening (Target Analytics)',desc:'Real estate, business interests, stock holdings, and affinity scores layered onto every constituent from Blackbaud TA.'},
+   {label:'Event attendance graph',desc:'Every event check-in enriches engagement score — a prospect attending 3+ events in 12 months earns NBA priority boost.'},
+   {label:'Bookstore + course enrollment',desc:'Alumni who buy books and take courses surface as high-affinity prospects even without a prior gift history.'},
+   {label:'Relationship graph',desc:'Household, foundation, and board connections reveal warm introduction paths between officers and cold prospects.'}
+  ]},
+ director:{title:'Gift Director',color:'#2D6A4F',
+  summary:'Runs the full advancement operation — portfolio health, pipeline forecasting, team performance, and strategic resource allocation.',
+  workflows:[
+   {icon:'chart',label:'Analytics & reporting',desc:'Fund performance, officer scorecards, donor retention rates, LYBUNT/SYBUNT analysis, and board-ready dashboards.'},
+   {icon:'trend',label:'Pipeline forecasting',desc:'Probability-weighted pipeline, discount models, and FY projection vs. target with scenario planning.'},
+   {icon:'send',label:'Bulk operations',desc:'Multi-select constituent actions — bulk event prep, batch bio generation, mass re-engagement campaigns launched in one step.'},
+   {icon:'gear',label:'Team & access management',desc:'User provisioning, persona-level view scoping, and field-level data access controls.'}
+  ],
+  ai:[
+   {label:'Pipeline discounting model',desc:'AI discounts each ask by stage probability and historical close rate — producing a realistic weighted forecast vs. gross pipeline.'},
+   {label:'Retention risk scoring',desc:'Flags major donors likely to lapse based on engagement decline, recency drop, and life-event signals before the gift is lost.'},
+   {label:'Bulk bio generation',desc:'For events and board prep: AI generates personalized briefing paragraphs for 50+ attendees in one action — saving hours of staff time.'},
+   {label:'Strategic AI assistant',desc:'Ask AI queries the full data model in plain English: "show me lapsed $10K+ donors in Berkeley who attended an event."'}
+  ],
+  kg:[
+   {label:'Full cross-system constituent view',desc:'Every constituent\'s giving, engagement, events, courses, and bookstore activity unified in one record — zero silos.'},
+   {label:'Mailchimp engagement feedback loop',desc:'Email open rates, click-throughs, and list membership flow back into the knowledge graph to inform retention scoring.'},
+   {label:'Living forecast model',desc:'Combines pledges, designations, historical patterns, and pipeline velocity to produce a FY projection updated in real-time.'},
+   {label:'Event ROI attribution',desc:'Links event attendance to subsequent gift conversions — measuring which events drive the most pipeline growth.'}
+  ]},
+ marketing:{title:'Marketing',color:'#9333EA',
+  summary:'Builds and activates donor and community segments — connecting online engagement to giving intent through intelligent, data-unified list-building.',
+  workflows:[
+   {icon:'list',label:'Segment builder',desc:'Filter by constituent type, lifetime giving, ZIP, fund interest, and engagement signals to build precise audiences in seconds.'},
+   {icon:'spark',label:'AI-powered list building',desc:'Describe your audience in plain English — AI queries the knowledge graph and returns a matching segment instantly.'},
+   {icon:'mail',label:'Bulk messaging & Mailchimp sync',desc:'One-click bulk outreach or export to Mailchimp — lists stay in sync automatically on a nightly schedule.'},
+   {icon:'cal',label:'Event & community engagement',desc:'Track event attendance, bookstore activity, and course enrollment as rich engagement signals for segmentation.'}
+  ],
+  ai:[
+   {label:'Natural language segmentation',desc:'"Find alumni in Berkeley who gave to the Annual Fund and attended an event this year" — AI returns the matching list in 2 seconds.'},
+   {label:'Re-engagement scoring',desc:'AI identifies lapsed community members most likely to respond to outreach based on historical engagement decay patterns.'},
+   {label:'Content personalization signals',desc:'Knowledge graph surfaces whether a donor is a book buyer, course taker, or event-goer — enabling precise message tailoring.'},
+   {label:'Upgrade opportunity detection',desc:'AI flags recurring small donors showing capacity signals — auto-referring them to a Gift Officer for major gift cultivation.'}
+  ],
+  kg:[
+   {label:'Thinkific course enrollment',desc:'Course completions matched by email — students of Islamic finance or leadership programs surface as high-affinity prospects.'},
+   {label:'Bookstore purchase history',desc:'Unified with the giving record — bookstore buyers are 3× more likely to donate in the following 12 months.'},
+   {label:'Mailchimp two-way sync',desc:'List membership, open rates, and click data flow back into Risely — enriching engagement scores used across every persona.'},
+   {label:'Event management',desc:'Attendance records from all events linked to constituent profiles — every check-in enriches the segmentation graph in real time.'}
+  ]}
+};
+
+function openReqModal(p){
+ const r=REQ[p];if(!r)return;
+ const sh=( label,icon,color)=>'<div style="display:flex;align-items:center;gap:8px;margin:20px 0 10px">'
+  +'<div style="width:26px;height:26px;border-radius:7px;background:'+color+'18;display:flex;align-items:center;justify-content:center;color:'+color+'">'+ic(icon,13)+'</div>'
+  +'<span style="font-weight:700;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--slate6)">'+label+'</span></div>';
+ const wf=r.workflows.map(w=>'<div style="display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--line2)">'
+  +'<div style="width:30px;height:30px;border-radius:8px;background:var(--bg);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--slate5)">'+ic(w.icon,14)+'</div>'
+  +'<div><div style="font-weight:600;font-size:13px;margin-bottom:2px">'+w.label+'</div><div style="font-size:12px;color:var(--slate5);line-height:1.5">'+w.desc+'</div></div></div>').join('');
+ const ai=r.ai.map(a=>'<div style="padding:9px 12px;border-radius:9px;background:linear-gradient(135deg,#EFF4FF,#EDE9FE33);border:1px solid #BFDBFE;margin-bottom:7px">'
+  +'<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px">'+ic('spark',12)+'<span style="font-weight:700;font-size:12px;color:#1D4ED8">'+a.label+'</span></div>'
+  +'<div style="font-size:12px;color:var(--slate6);line-height:1.5">'+a.desc+'</div></div>').join('');
+ const kg=r.kg.map(k=>'<div style="padding:9px 12px;border-radius:9px;background:#F0FDF4;border:1px solid #BBF7D0;margin-bottom:7px">'
+  +'<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px">'+ic('link',12)+'<span style="font-weight:700;font-size:12px;color:#15803D">'+k.label+'</span></div>'
+  +'<div style="font-size:12px;color:var(--slate6);line-height:1.5">'+k.desc+'</div></div>').join('');
+ openModal('<div class="modal" style="width:580px;max-width:96vw">'
+  +'<div class="modal-h" style="background:linear-gradient(135deg,'+r.color+'15,'+r.color+'05)">'
+  +'<div style="width:38px;height:38px;border-radius:10px;background:'+r.color+';display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0">'+ic('spark',17)+'</div>'
+  +'<div><b style="font-size:15px">'+r.title+'</b><div class="sub">Persona requirements · AI & knowledge graph callouts</div></div>'
+  +'<button class="mx" onclick="closeModal()">'+ic('x',17)+'</button>'
+  +'</div>'
+  +'<div class="modal-b">'
+  +'<div style="padding:12px 14px;border-radius:9px;background:'+r.color+'0e;border-left:3px solid '+r.color+';font-size:13px;color:var(--slate7);line-height:1.6">'+r.summary+'</div>'
+  +sh('Core workflows','grid',r.color)+wf
+  +sh('AI applied','spark','#2563EB')+ai
+  +sh('Knowledge graph connections','link','#15803D')+kg
+  +'</div>'
+  +'<div class="modal-f"><button class="btn btn-sec" onclick="setPersona(\''+p+'\');closeModal()">Switch to this persona</button><button class="btn btn-pri" onclick="closeModal()">Done</button></div>'
+  +'</div>');
+}
 function renderSidebar(){
  const allow=PERSONAS[state.persona].views;
  let h='';
@@ -807,6 +928,7 @@ function render(){
  if(v==='forecast')return renderForecast();
  if(v==='forecastRec')return renderForecastRec();
  if(v==='settings')return renderSettings();
+ if(v==='uploads')return renderUploads();
 }
 /* ---------- Pipeline stages ---------- */
 const STAGES=[
@@ -989,7 +1111,7 @@ function portfolioCard(){
 function listsReadyCard(){
  return '<div class="card" style="overflow:visible"><div class="card-h"><b>Lists ready to sync</b><button class="btn btn-pri btn-sm" onclick="go(\'lists\')">'+ic('plus',14)+'Build list</button></div>'
  +'<table><thead><tr><th>List</th><th>Definition</th><th class="r">Members</th><th>Status</th><th class="r">Action</th></tr></thead><tbody>'
- +SAVED_LISTS.map((l,i)=>'<tr><td class="t-name">'+esc(l.name)+'</td><td>'+esc(l.desc)+'</td><td class="r tnum">'+l.count+'</td><td>'+(l.sync.startsWith('Synced')?'<span class="badge b-green">'+esc(l.sync)+'</span>':'<span class="badge b-slate">'+esc(l.sync)+'</span>')+'</td>'
+ +SAVED_LISTS.map((l,i)=>'<tr><td class="t-name">'+esc(l.name)+'</td><td>'+esc(l.desc)+'</td><td style="text-align:center;font-weight:700">'+l.count+'</td><td>'+(l.sync.startsWith('Synced')?'<span class="badge b-green">'+esc(l.sync)+'</span>':'<span class="badge b-slate">'+esc(l.sync)+'</span>')+'</td>'
    +'<td class="r">'+rowMenu([{l:'Download Mailchimp CSV',ic:'download',fn:'downloadList(\''+esc(l.name)+'\')'},{l:'Open in Lists',ic:'list',fn:'go(\'lists\')'}])+'</td></tr>').join('')
  +'</tbody></table></div>';
 }
@@ -1661,11 +1783,11 @@ function renderLists(){
   +'<label><input type="checkbox" '+(state.list.hiZip?'checked':'')+' onchange="state.list.hiZip=this.checked;render()"> In a high-capacity ZIP</label>'
   +'</div></label><label class="fld"><span class="lk">&nbsp;</span><div class="t-sub" style="padding-top:8px;line-height:1.5">Signals unify across events, Thinkific and the bookstore by email — build re-engagement and upgrade lists in seconds.</div></label></div></div></div>';
  const result='<div class="card" style="overflow:visible"><div class="card-h"><b>Matching constituents</b><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><span class="muted">'+res.length+' members</span>'+(can('list')?'<button class="btn btn-sec btn-sm" onclick="saveSegmentModal()">'+ic('list',14)+'Save as list</button>':'')+(can('bulk')?'<button class="btn btn-pri btn-sm" onclick="bulkFromSegment()">'+ic('send',14)+'Bulk message</button>':'')+moreMenu([{label:'Download to CSV',icon:'download',onclick:'downloadCSVrows()'},{label:'Push to Mailchimp',icon:'mail',onclick:'pushSegmentMC()'}])+'</div></div>'
-  +'<table><thead><tr><th>Name</th><th>Email</th><th>City</th><th>ZIP</th><th class="r">Lifetime</th><th class="r">Actions</th></tr></thead><tbody>'
+  +'<table><thead><tr><th>Name</th><th>Email</th><th>City</th><th>ZIP</th><th class="r">Lifetime</th><th>Sync</th><th class="r">Actions</th></tr></thead><tbody>'
   +(res.length?res.map(c=>{const cf=state.listConf[c.id]||c.confidence||0;return '<tr><td class="t-name">'+esc(c.name)+'</td><td>'+esc(c.email)+'</td><td>'+esc(c.city)+'</td><td>'+esc(c.zip)+'</td><td class="r tnum">'+usd(c.lifetime)+'</td><td class="r" style="white-space:nowrap"><details class="menu"><summary class="btn btn-sec btn-sm" style="display:inline-flex;align-items:center;gap:6px">Actions<span style="display:inline-flex;transform:rotate(90deg)">'+ic('chev',12)+'</span></summary><div class="menu-pop" style="right:0;left:auto;min-width:210px">'+[{l:'Open record',ic:'grid',fn:'openRecord(\''+c.id+'\')'},{l:'Pre-meeting prep',ic:'spark',fn:'openPrep(\''+c.id+'\')'}].concat(can('email')?[{l:'Send email',ic:'mail',fn:'openEmail(\''+c.id+'\')'}]:[]).map(it=>'<div class="menu-item" onclick="this.closest(\'details\').open=false;'+it.fn+'">'+ic(it.ic,15)+it.l+'</div>').join('')+'<div class="menu-lbl">'+(c.stage?('In pipeline'+(cf?' · '+cf+'%':'')):'Add to pipeline')+'</div>'+[[10,'Low · 10%'],[30,'Medium · 30%'],[60,'Likely · 60%'],[85,'Strong · 85%'],[100,'Committed · 100%']].map(o=>'<div class="menu-item" onclick="this.closest(\'details\').open=false;addListToPipeline(\''+c.id+'\','+o[0]+')">'+(cf===o[0]?ic('check',14):'<span style="display:inline-block;width:14px"></span>')+o[1]+'</div>').join('')+'</div></details></td></tr>';}).join(''):'<tr><td colspan="6"><div class="t-sub" style="padding:8px">No matches — loosen the filters.</div></td></tr>')
   +'</tbody></table></div>';
- const saved='<div class="card" style="overflow:visible"><div class="card-h"><b>Saved lists</b></div><table><thead><tr><th>List</th><th>Definition</th><th class="r">Members</th><th>Mailchimp</th><th class="r">Action</th></tr></thead><tbody>'
-  +SAVED_LISTS.map((l,i)=>'<tr><td class="t-name">'+esc(l.name)+'</td><td>'+esc(l.desc)+'</td><td class="r tnum">'+l.count+'</td><td>'+(l.sync.startsWith('Synced')?'<span class="badge b-green">'+esc(l.sync)+'</span>':'<span class="badge b-slate">'+esc(l.sync)+'</span>')+'</td><td class="r" style="white-space:nowrap">'+rowMenu((can('bulk')?[{l:'Send message',ic:'send',fn:'bulkSaved('+i+')'}]:[]).concat([{l:'Download to CSV',ic:'download',fn:'csvSaved('+i+')'},{l:'Push to Mailchimp',ic:'mail',fn:'pushSavedMC('+i+')'}]))+'</td></tr>').join('')
+ const saved='<div class="card" style="overflow:visible"><div class="card-h"><b>Saved lists</b></div><table><thead><tr><th>List</th><th>Definition</th><th style="text-align:center">Members</th><th>Sync</th><th class="r">Action</th></tr></thead><tbody>'
+  +SAVED_LISTS.map((l,i)=>{const pills=(l.syncBB?'<span class="badge b-blue" style="margin-right:4px">BB</span>':'')+(l.syncMC?'<span class="badge b-green">Mailchimp</span>':'');return '<tr><td class="t-name">'+esc(l.name)+'</td><td>'+esc(l.desc)+'</td><td style="text-align:center;font-weight:700">'+l.count+'</td><td>'+(pills||'<span class="muted">—</span>')+'</td><td class="r" style="white-space:nowrap">'+rowMenu((can('bulk')?[{l:'Send message',ic:'send',fn:'bulkSaved('+i+')'}]:[]).concat([{l:'Download to CSV',ic:'download',fn:'csvSaved('+i+')'},{l:'Push to Mailchimp',ic:'mail',fn:'pushSavedMC('+i+')'}]))+'</td></tr>';}).join('')
   +'</tbody></table></div>';
  setHTML('#view',header('Lists','Build a custom list, then send a bulk message or export it to Mailchimp')+aiCard+builder+result+saved);
 }
@@ -1801,6 +1923,120 @@ function renderAskAI(){
  setHTML('#view',header('Ask AI','Plain-English answers across your advancement data — available to everyone')+box+log);
 }
 /* ============================ USERS (Administrative) ============================ */
+
+/* ---- Uploads ---- */
+const UPLOADS=[
+ {id:'u1',type:'csv',name:'spring_gala_donors.csv',uploader:'Nizam Ali',uploaded:'Jun 28, 2026 · 10:42 AM',rows:87,status:'Imported',
+  syncLog:[{system:'Blackbaud',by:'Nizam Ali',at:'Jun 28, 2026 · 11:05 AM',records:87},{system:'Mailchimp',by:'Nizam Ali',at:'Jun 28, 2026 · 11:06 AM',records:87}]},
+ {id:'u2',type:'form',name:'donor_interest_Ahmad_Karimi.pdf',uploader:'Shams Ali',uploaded:'Jun 27, 2026 · 3:15 PM',rows:null,status:'Pending review',syncLog:[]},
+ {id:'u3',type:'form',name:'donor_interest_scan_Fatima.pdf',uploader:'Nizam Ali',uploaded:'Jun 25, 2026 · 9:00 AM',rows:null,status:'Reviewed',
+  syncLog:[{system:'Blackbaud',by:'Nizam Ali',at:'Jun 25, 2026 · 9:22 AM',records:1}]},
+ {id:'u4',type:'csv',name:'annual_fund_fy25_gifts.csv',uploader:'Nizam Ali',uploaded:'Jun 20, 2026 · 2:30 PM',rows:214,status:'Imported',
+  syncLog:[{system:'Blackbaud',by:'Nizam Ali',at:'Jun 20, 2026 · 2:55 PM',records:214}]}
+];
+function renderUploads(){
+ const typeIcon=t=>t==='csv'?ic('list',15):ic('file',15);
+ const statusBadge=s=>s==='Imported'?'<span class="badge b-green">'+s+'</span>':s==='Pending review'?'<span class="badge b-amber">'+s+'</span>':'<span class="badge b-slate">'+s+'</span>';
+ const syncPills=u=>{const log=u.syncLog||[];const hasBB=log.some(e=>e.system==='Blackbaud');const hasMC=log.some(e=>e.system==='Mailchimp');return(hasBB?'<span class="badge b-blue" style="margin-right:4px">BB</span>':'')+(hasMC?'<span class="badge b-green">Mailchimp</span>':'')||'<span class="muted">—</span>';};
+const rows=UPLOADS.map((u,i)=>'<tr class="clk" onclick="openUploadDetail('+i+')">'
+  +'<td>'+typeIcon(u.type)+'<span style="margin-left:6px">'+esc(u.name)+'</span></td>'
+  +'<td><span class="badge '+(u.type==='csv'?'b-blue':'b-slate')+'">'+(u.type==='csv'?'CSV — Donor gifts':'Donor interest form')+'</span></td>'
+  +'<td>'+esc(u.uploader)+'</td>'
+  +'<td class="muted" style="white-space:nowrap">'+esc(u.uploaded)+'</td>'
+  +'<td class="r tnum">'+(u.rows!=null?u.rows:'—')+'</td>'
+  +'<td>'+statusBadge(u.status)+'</td>'
+  +'<td>'+syncPills(u)+'</td>'
+  +'</tr>').join('');
+ const table='<div class="card" style="overflow:visible"><div class="card-h"><b>Upload history</b><span class="muted">'+UPLOADS.length+' files</span></div>'
+  +'<table><thead><tr><th>File</th><th>Type</th><th>Uploaded by</th><th>Date</th><th class="r">Records</th><th>Status</th><th>Synced</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+ const upType=state.upType||'form';
+ const dropzone='<div class="card"><div class="card-h"><b>New upload</b></div><div class="card-b">'
+  +'<div style="display:flex;gap:8px;margin-bottom:16px">'
+  +'<button class="btn '+(upType==='form'?'btn-pri':'btn-sec')+'" onclick="state.upType=\'form\';render()">'+ic('file',15)+' Donor interest form</button>'
+  +'<button class="btn '+(upType==='csv'?'btn-pri':'btn-sec')+'" onclick="state.upType=\'csv\';render()">'+ic('list',15)+' CSV of donors with donations</button>'
+  +'</div>'
+  +'<div id="dropzone" ondragover="event.preventDefault();this.style.background=\'var(--blue-l)\'" ondragleave="this.style.background=\'\'" ondrop="handleUploadDrop(event)" style="border:2px dashed var(--border);border-radius:10px;padding:48px 24px;text-align:center;cursor:pointer;transition:background 0.15s" onclick="document.getElementById(\'upfile\').click()">'
+  +'<div style="margin-bottom:8px">'+ic('upload',28)+'</div>'
+  +'<div style="font-weight:600;margin-bottom:4px">Drag & drop here, or click to choose</div>'
+  +'<div class="muted" style="font-size:13px">'+(upType==='form'?'PDF, JPG, PNG — donor interest forms':'CSV with columns: name, email, amount, date, fund')+'</div>'
+  +'<input type="file" id="upfile" style="display:none" accept="'+(upType==='form'?'.pdf,.jpg,.jpeg,.png':'.csv')+'" onchange="handleUploadFile(this)">'
+  +'</div></div></div>';
+ setHTML('#view',header('Uploads','Donor interest forms and CSV gift imports')+dropzone+table);
+}
+function handleUploadDrop(e){e.preventDefault();document.getElementById('dropzone').style.background='';const f=e.dataTransfer.files[0];if(f)simulateUpload(f.name);}
+function handleUploadFile(inp){if(inp.files[0])simulateUpload(inp.files[0].name);}
+function simulateUpload(name){
+ const isCSV=name.toLowerCase().endsWith('.csv');
+ UPLOADS.unshift({id:'u'+Date.now(),type:isCSV?'csv':'form',name:name,uploader:'Nizam Ali',uploaded:'Just now',rows:isCSV?Math.floor(Math.random()*200+10):null,status:isCSV?'Imported':'Pending review'});
+ toast('Uploaded '+name,'check');render();
+}
+function openUploadDetail(i){
+ const u=UPLOADS[i];
+ const CSV_ROWS={
+  'u1':[{name:'Ahmad Karimi',email:'a.karimi@example.com',amount:'$5,000',date:'Jun 1, 2026',fund:'Annual Fund'},
+        {name:'Fatima Hassan',email:'fatima.h@example.com',amount:'$2,500',date:'Jun 3, 2026',fund:'Scholarship Fund'},
+        {name:'Omar Siddiqui',email:'omar.s@example.com',amount:'$10,000',date:'Jun 5, 2026',fund:'Endowment'},
+        {name:'Layla Nasser',email:'layla.n@example.com',amount:'$1,000',date:'Jun 7, 2026',fund:'Annual Fund'},
+        {name:'Yusuf Rahman',email:'yusuf.r@example.com',amount:'$500',date:'Jun 8, 2026',fund:'Zakat Fund'}],
+  'u4':[{name:'Ibrahim Al-Amin',email:'ibrahim@example.com',amount:'$25,000',date:'May 1, 2026',fund:'Endowment'},
+        {name:'Mariam Tahir',email:'mariam.t@example.com',amount:'$3,000',date:'May 4, 2026',fund:'Annual Fund'},
+        {name:'Aisha Malik',email:'aisha.m@example.com',amount:'$7,500',date:'May 10, 2026',fund:'Scholarship Fund'},
+        {name:'Zaid Hossain',email:'zaid.h@example.com',amount:'$1,200',date:'May 15, 2026',fund:'Annual Fund'},
+        {name:'Nour Khalil',email:'nour.k@example.com',amount:'$50,000',date:'May 20, 2026',fund:'Capital Fund'}]
+ };
+ const FORM_ROWS={
+  'u2':[{name:'Ahmad Karimi',email:'a.karimi@example.com',phone:'(510) 555-0142',interest:'Major Gifts — $25K+',notes:'Interested in endowment naming opportunity'}],
+  'u3':[{name:'Fatima Al-Rashid',email:'fatima@alrashid.com',phone:'(510) 555-0198',interest:'Scholarship Fund',notes:'Would like to fund a female student scholarship'}]
+ };
+ const isCSV=u.type==='csv';
+ const csvRows=CSV_ROWS[u.id]||[{name:'Sample Donor',email:'donor@example.com',amount:'$1,000',date:'Jun 2026',fund:'Annual Fund'}];
+ const formRows=FORM_ROWS[u.id]||[{name:'Donor Name',email:'donor@example.com',phone:'(555) 000-0000',interest:'Annual Fund',notes:'Extracted from form'}];
+ const tableHTML=isCSV
+  ?'<table style="width:100%"><thead><tr><th>Name</th><th>Email</th><th class="r">Amount</th><th>Date</th><th>Fund</th></tr></thead><tbody>'
+   +csvRows.map(r=>'<tr><td class="t-name">'+esc(r.name)+'</td><td class="muted">'+esc(r.email)+'</td><td class="r tnum">'+esc(r.amount)+'</td><td class="muted">'+esc(r.date)+'</td><td>'+esc(r.fund)+'</td></tr>').join('')
+   +(u.rows>csvRows.length?'<tr><td colspan="5" class="muted" style="font-style:italic;padding:10px 0">…'+(u.rows-csvRows.length)+' more rows not shown</td></tr>':'')
+   +'</tbody></table>'
+  :'<table style="width:100%"><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Interest</th><th>Notes</th></tr></thead><tbody>'
+   +formRows.map(r=>'<tr><td class="t-name">'+esc(r.name)+'</td><td class="muted">'+esc(r.email)+'</td><td class="muted">'+esc(r.phone)+'</td><td>'+esc(r.interest)+'</td><td class="muted">'+esc(r.notes)+'</td></tr>').join('')
+   +'</tbody></table>';
+ const recCount=u.rows||formRows.length;
+ const summary='<div style="display:flex;gap:12px;margin-bottom:20px">'
+  +'<div class="tile" style="flex:1"><div class="tl">'+(isCSV?'Records':'Forms')+'</div><div class="tv tnum">'+recCount+'</div></div>'
+  +'<div class="tile" style="flex:1"><div class="tl">Type</div><div class="tv" style="font-size:13px">'+(isCSV?'CSV Import':'Scanned form')+'</div></div>'
+  +'<div class="tile" style="flex:1"><div class="tl">Status</div><div class="tv" style="font-size:13px">'+esc(u.status)+'</div></div>'
+  +'</div>';
+ const syncLog=u.syncLog||[];
+ const syncHistHTML=syncLog.length
+  ?'<div style="margin-top:20px"><div style="font-weight:700;font-size:12px;color:var(--slate5);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">Sync history</div>'
+   +'<table style="width:100%"><thead><tr><th>System</th><th>Pushed by</th><th>Date &amp; time</th><th class="r">Records</th></tr></thead><tbody>'
+   +syncLog.map(e=>'<tr><td><span class="badge '+(e.system==='Blackbaud'?'b-blue':'b-green')+'">'+esc(e.system)+'</span></td><td>'+esc(e.by)+'</td><td class="muted">'+esc(e.at)+'</td><td class="r tnum">'+e.records+'</td></tr>').join('')
+   +'</tbody></table></div>'
+  :'<div class="muted" style="margin-top:16px;font-size:13px;font-style:italic">No syncs yet.</div>';
+ openModal('<div class="modal" style="width:700px;max-width:96vw">'
+  +'<div class="modal-h">'+ic(isCSV?'list':'file',20)+'<div><b>'+esc(u.name)+'</b><div class="sub">Uploaded by '+esc(u.uploader)+' · '+esc(u.uploaded)+'</div></div></div>'
+  +'<div class="modal-b">'+summary+tableHTML+syncHistHTML+'</div>'
+  +'<div class="modal-f">'
+  +'<button class="btn btn-sec" onclick="closeModal()">Close</button>'
+  +'<button class="btn btn-sec" onclick="pushUpload('+i+',\'Blackbaud\')">Push to Blackbaud</button>'
+  +'<button class="btn btn-sec" onclick="pushUpload('+i+',\'Mailchimp\')">Push to Mailchimp</button>'
+  +'<button class="btn btn-pri" onclick="pushUpload('+i+',\'both\')">Push to both</button>'
+  +'</div></div>');
+}
+
+function pushUpload(i,target){
+ const u=UPLOADS[i];
+ const me='Nizam Ali';
+ const now=new Date();
+ const ts=now.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' · '+now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+ const rec=u.rows||1;
+ if(!u.syncLog)u.syncLog=[];
+ if(target==='Blackbaud'||target==='both')u.syncLog.push({system:'Blackbaud',by:me,at:ts,records:rec});
+ if(target==='Mailchimp'||target==='both')u.syncLog.push({system:'Mailchimp',by:me,at:ts,records:rec});
+ closeModal();
+ toast('Pushed '+rec+' records to '+(target==='both'?'Blackbaud & Mailchimp':target),'check');
+ render();
+ setTimeout(()=>openUploadDetail(i),60);
+}
 function renderUsers(){
  const rows=TEAM.map(t=>({name:t.name,role:t.role,email:t.name.toLowerCase().replace(/[^a-z]+/g,'.')+'@zaytuna.edu',status:'Active',last:'Today',init:t.initials,color:t.color}))
   .concat([{name:'Yasmin Haddad',role:'Gift Officer',email:'yasmin.haddad@zaytuna.edu',status:'Active',last:'2 days ago',init:'YH',color:'#0EA5E9'},
