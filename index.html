@@ -895,7 +895,7 @@ function renderSidebar(){
      h+='<div class="navitem '+(on?'on':'')+'" onclick="go(\''+i.k+'\')">'+ic(i.icon)+'<span>'+i.label+'</span>'+badge+'</div>';
    });
  });
- h+='<div class="navspacer"></div><div class="sb-foot"><div class="navitem" onclick="toast(\'Prototype — sign out is illustrative\')">'+ic('logout')+'<span>Sign out</span></div></div>';
+ h+='<div class="navspacer"></div><div class="sb-foot"><div class="navitem '+(state.view==='summary'?'on':'')+'" onclick="go(\'summary\')">'+ic('list')+'<span>Summary</span></div><div class="navitem" onclick="toast(\'Prototype — sign out is illustrative\')">'+ic('logout')+'<span>Sign out</span></div></div>';
  $('#sidebar').innerHTML=h;
 }
 
@@ -905,7 +905,7 @@ function setPersona(p){
  if(!PERSONAS[p])return;
  state.persona=p;
  // keep current view if allowed; record view always allowed (constituents in every persona)
- if(state.view!=='record' && state.view!=='forecastRec' && !PERSONAS[p].views.includes(state.view))state.view='dashboard';
+ if(state.view!=='record' && state.view!=='forecastRec' && state.view!=='summary' && !PERSONAS[p].views.includes(state.view))state.view='dashboard';
  closeDrawer();render();
  toast('Now viewing as '+PERSONAS[p].label+' — '+PERSONAS[p].sub,'user');
 }
@@ -931,7 +931,53 @@ function render(){
  if(v==='forecastRec')return renderForecastRec();
  if(v==='settings')return renderSettings();
  if(v==='uploads')return renderUploads();
+ if(v==='summary')return renderSummary();
 }
+
+/* ---------- Summary (capabilities overview) ---------- */
+function renderSummary(){
+ const chip='<span style="position:absolute;top:12px;right:12px;font-size:11px;font-weight:800;letter-spacing:.06em;color:var(--purple-t);background:var(--purple-b);border:1px dashed var(--purple-t);border-radius:7px;padding:2px 7px">AI</span>';
+ const G='display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin-bottom:22px';
+ const CD='background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;position:relative;box-shadow:var(--sh)';
+ const H2='font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--slate5);margin:0 0 10px';
+ const card=(t,d,ai)=>'<div style="'+CD+(ai?';border-color:var(--purple-b);padding-right:52px':'')+'">'+(ai?chip:'')+'<div style="font-weight:700;font-size:14px;margin-bottom:4px">'+t+'</div><div style="font-size:13px;color:var(--slate6)">'+d+'</div></div>';
+ const AI=[
+  ['🎯 Next Best Action','AI-prioritized daily queue per officer: scored recommendations with the why — capacity signals, giving momentum, lapse risk — and one-click assignment.'],
+  ['📈 Pipeline intelligence','AI-suggested prospects on the pipeline board with recommended asks and rationale; weighted forecasting by stage probability.'],
+  ['📝 Auto meeting prep','One click generates a donor visit brief: giving history, relationships, engagement, last interactions, suggested talking points.'],
+  ['✉️ Drafted outreach','AI-drafted emails and texts from the donor record, plus a deck-builder wizard that logs proposals to the record.'],
+  ['💬 Ask AI','Natural-language questions over advancement data — answered instantly, no report request needed.'],
+  ['🎤 Voice notes','Officers record notes from the road; captured to the constituent record alongside actions.']
+ ];
+ const CORE=[
+  ['👤 Donor 360','Giving history, relationships, engagement, notes, presentations, and receipts in one record — individuals, organizations, foundations, households.'],
+  ['🏛️ Multi-entity credit','Household → LLC → foundation hierarchies with hard/soft credit segregated per entity for CASE GRS and IRS receipting.'],
+  ['💳 Gifts & payments','Fund and gift types, pledge schedules, matching-gift logic, batch processing, per-entity receipt routing.'],
+  ['🕌 Fund compliance','Zakat (Shariah-restricted), endowment (UPMIFA), scholarships, capital projects, unrestricted annual fund.'],
+  ['📊 Major-gift pipeline','Kanban from identification to stewardship with probability weighting and QTD/YTD reporting.'],
+  ['📣 Segmentation & outreach','Saved lists, list builder with capacity and geography filters, bulk messaging with send history.'],
+  ['🎟️ Cross-channel engagement','Events, Thinkific courses, and bookstore purchases unified on one record by email.'],
+  ['🔔 Team workflow','@Mention routing to inbox, role-based permissions, full activity trail.']
+ ];
+ const FEEDS=[
+  ['🔄 Constituent data — Blackbaud','RE NXT stays the system of record. Risely ingests via SKY API and reverse-syncs, with conflict monitoring on the dashboard.'],
+  ['📥 Marketing-only contacts','Separate pipeline for event registrants, subscribers, buyers, and enrollees — segmented in Risely without cluttering Blackbaud.'],
+  ['⬆️ Promotion path','When a contact gives or qualifies, they become a full constituent written to Blackbaud — with engagement history intact.']
+ ];
+ const pills=['Blackbaud RE NXT — reverse-sync','Mailchimp — lists & campaigns','Thinkific — courses','Bookstore — purchases','Microsoft 365 — presentations','Wealth screening — capacity (planned)']
+  .map(x=>'<span style="font-size:12.5px;font-weight:600;padding:5px 12px;border-radius:999px;background:var(--blue-l);color:var(--blue-d);border:1px solid var(--blue-l2)">'+x+'</span>').join(' ');
+ setHTML('#view',header('Summary','What Risely delivers for Zaytuna College Advancement')
+  +'<div style="background:linear-gradient(135deg,#1E3A8A,#2563EB);color:#fff;border-radius:16px;padding:24px 26px;margin-bottom:22px">'
+  +'<div style="display:inline-block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:4px 12px;margin-bottom:10px">Purpose of Risely</div>'
+  +'<div style="font-size:22px;font-weight:800;line-height:1.2;margin-bottom:8px">Risely makes Blackbaud a better asset.</div>'
+  +'<div style="font-size:14px;line-height:1.6;color:#DBEAFE;max-width:760px">It doesn\'t replace Raiser\'s Edge — it <b style="color:#fff">ingests Blackbaud data</b> (with reverse-sync back) and <b style="color:#fff">puts it to work in an AI layer</b>: next-best-action prioritization, pre-meeting prep, drafted outreach, and natural-language answers. Blackbaud stays the system of record; Risely turns that record into daily fundraising action.</div></div>'
+  +'<div style="'+H2+'">The AI layer</div><div style="'+G+'">'+AI.map(x=>card(x[0],x[1],true)).join('')+'</div>'
+  +'<div style="'+H2+'">Core capabilities</div><div style="'+G+'">'+CORE.map(x=>card(x[0],x[1],false)).join('')+'</div>'
+  +'<div style="'+H2+'">Data feeds — two tracks, one workspace</div><div style="'+G+'">'+FEEDS.map(x=>card(x[0],x[1],false)).join('')+'</div>'
+  +'<div style="'+H2+'">Integrations</div><div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:22px">'+pills+'</div>'
+  +'<div style="'+H2+'">Where we are</div><div style="background:var(--blue-l);border:1px solid var(--blue-l2);border-radius:14px;padding:15px 17px;font-size:13.5px;color:var(--slate6)">Prototype reviewed by the Zaytuna team on <b>June 30, 2026</b> — pledges-due dashboard, payments, and Ask AI praised as-is. <b>18 refinements</b> identified before development, led by capacity data in all constituent views, expanded gift-form fields, actions tied to opportunities, drillable tiles, and field-level permissions. Next: dev kickoff with a Blackbaud sandbox integration plan.</div>');
+}
+
 /* ---------- Pipeline stages ---------- */
 const STAGES=[
  {key:'identification',name:'Identification',prob:10,color:'#94A3B8'},
