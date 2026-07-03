@@ -697,7 +697,7 @@ let BULK_SENDS=[
 ];
 
 /* ---------- State ---------- */
-const state={persona:'admin',view:'dashboard',recordId:null,tab:'overview',drawerId:null,
+const state={persona:'admin',view:'dashboard',recordId:null,giftId:null,tab:'overview',drawerId:null,
  cFilter:'all',cLifetime:0,gFilter:'all',gFund:'all',gSize:0,gRange:'all',pSource:'all',pRange:'all',pSize:0,nbaType:'all',nbaAction:'all',nbaSignal:'all',nbaAssign:{},askLog:[],listConf:{},giftAssign:{},dashSeg:'nba',dpStage:'all',dplStatus:'all',dgFund:'all',dashFilter:'fy26',inboxFilter:'unread',selected:new Set(),bulk:null,forecastId:null,fcFilter:'all',catDraft:null,anTab:'revenue',fcExpanded:new Set(),catExpanded:new Set(),inboxCat:'mentions',settings:{tz:'America/Los_Angeles',inbox:null},
  wizard:null,voice:null,list:{type:'all',minLt:0,fund:'all',zip:'',recency:'all',ev:false,books:false,course:false,hiZip:false,result:null}};
 
@@ -905,7 +905,7 @@ function setPersona(p){
  if(!PERSONAS[p])return;
  state.persona=p;
  // keep current view if allowed; record view always allowed (constituents in every persona)
- if(state.view!=='record' && state.view!=='forecastRec' && state.view!=='summary' && !PERSONAS[p].views.includes(state.view))state.view='dashboard';
+ if(state.view!=='record' && state.view!=='forecastRec' && state.view!=='summary' && state.view!=='gift' && !PERSONAS[p].views.includes(state.view))state.view='dashboard';
  closeDrawer();render();
  toast('Now viewing as '+PERSONAS[p].label+' — '+PERSONAS[p].sub,'user');
 }
@@ -932,6 +932,7 @@ function render(){
  if(v==='settings')return renderSettings();
  if(v==='uploads')return renderUploads();
  if(v==='summary')return renderSummary();
+ if(v==='gift')return renderGift();
 }
 
 /* ---------- Summary (capabilities overview) ---------- */
@@ -1137,13 +1138,13 @@ function giftRangeCard(range){
  return '<div class="card" style="overflow:visible"><div class="card-h"><b>Gifts closed '+(range==='qtd'?'QTD':'YTD')+'</b><span class="muted">'+rows.length+' gifts · '+usd(total)+'</span></div>'
   +'<div class="card-b" style="padding-bottom:0">'+pills+'</div>'
   +'<table><thead><tr><th>Donor</th><th>Date</th><th>Fund</th><th class="r">Amount</th><th>Status</th><th class="r">Action</th></tr></thead><tbody>'
-  +(rows.length?rows.map(g=>'<tr class="clk" onclick="openRecord(\''+g.did+'\')"><td class="t-name">'+esc(g.donor)+'</td><td>'+esc(g.date)+'</td><td>'+esc(g.fund)+'</td><td class="r tnum">'+usd(g.amount)+'</td><td>'+statusBadge(g.status)+'</td><td class="r">'+rowMenu([{l:'Open record',ic:'user',fn:'openRecord(\''+g.did+'\')'},{l:'Pre-meeting prep',ic:'spark',fn:'openPrep(\''+g.did+'\')'}])+'</td></tr>').join(''):'<tr><td colspan="6"><div class="t-sub" style="padding:8px">No gifts in range.</div></td></tr>')
+  +(rows.length?rows.map(g=>'<tr class="clk" onclick="openGift(\''+g.id+'\')"><td class="t-name">'+esc(g.donor)+'</td><td>'+esc(g.date)+'</td><td>'+esc(g.fund)+'</td><td class="r tnum">'+usd(g.amount)+'</td><td>'+statusBadge(g.status)+'</td><td class="r">'+rowMenu([{l:'Open record',ic:'user',fn:'openRecord(\''+g.did+'\')'},{l:'Pre-meeting prep',ic:'spark',fn:'openPrep(\''+g.did+'\')'}])+'</td></tr>').join(''):'<tr><td colspan="6"><div class="t-sub" style="padding:8px">No gifts in range.</div></td></tr>')
   +'</tbody></table></div>';
 }
 function giftsTableCard(title,rows,canReceipt){
  return '<div class="card"><div class="card-h"><b>'+title+'</b><span class="muted">'+rows.length+' gifts</span></div>'
  +'<table><thead><tr><th>Donor</th><th>Date</th><th>Fund</th><th class="r">Amount</th><th>Credit</th><th>Status</th><th class="r">Action</th></tr></thead><tbody>'
- +rows.map(g=>'<tr class="clk" onclick="openRecord(\''+g.did+'\')"><td class="t-name">'+esc(g.donor)+'</td><td>'+g.date+'</td><td>'+esc(g.fund)+'</td><td class="r tnum">'+usd(g.amount)+'</td><td>'+creditBadge(g.credit)+'</td><td>'+statusBadge(g.status)+'</td>'
+ +rows.map(g=>'<tr class="clk" onclick="openGift(\''+g.id+'\')"><td class="t-name">'+esc(g.donor)+'</td><td>'+g.date+'</td><td>'+esc(g.fund)+'</td><td class="r tnum">'+usd(g.amount)+'</td><td>'+creditBadge(g.credit)+'</td><td>'+statusBadge(g.status)+'</td>'
    +'<td class="r">'+rowMenu([{l:'Open record',ic:'user',fn:'openRecord(\''+g.did+'\')'},{l:'Pre-meeting prep',ic:'spark',fn:'openPrep(\''+g.did+'\')'}])+'</td></tr>').join('')
  +'</tbody></table></div>';
 }
@@ -1240,6 +1241,7 @@ function relIcon(t){return t==='Organization'?'building':t==='Foundation'?'heart
 
 /* ============================ DONOR 360 RECORD ============================ */
 function openRecord(id){state.recordId=id;state.view='record';state.tab='overview';closeDrawer();render();window.scrollTo(0,0);}
+function openGift(id){state.giftId=id;state.view='gift';closeDrawer();render();window.scrollTo(0,0);}
 function setTab(t){state.tab=t;renderRecord();}
 function renderRecord(){
  const c=byId(state.recordId);if(!c){go('constituents');return;}
@@ -1626,6 +1628,42 @@ function setGiftSize(v){state.gSize=v;render();}
 function setGiftRange(v){state.gRange=v;render();}
 function giftFundMenu(){const opts=[['all','All funds']].concat(FUNDS.map(f=>[f.name,f.name]));const a=state.gFund||'all';const cur=opts.find(o=>o[0]===a)||opts[0];return '<details class="menu"><summary class="fpill '+(a!=='all'?'on':'')+'" style="display:inline-flex;align-items:center;gap:6px">'+(a==='all'?'Fund type':esc(cur[1]))+'<span style="display:inline-flex;transform:rotate(90deg)">'+ic('chev',13)+'</span></summary><div class="menu-pop" style="left:0;right:auto">'+opts.map(o=>'<div class="menu-item" onclick="this.closest(\'details\').open=false;setGiftFund(\''+o[0]+'\')">'+(a===o[0]?ic('check',14):'<span style="display:inline-block;width:14px"></span>')+esc(o[1])+'</div>').join('')+'</div></details>';}
 function giftSizeMenu(){const opts=[[0,'Any size'],[1000,'≥ $1K'],[25000,'≥ $25K'],[50000,'≥ $50K'],[100000,'≥ $100K']];const a=state.gSize||0;const cur=opts.find(o=>o[0]===a)||opts[0];return '<details class="menu"><summary class="fpill '+(a?'on':'')+'" style="display:inline-flex;align-items:center;gap:6px">'+(a?'Gift '+cur[1]:'Gift size')+'<span style="display:inline-flex;transform:rotate(90deg)">'+ic('chev',13)+'</span></summary><div class="menu-pop" style="left:0;right:auto">'+opts.map(o=>'<div class="menu-item" onclick="this.closest(\'details\').open=false;setGiftSize('+o[0]+')">'+(a===o[0]?ic('check',14):'<span style="display:inline-block;width:14px"></span>')+o[1]+'</div>').join('')+'</div></details>';}
+function giftKV(l,v){return '<div style=\"display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line2)\"><span class=\"t-sub\">'+l+'</span><span style=\"font-weight:600\">'+v+'</span></div>';}
+function renderGift(){
+ const g=GIFTS.find(function(x){return x.id===state.giftId;});
+ if(!g){go('gifts');return;}
+ const c=byId(g.did);
+ const gid='GFT-2026-'+('000'+g.id.replace('g','')).slice(-4);
+ let acts='';
+ if(g.status!=='Receipted'&&can('gift'))acts+='<button class=\"btn btn-pri\" onclick=\"sendReceipt(\''+g.id+'\')\">'+ic('receipt',15)+'Send receipt</button>';
+ setHTML('#view','<button class=\"backlink\" onclick=\"go(\'gifts\')\">'+ic('back',16)+'Gifts</button>'
+  +header('Gift \u2014 '+esc(g.donor), gid+' \u00b7 entered by Souad Ahmed \u00b7 '+g.date,acts)
+  +'<div class=\"cols\">'
+  +'<div class=\"card\"><div class=\"card-h\"><b>Gift details</b>'+statusBadge(g.status)+'</div><div class=\"card-b\">'
+  +'<div class=\"tnum\" style=\"font-size:32px;font-weight:800;line-height:1\">'+usd(g.amount)+'</div>'
+  +'<div class=\"t-sub\" style=\"margin:4px 0 14px\">'+esc(g.fund)+'</div>'
+  +giftKV('Gift ID',gid)
+  +giftKV('Date received',esc(g.date))
+  +giftKV('Fund',esc(g.fund))
+  +giftKV('Gift type','Outright gift')
+  +giftKV('Credit',creditBadge(g.credit))
+  +giftKV('Receipt',statusBadge(g.status))
+  +giftKV('Payment method','Wire transfer \u00b7 BBMS')
+  +(g.status==='Receipted'?'<div class=\"note-banner\" style=\"margin-top:12px\">Receipt PDF on file \u2014 sent to the donor\u2019s receipt email per the routing matrix.</div>':'<div class=\"note-banner\" style=\"margin-top:12px\">Awaiting receipt \u2014 will follow the per-entity routing rules (immediate vs. year-end).</div>')
+  +'</div></div>'
+  +'<div class=\"card\"><div class=\"card-h\"><b>Donor</b></div><div class=\"card-b\">'
+  +(c
+    ?('<div class=\"t-name\" style=\"font-size:16px\">'+esc(c.name)+'</div><div class=\"t-sub\" style=\"margin-bottom:12px\">'+esc(c.cid||'')+(c.title?' \u00b7 '+esc(c.title):'')+'</div>'
+      +giftKV('Email',esc(c.email||'\u2014'))
+      +giftKV('Lifetime giving',usd(c.lifetime||0))
+      +giftKV('Assigned officer',esc(c.officer||'\u2014'))
+      +giftKV('Capacity',esc(c.capacity||'\u2014'))
+      +'<div style=\"margin-top:14px;display:flex;gap:8px;flex-wrap:wrap\"><button class=\"btn btn-sec\" onclick=\"openRecord(\''+c.id+'\')\">'+ic('user',15)+'Open donor record</button>'
+      +(can('note')?'<button class=\"btn btn-sec\" onclick=\"openRecord(\''+c.id+'\');setTab(\'notes\')\">'+ic('edit',15)+'Add note</button>':'')
+      +'</div>')
+    :'<div class=\"t-sub\">'+esc(g.donor)+' \u2014 no linked constituent record.</div>')
+  +'</div></div></div>');
+}
 function renderGifts(){
  const rows=giftRows();
  const tiles=[{l:'Gifts this month',v:GIFTS.length,d:'Posted'},{l:'Closed this quarter',v:giftsInRange('qtd',null).length,d:usdK(giftsInRange('qtd',null).reduce((s,g)=>s+g.amount,0))},{l:'Processed FY26',v:usdK(totalRaised()),d:'All funds'},{l:'Avg gift',v:usdK(totalRaised()/GIFTS.length),d:'FY26'}];
@@ -1635,7 +1673,7 @@ function renderGifts(){
   +'<div class="tiles">'+tiles.map(tile).join('')+'</div>'+pills
   +'<div class="card"><div class="card-h"><b>All gifts</b><span class="muted">'+rows.length+' of '+GIFTS.length+'</span></div>'
   +'<table><thead><tr><th>Donor</th><th>Date</th><th>Fund</th><th class="r">Amount</th><th>Credit</th><th>Status</th><th>Assignment</th></tr></thead><tbody>'
-  +(rows.length?rows.map(g=>'<tr class="clk" onclick="openRecord(\''+g.did+'\')"><td class="t-name">'+esc(g.donor)+'</td><td>'+g.date+'</td><td>'+esc(g.fund)+'</td><td class="r tnum">'+usd(g.amount)+'</td><td>'+creditBadge(g.credit)+'</td><td>'+statusBadge(g.status)+'</td><td onclick="event.stopPropagation()">'+giftAssignCell(g)+'</td></tr>').join(''):'<tr><td colspan="7"><div class="t-sub" style="padding:8px">No gifts match these filters.</div></td></tr>')
+  +(rows.length?rows.map(g=>'<tr class="clk" onclick="openGift(\''+g.id+'\')"><td class="t-name">'+esc(g.donor)+'</td><td>'+g.date+'</td><td>'+esc(g.fund)+'</td><td class="r tnum">'+usd(g.amount)+'</td><td>'+creditBadge(g.credit)+'</td><td>'+statusBadge(g.status)+'</td><td onclick="event.stopPropagation()">'+giftAssignCell(g)+'</td></tr>').join(''):'<tr><td colspan="7"><div class="t-sub" style="padding:8px">No gifts match these filters.</div></td></tr>')
   +'</tbody></table></div>');
 }
 /* ============================ EVENTS (Marketing) ============================ */
