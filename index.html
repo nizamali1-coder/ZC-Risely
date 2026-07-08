@@ -1254,7 +1254,6 @@ function renderConstituents(){
     const cb=selectable?'<td onclick="event.stopPropagation()"><input type="checkbox" '+(sel.has(c.id)?'checked':'')+' onclick="toggleSel(\''+c.id+'\')"></td>':'';
     const items=[{l:'Preview',ic:'user',fn:'openDrawer(\''+c.id+'\')'},{l:'Open record',ic:'grid',fn:'openRecord(\''+c.id+'\')'},{l:'Pre-meeting prep',ic:'spark',fn:'openPrep(\''+c.id+'\')'}];
     if(can('email'))items.push({l:'Send email',ic:'mail',fn:'openEmail(\''+c.id+'\')'});
-    if(can('deck'))items.push({l:'Create deck',ic:'slides',fn:'openWizard(\''+c.id+'\')'});
     if(can('gift'))items.push({l:'Add gift',ic:'gift',fn:'openGiftModal(\''+c.id+'\')'});
     const acts='<details class="menu" onclick="event.stopPropagation()"><summary class="btn btn-sec btn-sm" style="display:inline-flex;align-items:center;gap:6px">Actions<span style="display:inline-flex;transform:rotate(90deg)">'+ic('chev',12)+'</span></summary><div class="menu-pop" style="right:0;left:auto">'+items.map(it=>'<div class="menu-item" onclick="this.closest(\'details\').open=false;'+it.fn+'">'+ic(it.ic,15)+it.l+'</div>').join('')+'</div></details>';
     return '<tr class="clk" onclick="openDrawer(\''+c.id+'\')">'+cb
@@ -1364,7 +1363,6 @@ function oppActionsMenu(cid,o){
  var items=[
   {l:'Advance stage',ic:'trend',fn:'advanceOpp(\''+cid+'\',\''+o.id+'\')'},
   {l:'Log action',ic:'edit',fn:'openRecord(\''+cid+'\');setTimeout(function(){setTab(\'notes\')},30)'},
-  {l:'Create proposal',ic:'slides',fn:'openWizard(\''+cid+'\')'},
   {l:'Email donor',ic:'mail',fn:'aiEmail(\''+cid+'\')'},
   {l:'Open in pipeline',ic:'target',fn:'go(\'pipeline\')'}
  ];
@@ -1377,7 +1375,6 @@ function renderDrawer(){
  acts.push('<button class="btn btn-pri" style="flex:1" onclick="openRecord(\''+c.id+'\')">'+ic('user',15)+'Open full record</button>');
  if(can('note'))acts.push('<button class="btn btn-sec btn-sm" onclick="openRecord(\''+c.id+'\');setTimeout(()=>setTab(\'notes\'),20)">'+ic('edit',14)+'Note</button>');
  if(can('email'))acts.push('<button class="btn btn-sec btn-sm" onclick="openEmail(\''+c.id+'\')">'+ic('mail',14)+'Email</button>');
- if(can('deck'))acts.push('<button class="btn btn-sec btn-sm" onclick="openWizard(\''+c.id+'\')">'+ic('slides',14)+'Deck</button>');
  const _opps=openOpps(c);
  const oppList=_opps.length?_opps.map(function(o){var s=stageObj(o.stageKey)||{color:'#2563EB'};return '<div class="tnode" style="margin-bottom:9px;padding:10px 12px;align-items:flex-start">'
    +'<div class="tic" style="width:28px;height:28px;background:'+s.color+'">'+ic('target',13)+'</div>'
@@ -1446,7 +1443,38 @@ function relColor(t){return t==='Organization'?'#B07A4B':t==='Foundation'?'#2D6A
 function relIcon(t){return t==='Organization'?'building':t==='Foundation'?'heart':t==='Household'?'home':'user';}
 
 /* ============================ DONOR 360 RECORD ============================ */
-function openRecord(id){state.recordId=id;state.view='record';state.tab='overview';closeDrawer();render();window.scrollTo(0,0);}
+function openRecord(id){state.recordId=id;state.view='record';state.tab='overview';state.recordAI=null;closeDrawer();render();window.scrollTo(0,0);}
+/* ---- AI record summary (proposal slide 15) ---- */
+function recordSummary(c){
+ var m=retentionModel(c);
+ var open=(c.opportunities||[]).filter(function(o){return o.status!=='closed';});
+ var g=(c.giving||[]).length;
+ var parts=[];
+ parts.push('<b>'+esc(c.name)+'</b> — '+esc(c.capacity||'unrated')+' capacity '+esc((c.type||'constituent').toLowerCase())+(c.officer?', managed by '+esc(c.officer):'')+'.');
+ parts.push('Lifetime giving <b>'+usd(c.lifetime||0)+'</b> across '+g+' gift'+(g!==1?'s':'')+((c.last&&c.last.date&&c.last.date!=='—')?(', most recent '+usd(c.last.amount)+' to '+esc(c.last.fund)+' on '+esc(c.last.date)):'')+'.');
+ parts.push('Retention <b>'+esc(m.status)+'</b>'+(m.win?(' ('+esc(m.win)+')'):'')+' — cadence '+esc(String(m.cadence).toLowerCase())+', email '+(m.silent>45?('silent '+m.silent+'d'):'engaged')+'.');
+ var eng=[];
+ if((c.events||[]).length)eng.push((c.events||[]).length+' event'+((c.events||[]).length!==1?'s':''));
+ if((c.courses||[]).length)eng.push((c.courses||[]).length+' course'+((c.courses||[]).length!==1?'s':''));
+ if(eng.length)parts.push('Engaged via '+eng.join(' and ')+'.');
+ if(open.length)parts.push('<b>'+open.length+' open opportunit'+(open.length!==1?'ies':'y')+'</b>'+(open[0]?(' — “'+esc(open[0].name)+'” at '+usd(open[0].ask||0)):'')+'.');
+ parts.push(m.flag?('<b>Recommended:</b> '+(m.status==='Likely lapse'?'re-engage now, inside the 90-day window — a personal note plus an event invite.':'schedule outreach; giving has cooled.')):(c.stage?'<b>Recommended:</b> advance the open ask toward solicitation.':'<b>Recommended:</b> strong retention — steward and test an upgrade ask.'));
+ return parts.join(' ');
+}
+function recordAskCard(c){
+ var fn=c.name?esc(c.name.split(' ')[0]):'this record';
+ var out=state.recordAI?('<div class="aibrief" style="margin-top:12px;align-items:flex-start"><span style="flex-shrink:0">'+ic('spark',15)+'</span><span style="line-height:1.6">'+state.recordAI+'</span></div>'):'';
+ return '<div class="card" style="margin-bottom:18px;overflow:visible"><div class="card-b">'
+  +'<div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap">'+ic('spark',16)
+  +'<input class="input" id="recAsk" style="flex:1;min-width:200px" placeholder="Ask about '+esc(c.name)+'…" onkeydown="if(event.key===\'Enter\')askRecord(\''+c.id+'\')">'
+  +'<button class="btn btn-pri" onclick="askRecord(\''+c.id+'\')">'+ic('spark',15)+'Ask</button></div>'
+  +'<div style="margin-top:9px;display:flex;gap:7px;flex-wrap:wrap">'
+  +'<button class="btn btn-sec btn-sm" onclick="askRecord(\''+c.id+'\')">Give me a summary of '+fn+'</button>'
+  +'<button class="btn btn-sec btn-sm" onclick="askRecord(\''+c.id+'\')">Is '+fn+' at risk?</button>'
+  +'<button class="btn btn-sec btn-sm" onclick="askRecord(\''+c.id+'\')">What should I ask for?</button>'
+  +'</div>'+out+'</div></div>';
+}
+function askRecord(id){var c=byId(id);if(!c)return;state.recordAI=recordSummary(c);if(state.view==='record')renderRecord();}
 function openGift(id){state.giftId=id;state.view='gift';closeDrawer();render();window.scrollTo(0,0);}
 function setTab(t){state.tab=t;renderRecord();}
 function renderRecord(){
@@ -1457,7 +1485,6 @@ function renderRecord(){
  if(can('email'))acts.push('<button class="btn btn-sec" onclick="openEmail(\''+c.id+'\')">'+ic('mail',15)+'Send email</button>');
  const more=[];
  if(can('note'))more.push({label:'Add note',icon:'edit',onclick:'setTab(\'notes\')'});
- if(can('deck'))more.push({label:'Create deck',icon:'slides',onclick:'openWizard(\''+c.id+'\')'});
  if(can('voice'))more.push({label:'Voice note',icon:'mic',onclick:'openVoice(\''+c.id+'\')'});
  if(can('gift'))more.push({label:'Add gift',icon:'gift',onclick:'openGiftModal(\''+c.id+'\')'});
  if(more.length)acts.push(moreMenu(more));
@@ -1595,8 +1622,8 @@ function saveOpp(id){
 function presBadge(s){if(s==='Sent')return '<span class="badge b-green">'+ic('check',12)+'Sent</span>';if(s==='Downloaded')return '<span class="badge b-blue">Downloaded</span>';if(s==='Saved')return '<span class="badge b-sky">Saved</span>';if(s==='In O365')return '<span class="badge b-purple">In O365</span>';return '<span class="badge b-slate">'+esc(s)+'</span>';}
 function tabPres(c){
  const ps=c.presentations||[];
- const head='<div class="card-h"><b>Presentations</b><div style="display:flex;gap:10px;align-items:center"><span class="muted">'+ps.length+' decks</span>'+(can('deck')?'<button class="btn btn-pri btn-sm" onclick="openWizard(\''+c.id+'\')">'+ic('slides',14)+'New deck</button>':'')+'</div></div>';
- if(!ps.length)return '<div class="card">'+head+'<div class="empty"><div class="ei">'+ic('slides',24)+'</div><div style="font-weight:700;color:var(--navy)">No presentations yet</div><div>Create a donor deck with the wizard — it logs here with who made it and when.</div></div></div>';
+ const head='<div class="card-h"><b>Presentations</b><div style="display:flex;gap:10px;align-items:center"><span class="muted">'+ps.length+' decks</span>'+'</div></div>';
+ if(!ps.length)return '<div class="card">'+head+'<div class="empty"><div class="ei">'+ic('slides',24)+'</div><div style="font-weight:700;color:var(--navy)">No presentations yet</div><div>Donor proposal decks will appear here.</div></div></div>';
  return '<div class="card">'+head+'<table><thead><tr><th>Presentation</th><th>Created by</th><th>Date</th><th class="r">Ask</th><th>Status</th></tr></thead><tbody>'
   +ps.slice().reverse().map(p=>{const m=TEAM.find(t=>t.id===p.by)||{name:'User'};return '<tr><td class="t-name">'+esc(p.title)+'</td><td>'+esc(m.name)+'</td><td>'+esc(p.date)+'</td><td class="r tnum">'+(p.ask?usd(p.ask):'—')+'</td><td>'+presBadge(p.status)+'</td></tr>';}).join('')
   +'</tbody></table></div>';
@@ -1624,7 +1651,7 @@ function tabOverview(c){
  const attRows=atts.map(a=>'<tr><td class="t-name">'+esc(a.name)+'</td><td>'+esc(a.type)+'</td><td>'+esc(a.date)+'</td><td>'+esc(a.by)+'</td><td class="r"><button class="btn btn-sec btn-sm" onclick="toast(\'Downloading '+esc(a.name)+'\')">'+ic('download',13)+'Download</button></td></tr>').join('');
  const attCard='<div class="card"><div class="card-h"><b>'+ic('file',15)+' Attachments</b><div style="display:flex;gap:10px;align-items:center"><span class="muted">'+atts.length+' file'+(atts.length!==1?'s':'')+'</span><button class="btn btn-sec btn-sm" onclick="openAttachModal('+c.id+')">'+ic('plus',13)+'Upload</button></div></div>'
   +(atts.length?'<table><thead><tr><th>File</th><th>Type</th><th>Date</th><th>Added by</th><th class="r">Action</th></tr></thead><tbody>'+attRows+'</tbody></table>':'<div class="card-b"><div class="t-sub">No attachments yet. Upload scanned checks, correspondence, or supporting documents.</div></div>')+'</div>';
- return '<div class="cols"><div class="card"><div class="card-h"><b>Constituent details</b></div><div class="card-b">'
+ return recordAskCard(c)+'<div class="cols" style="grid-template-columns:1fr 1fr"><div><div class="card"><div class="card-h"><b>Constituent details</b></div><div class="card-b">'
   +'<div class="kv">'
   +'<div class="k">Constituent ID</div><div class="v">'+esc(c.cid)+'</div>'
   +'<div class="k">Type</div><div class="v">'+esc(c.type)+'</div>'
@@ -1637,7 +1664,7 @@ function tabOverview(c){
   +'<div class="k">FY25 giving</div><div class="v tnum">'+usd(c.fy25)+'</div>'
   +(c.stage?'<div class="k">Pipeline</div><div class="v">'+stageObj(c.stage).name+' · ask '+usd(c.ask)+' · '+esc(c.fundInterest)+'</div>':'')
   +'</div></div></div>'
-  +'<div>'+wealthCard+attCard+impact+(c.hierarchy?'':'<div class="card"><div class="card-h"><b>Quick stats</b></div><div class="card-b"><div class="impact"><div class="ic"><div class="l">Lifetime</div><div class="v tnum">'+usd(c.lifetime)+'</div></div><div class="ic"><div class="l">FY25</div><div class="v tnum">'+usd(c.fy25)+'</div></div><div class="ic"><div class="l">Relationships</div><div class="v">'+c.rel+'</div></div><div class="ic"><div class="l">Gifts</div><div class="v">'+(c.giving||[]).length+'</div></div></div></div></div>')+engageMiniCard(c)+'</div></div>';
+  +wealthCard+attCard+impact+'</div><div>'+retentionSignalsCard(c)+eventGiftCard(c)+engageMiniCard(c)+(c.hierarchy?'':'<div class="card"><div class="card-h"><b>Quick stats</b></div><div class="card-b"><div class="impact"><div class="ic"><div class="l">Lifetime</div><div class="v tnum">'+usd(c.lifetime)+'</div></div><div class="ic"><div class="l">FY25</div><div class="v tnum">'+usd(c.fy25)+'</div></div><div class="ic"><div class="l">Relationships</div><div class="v">'+c.rel+'</div></div><div class="ic"><div class="l">Gifts</div><div class="v">'+(c.giving||[]).length+'</div></div></div></div></div>')+'</div></div>';
 }
 function openAttachModal(id){
  openModal('<div class="modal"><div class="modal-h">'+ic('file',20)+'<div><b>Upload attachment</b><div class="sub">Scanned checks, correspondence, or documents</div></div><button class="mx" onclick="closeModal()">'+ic('x',18)+'</button></div>'
@@ -1660,6 +1687,50 @@ function engageMiniCard(c){const ev=(c.events||[]).length,co=(c.courses||[]).len
  return '<div class="card"><div class="card-h"><b>Engagement</b><span class="muted">matched by email</span></div><div class="card-b">'
   +'<div class="impact"><div class="ic"><div class="l">Events</div><div class="v">'+ev+'</div></div><div class="ic"><div class="l">Courses</div><div class="v">'+co+'</div></div><div class="ic"><div class="l">Books</div><div class="v">'+bk+'</div></div><div class="ic"><div class="l">Engagement</div><div class="v">'+sc+'</div></div></div>'
   +'<button class="btn btn-sec btn-sm" style="margin-top:11px" onclick="setTab(\'engagement\')">'+ic('trend',14)+'View engagement</button></div></div>';}
+/* ---- Retention signals + event-to-gift attribution (proposal slide 16) ---- */
+function retBadge(text,kind){if(kind==='red')return '<span class="badge" style="background:var(--red-b);color:var(--red-t)">'+esc(text)+'</span>';var cls={green:'b-green',amber:'b-amber',blue:'b-blue',slate:'b-slate',purple:'b-purple'}[kind]||'b-slate';return '<span class="badge '+cls+'">'+esc(text)+'</span>';}
+var RET_EMAIL={ahmad:12,fatima:9,omar:68,layla:26,mariam:96,yusuf:74,aisha:7};
+function retDays(dateStr){var now=new Date('2026-06-01');var d=new Date(dateStr);if(isNaN(d.getTime()))return null;return Math.max(0,Math.round((now-d)/86400000));}
+function retentionModel(c){
+ var last=(c.last&&c.last.date)?c.last.date:null;
+ var days=last?retDays(last):null;
+ var rec=!!c.rec;var gifts=(c.giving||[]).length;
+ var cadence,cadKind;
+ if(rec){cadence='Steady · recurring';cadKind='green';}
+ else if(days!=null&&days>240){cadence='Broken ↓';cadKind='red';}
+ else if(days!=null&&days<75){cadence='Rising ↑';cadKind='green';}
+ else{cadence='Steady';cadKind='slate';}
+ var silent=RET_EMAIL[c.id];if(silent==null)silent=(days!=null?Math.min(days,40):28);
+ var status,statusKind,flag=false,win='';
+ if(!rec&&days!=null&&days>240){status='Likely lapse';statusKind='red';flag=true;win='90-day window';}
+ else if(!rec&&days!=null&&days>150){status='At risk';statusKind='amber';flag=true;win='watch';}
+ else if(gifts<=1){status='First-gift watch';statusKind='blue';win='2nd-gift window';}
+ else{status='Retained';statusKind='green';}
+ return {days:days,rec:rec,gifts:gifts,cadence:cadence,cadKind:cadKind,silent:silent,status:status,statusKind:statusKind,flag:flag,win:win};
+}
+function retSignalRow(icon,label,val,kind){return '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px"><span style="display:flex;align-items:center;gap:8px;color:var(--slate6);font-size:13px">'+ic(icon,14)+esc(label)+'</span>'+retBadge(val,kind)+'</div>';}
+function retentionSignalsCard(c){
+ var m=retentionModel(c);var evc=(c.events||[]).length;
+ var eg=evc?(m.gifts?'Gala → gave, prior giving':'Engaged, no gift yet'):'No events on record';
+ var egKind=evc&&m.gifts?'green':(evc?'amber':'slate');
+ var rows=retSignalRow('trend','Giving cadence',m.cadence,m.cadKind)
+  +retSignalRow('mail','Email engagement',m.silent>45?('Silent '+m.silent+'d'):('Engaged · '+m.silent+'d'),m.silent>60?'red':(m.silent>30?'amber':'green'))
+  +retSignalRow('cal','Event → gift',eg,egKind)
+  +retSignalRow('gift','Last gift',m.days!=null?(m.days+'d ago'):'—',(m.days!=null&&m.days>240)?'red':((m.days!=null&&m.days>150)?'amber':'green'));
+ var flagHtml=m.flag?'<div class="aibrief" style="margin-top:12px;background:var(--red-b);border:none;color:var(--red-t)">'+ic('spark',13)+'<span><b>Flagged for officer</b> — outreach drafted, ready for review</span></div><button class="btn btn-pri btn-sm" style="margin-top:10px" onclick="aiEmail(\''+c.id+'\')">'+ic('mail',14)+'Review draft</button>':'';
+ return '<div class="card" style="overflow:visible"><div class="card-h"><b>'+ic('target',15)+' Retention signals</b>'+retBadge(m.status+(m.win?' · '+m.win:''),m.statusKind)+'</div><div class="card-b"><div style="display:flex;flex-direction:column;gap:10px">'+rows+'</div>'+flagHtml+'</div></div>';
+}
+function eventGiftCard(c){
+ var evs=c.events||[];if(!evs.length)return '';var m=retentionModel(c);
+ var rows=evs.map(function(n,i){
+   var e=EVENTS.find(function(x){return x.name===n;})||{};
+   var outcome,kind;
+   if(m.gifts){if(c.rec&&i>0){outcome='Recurring upgrade ↑';kind='green';}else if(i===0){outcome='Gift within 60 days ↑';kind='green';}else{outcome='Re-engaged · gift logged';kind='blue';}}
+   else{outcome='Engagement only · no gift yet';kind='amber';}
+   return '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--line)"><div><div style="font-weight:600;color:var(--navy);font-size:13px">'+esc(n)+'</div><div class="t-sub">'+esc(e.date||'—')+' · '+esc(e.type||'Event')+'</div></div>'+retBadge(outcome,kind)+'</div>';
+ }).join('');
+ return '<div class="card"><div class="card-h"><b>'+ic('cal',15)+' Event-to-gift attribution</b><span class="muted">'+evs.length+' event'+(evs.length!==1?'s':'')+'</span></div><div class="card-b" style="padding-top:2px">'+rows+'</div></div>';
+}
 function tabEngagement(c){
  const ev=c.events||[],co=c.courses||[],bk=c.books||[];
  const evCard='<div class="card"><div class="card-h"><b>'+ic('cal',15)+' Events attended</b><span class="muted">'+ev.length+'</span></div>'
