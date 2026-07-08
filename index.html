@@ -364,6 +364,8 @@ input[type=checkbox]{accent-color:var(--blue);width:16px;height:16px;cursor:poin
   </div>
   <div class="persona" id="persona"></div>
   <div class="tr">
+    <button class="btn btn-pri btn-sm" id="qaOppBtn" onclick="openCreateOppGlobal()" title="Log a new opportunity">＋ Opportunity</button>
+    <button class="btn btn-sec btn-sm" id="qaConBtn" onclick="openAddConstituent()" title="Add a new constituent">＋ Constituent</button>
     <div class="search">{ICON_SEARCH}<input placeholder="Search constituents, gifts..." id="globalSearch"></div>
     <button class="iconbtn" id="bellBtn" title="Inbox">{ICON_BELL}<span class="badge-dot" id="bellBadge" style="display:none">0</span></button>
     <div class="avatar" id="meAvatar">SM</div>
@@ -441,13 +443,13 @@ function memberByPersona(p){return TEAM.find(t=>t.persona===p);}
 
 /* ---------- Personas ---------- */
 const PERSONAS={
- admin:{label:'Admin',sub:'Gift Entry',color:'#B07A4B',views:['dashboard','constituents','hierarchies','gifts','payments','forecast','askai','inbox','uploads','users','settings'],
+ admin:{label:'Admin',sub:'Gift Entry',color:'#B07A4B',views:['dashboard','constituents','hierarchies','gifts','payments','forecast','askai','inbox','dataquality','uploads','users','settings'],
    actions:['note','gift']},
- officer:{label:'Gift Officer',sub:'Major Gifts',color:'#2563EB',views:['dashboard','constituents','hierarchies','pipeline','nba','gifts','lists','forecast','askai','inbox'],
+ officer:{label:'Gift Officer',sub:'Major Gifts',color:'#2563EB',views:['dashboard','constituents','hierarchies','pipeline','nba','gifts','lists','forecast','askai','inbox','dataquality'],
    actions:['note','email','deck','voice','gift','bulk','list']},
- director:{label:'Gift Director',sub:'Advancement',color:'#2D6A4F',views:['dashboard','constituents','hierarchies','pipeline','nba','gifts','payments','lists','analytics','forecast','askai','inbox','users','settings'],
+ director:{label:'Gift Director',sub:'Advancement',color:'#2D6A4F',views:['dashboard','constituents','hierarchies','pipeline','nba','gifts','payments','lists','analytics','forecast','askai','inbox','dataquality','users','settings'],
    actions:['note','email','deck','voice','gift','bulk','list']},
- marketing:{label:'Marketing',sub:'Engagement',color:'#9333EA',views:['dashboard','constituents','hierarchies','lists','events','bookstore','courses','askai','inbox'],
+ marketing:{label:'Marketing',sub:'Engagement',color:'#9333EA',views:['dashboard','constituents','hierarchies','lists','events','bookstore','courses','askai','inbox','dataquality'],
    actions:['note','bulk','list']}
 };
 const NAV=[
@@ -469,8 +471,10 @@ const NAV=[
    {k:'forecast',label:'Forecast',icon:'trend'},
    {k:'askai',label:'Ask AI',icon:'spark'}
  ]},
+ {sec:'Data Quality',items:[
+   {k:'dataquality',label:'Data Quality',icon:'file'}
+ ]},
  {sec:'Administrative',items:[
-   {k:'uploads',label:'Uploads',icon:'upload'},
    {k:'users',label:'Users',icon:'user'},
    {k:'settings',label:'Settings',icon:'gear'}
  ]}
@@ -649,6 +653,19 @@ function oppStageBadge(k){var s=stageObj(k);if(!s)return '<span class="badge b-s
 /* ---- Recurring-donor tags (monthly sustainers) ---- */
 ['yusuf','aisha','fatima','mariam','layla'].forEach(function(id){var c=byId(id);if(c)c.rec=true;});
 ['yusuf','aisha','fatima'].forEach(function(id){var c=byId(id);if(c)c.recMTD=true;});
+
+/* ---- Data-quality seeding: phone, address (zip present), bounced flag → completeness tier ----
+   bronze = only name/email · silver = + phone · gold = + phone + address · major gap = address bounced */
+const DQ_PHONE={ahmad:'(510) 555-0142',fatima:'(510) 555-0177',holdings:'(510) 555-0208',foundation:'(510) 555-0231',household:'(510) 555-0142',omar:'(650) 555-0119',crescent:'(415) 555-0166',mariam:'(916) 555-0184'};
+const DQ_NOADDR=['holdings','fatima'];   /* address on file removed → silver when they have a phone */
+const DQ_BOUNCED=['aisha','mariam'];     /* mail returned undeliverable → major gap */
+C.forEach(function(c){
+  c.phone=DQ_PHONE[c.id]||null;
+  if(DQ_NOADDR.indexOf(c.id)>=0){c.city=null;c.state=null;c.zip=null;}
+  c.bounced=DQ_BOUNCED.indexOf(c.id)>=0;
+  var hasPhone=!!c.phone, hasAddr=!!c.zip;
+  c.dqTier=c.bounced?'major':(hasPhone&&hasAddr?'gold':(hasPhone&&!hasAddr?'silver':'bronze'));
+});
 
 /* Hard-credit / multi-entity impact for Ahmad (consolidated philanthropic view) */
 const AHMAD_IMPACT=[
@@ -943,6 +960,7 @@ function render(){
  if(v==='askai')return renderAskAI();
  if(v==='users')return renderUsers();
  if(v==='inbox')return renderInbox();
+ if(v==='dataquality')return renderDataQuality();
  if(v==='forecast')return renderForecast();
  if(v==='forecastRec')return renderForecastRec();
  if(v==='settings')return renderSettings();
@@ -1251,6 +1269,48 @@ function renderConstituents(){
   }).join('')
   +'</tbody></table></div>'));
 }
+/* ============================ DATA QUALITY ============================ */
+/* Records are tiered by field completeness. Fixing gaps lifts NBA scoring and list/segmentation targeting. */
+const DQ_TIERS=[
+ {k:'bronze',label:'Bronze',count:3240,badge:'b-amber',style:'',color:'#B45309',desc:'Name + email only. No phone or mailing address on file.'},
+ {k:'silver',label:'Silver',count:4100,badge:'b-blue',style:'',color:'#1D4ED8',desc:'Has a phone number, but no mailing address on file.'},
+ {k:'gold',label:'Gold',count:4660,badge:'b-green',style:'',color:'#15803D',desc:'Complete: name, email, phone and a mailing address.'},
+ {k:'major',label:'Major gap',count:480,badge:'',style:'background:var(--red-b);color:var(--red-t)',color:'#B91C1C',desc:'Mailing address flagged bounced — mail returned undeliverable.'}
+];
+function dqTierObj(k){return DQ_TIERS.filter(function(t){return t.k===k;})[0];}
+function dqTierBadge(k){var t=dqTierObj(k)||{label:k,badge:'b-slate',style:''};return '<span class="badge '+(t.badge||'')+'"'+(t.style?' style="'+t.style+'"':'')+'>'+esc(t.label)+'</span>';}
+function setDqFilter(k){state.dqFilter=(state.dqFilter===k?null:k);render();}
+function dqAddress(c){if(!c.zip)return '—';return esc([c.city,c.state].filter(Boolean).join(', ')+' '+c.zip).trim();}
+function renderDataQuality(){
+ const sel=state.dqFilter||null;
+ const total=DQ_TIERS.reduce(function(s,t){return s+t.count;},0);
+ const cards=DQ_TIERS.map(function(t){var on=sel===t.k;
+   return '<div class="tile sel'+(on?' on':'')+'" style="border-left:4px solid '+t.color+'" onclick="setDqFilter(\''+t.k+'\')">'
+     +'<div class="tl" style="display:flex;align-items:center;gap:7px">'+dqTierBadge(t.k)+'</div>'
+     +'<div class="tv tnum">'+t.count.toLocaleString()+'</div>'
+     +'<div class="td">'+esc(t.desc)+'</div></div>';
+ }).join('');
+ const rows=C.filter(function(c){return sel?c.dqTier===sel:true;});
+ const selObj=sel?dqTierObj(sel):null;
+ setHTML('#view',header('Data Quality','Records tiered by field completeness — fix gaps to improve deliverability and targeting')
+  +'<div class="aibrief">'+ic('spark',13)+'<span>Completeness drives results: missing phones and addresses weaken Next Best Action scoring and shrink the reach of every saved list and mail segment. Bounced addresses waste appeal spend. Click a tier to work its records.</span></div>'
+  +'<div class="tiles" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">'+cards+'</div>'
+  +'<div class="filters">'+DQ_TIERS.map(function(t){return '<button class="fpill '+(sel===t.k?'on':'')+'" onclick="setDqFilter(\''+t.k+'\')">'+esc(t.label)+'</button>';}).join('')+(sel?'<button class="fpill" onclick="state.dqFilter=null;render()">'+ic('x',12)+'Clear</button>':'')+'</div>'
+  +'<div class="card" style="overflow:visible"><div class="card-h"><b>'+(selObj?selObj.label+' records':'All records')+'</b><span class="muted">'+rows.length+' shown · '+total.toLocaleString()+' total</span></div><div style="overflow-x:auto">'
+  +'<table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Address</th><th>Tier</th><th class="r">Action</th></tr></thead><tbody>'
+  +(rows.length?rows.map(function(c){
+     const items=[{l:'Open record',ic:'grid',fn:'openRecord(\''+c.id+'\')'},{l:'Preview',ic:'user',fn:'openDrawer(\''+c.id+'\')'}];
+     if(can('note'))items.push({l:'Log note',ic:'edit',fn:'openRecord(\''+c.id+'\');setTimeout(function(){setTab(\'notes\')},30)'});
+     const acts=rowMenu(items);
+     const phone=c.phone?esc(c.phone):'<span class="t-sub">Missing</span>';
+     const bouncedTag='<span class="badge" style="background:var(--red-b);color:var(--red-t);margin-left:6px">Bounced</span>';
+     const addr=c.zip?(dqAddress(c)+(c.bounced?bouncedTag:'')):(c.bounced?bouncedTag:'<span class="t-sub">Missing</span>');
+     return '<tr class="clk" onclick="openRecord(\''+c.id+'\')"><td class="t-name">'+esc(c.name)+'<div class="t-sub">'+esc(c.title)+'</div></td>'
+      +'<td>'+esc(c.email)+'</td><td>'+phone+'</td><td>'+addr+'</td><td>'+dqTierBadge(c.dqTier)+'</td>'
+      +'<td class="r" style="white-space:nowrap" onclick="event.stopPropagation()">'+acts+'</td></tr>';
+   }).join(''):'<tr><td colspan="6"><div class="t-sub" style="padding:8px">No records in this tier.</div></td></tr>')
+  +'</tbody></table></div></div>');
+}
 /* ---- Hierarchies (household / multi-entity groups) — same columns as constituents, keyed on head of household ---- */
 const HIERARCHIES=[
  {head:'Ahmad Al-Rashid',headId:'ahmad',name:'Al-Rashid Household',members:6,rel:6,opps:2,lifetime:640000,capNum:500000,capacity:'$500K+',last:{date:'May 12, 2026',amount:50000,fund:'Annual Fund'}},
@@ -1347,6 +1407,41 @@ function renderDrawer(){
   +'</div>'
   +'<div class="dw-foot">'+acts.join('')+'</div>';
 }
+/* ---- Gift preview drawer (mirrors the constituent drawer) ---- */
+function openGiftDrawer(gid){
+ const g=GIFTS.find(function(x){return x.id===gid;});if(!g)return;
+ const c=byId(g.did);
+ const giftNo='GFT-2026-'+('000'+g.id.replace('g','')).slice(-4);
+ const donorNode=c?'<div class="tnode clk" onclick="openRecord(\''+c.id+'\')" style="cursor:pointer">'
+   +'<div class="rec-av '+avClass(c.type)+'" style="width:34px;height:34px;border-radius:9px;font-size:13px">'+initials(c.name)+'</div>'
+   +'<div style="flex:1"><div class="tnm">'+esc(c.name)+'</div><div class="tmeta">'+esc(c.title||c.type)+'</div></div>'
+   +'<span style="display:inline-flex;color:var(--slate4)">'+ic('chev',14)+'</span></div>'
+   :'<div class="t-sub">Donor record not linked.</div>';
+ const acts=[];
+ acts.push('<button class="btn btn-pri" style="flex:1" onclick="openGift(\''+g.id+'\')">'+ic('gift',15)+'Open full gift</button>');
+ if(c)acts.push('<button class="btn btn-sec btn-sm" onclick="openRecord(\''+c.id+'\')">'+ic('user',14)+'Donor</button>');
+ if(g.status!=='Receipted'&&can('gift'))acts.push('<button class="btn btn-sec btn-sm" onclick="sendReceipt(\''+g.id+'\');closeDrawer()">'+ic('receipt',14)+'Send receipt</button>');
+ $('#drawer').innerHTML=
+  '<div class="dw-h"><div class="rec-av" style="width:52px;height:52px;font-size:18px;background:linear-gradient(135deg,#22C55E,#15803D)">'+ic('gift',22)+'</div>'
+  +'<div style="flex:1"><div style="font-size:24px;font-weight:800;color:var(--navy);letter-spacing:-.02em">'+usd(g.amount)+'</div>'
+  +'<div class="t-sub">'+esc(g.fund)+' · '+esc(g.date)+'</div><div style="margin-top:7px;display:flex;gap:6px;flex-wrap:wrap">'+statusBadge(g.status)+creditBadge(g.credit)+(g.first?'<span class="badge b-sky">First gift</span>':'')+'</div></div>'
+  +'<button class="dw-x" onclick="closeDrawer()">'+ic('x',18)+'</button></div>'
+  +'<div class="dw-body">'
+  +'<div class="kv" style="grid-template-columns:130px 1fr">'
+    +'<div class="k">Gift ID</div><div class="v">'+esc(giftNo)+'</div>'
+    +'<div class="k">Date</div><div class="v">'+esc(g.date)+'</div>'
+    +'<div class="k">Fund</div><div class="v">'+esc(g.fund)+'</div>'
+    +'<div class="k">Amount</div><div class="v">'+usd(g.amount)+'</div>'
+    +'<div class="k">Credit</div><div class="v">'+esc(g.credit)+'</div>'
+    +'<div class="k">State · ZIP</div><div class="v">'+esc(g.state||'—')+' · '+esc(g.zip||'—')+'</div>'
+    +'<div class="k">Receipt status</div><div class="v">'+statusBadge(g.status)+'</div>'
+    +'<div class="k">Payment</div><div class="v">Wire transfer · BBMS</div>'
+  +'</div>'
+  +'<div style="font-size:12px;font-weight:700;color:var(--slate4);text-transform:uppercase;letter-spacing:.06em;margin:20px 0 10px;display:flex;align-items:center;gap:7px">'+ic('user',13)+'Donor</div>'+donorNode
+  +'</div>'
+  +'<div class="dw-foot">'+acts.join('')+'</div>';
+ $('#drawer').classList.add('on');$('#scrim').classList.add('on');$('#scrim').onclick=closeDrawer;
+}
 function relColor(t){return t==='Organization'?'#B07A4B':t==='Foundation'?'#2D6A4F':t==='Household'?'#0EA5E9':'#2563EB';}
 function relIcon(t){return t==='Organization'?'building':t==='Foundation'?'heart':t==='Household'?'home':'user';}
 
@@ -1402,6 +1497,73 @@ function tabOpportunities(c){
    +cg.map(function(g){return '<tr><td>'+esc(g.date)+'</td><td>'+esc(g.fund)+'</td><td class="r tnum">'+usd(g.amount)+'</td><td>'+creditBadge(g.credit)+'</td><td>'+statusBadge(g.receipt||'Pending')+'</td></tr>';}).join('')
    +'</tbody></table>':'<div class="card-b"><div class="t-sub">No closed gifts yet.</div></div>')+'</div>';
  return openCard+closedCard;
+}
+/* ---- Global quick-add: opportunity (any constituent) ---- */
+function openCreateOppGlobal(){
+ const donors=C.map(function(c){return '<option value="'+esc(c.id)+'">'+esc(c.name)+'</option>';}).join('');
+ const funds=FUNDS.map(function(f){return '<option>'+esc(f.name)+'</option>';}).join('');
+ const stages=STAGES.map(function(s){return '<option value="'+s.key+'"'+(s.key==='qualification'?' selected':'')+'>'+esc(s.name)+' · '+s.prob+'%</option>';}).join('');
+ $('#drawer').innerHTML=
+  '<div class="dw-h"><div class="rec-av" style="width:48px;height:48px;font-size:16px;background:linear-gradient(135deg,#2563EB,#1D4ED8)">'+ic('target',20)+'</div>'
+  +'<div style="flex:1"><div style="font-size:20px;font-weight:800;color:var(--navy);letter-spacing:-.01em">New opportunity</div><div class="t-sub">Log an ask against any constituent</div></div>'
+  +'<button class="dw-x" onclick="closeDrawer()">'+ic('x',18)+'</button></div>'
+  +'<div class="dw-body">'
+  +'<label class="fld"><span class="lk">Constituent</span><select class="input" id="goDonor">'+donors+'</select></label>'
+  +'<label class="fld"><span class="lk">Opportunity name</span><input class="input" id="goName" placeholder="e.g. Endowment gift — leadership ask"></label>'
+  +'<label class="fld"><span class="lk">Fund</span><select class="input" id="goFund">'+funds+'</select></label>'
+  +'<label class="fld"><span class="lk">Ask amount</span><input class="input" id="goAsk" value="$100,000"></label>'
+  +'<label class="fld"><span class="lk">Stage</span><select class="input" id="goStage">'+stages+'</select></label>'
+  +'<div class="note-banner">Creating an opportunity adds it to the constituent’s in-progress list and the major-gift pipeline.</div>'
+  +'</div>'
+  +'<div class="dw-foot"><button class="btn btn-sec" style="flex:1" onclick="closeDrawer()">Cancel</button><button class="btn btn-pri" style="flex:1" onclick="saveOppGlobal()">'+ic('check',15)+'Create opportunity</button></div>';
+ $('#drawer').classList.add('on');$('#scrim').classList.add('on');$('#scrim').onclick=closeDrawer;
+}
+function saveOppGlobal(){
+ const c=byId($('#goDonor').value);
+ if(!c){toast('Select a constituent first','target');return;}
+ const name=$('#goName')?$('#goName').value:'';
+ const fund=$('#goFund')?$('#goFund').value:'Annual Fund';
+ const ask=parseInt(($('#goAsk')?$('#goAsk').value:'0').replace(/[^0-9]/g,''))||0;
+ const stage=$('#goStage')?$('#goStage').value:'qualification';
+ c.opportunities=c.opportunities||[];
+ c.opportunities.push({id:'opp-'+Date.now(),name:(name||fund+' gift'),stageKey:stage,ask:ask,fund:fund,opened:'Just now',status:'open'});
+ if(!c.stage){c.stage=stage;c.ask=ask;c.fundInterest=fund;c.officer=c.officer||'Imran Patel';}
+ closeDrawer();toast('Opportunity created · '+c.name,'target');openRecord(c.id);setTimeout(function(){setTab('opportunities');},30);
+}
+/* ---- Global quick-add: constituent ---- */
+function openAddConstituent(){
+ const types=['Individual','Organization','Foundation','Household'].map(function(t){return '<option>'+t+'</option>';}).join('');
+ const caps=['$25K','$50K','$100K','$250K','$500K+','$1M+'].map(function(c){return '<option>'+c+'</option>';}).join('');
+ openModal('<div class="modal"><div class="modal-h">'+ic('user',20)+'<div><b>Add constituent</b><div class="sub">Create a new record — a person, household, or organization</div></div><button class="mx" onclick="closeModal()">'+ic('x',18)+'</button></div>'
+  +'<div class="modal-b">'
+  +'<div class="grid2"><label class="fld"><span class="lk">Name</span><input class="input" id="acName" placeholder="Full name or organization"></label><label class="fld"><span class="lk">Type</span><select class="input" id="acType">'+types+'</select></label></div>'
+  +'<label class="fld"><span class="lk">Primary email</span><input class="input" id="acEmail" placeholder="name@example.com"></label>'
+  +'<div class="grid2"><label class="fld"><span class="lk">City</span><input class="input" id="acCity" placeholder="Berkeley"></label><label class="fld"><span class="lk">State</span><input class="input" id="acState" placeholder="CA"></label></div>'
+  +'<div class="grid2"><label class="fld"><span class="lk">ZIP</span><input class="input" id="acZip" placeholder="94704"></label><label class="fld"><span class="lk">Capacity rating</span><select class="input" id="acCap">'+caps+'</select></label></div>'
+  +'<div class="note-banner">New records run through the dedup engine before they’re written. Wealth screening can be refreshed on-demand.</div>'
+  +'</div><div class="modal-f"><button class="btn btn-sec" onclick="closeModal()">Cancel</button><button class="btn btn-pri" onclick="saveConstituent()">'+ic('check',15)+'Add constituent</button></div></div>');
+}
+function saveConstituent(){
+ const name=($('#acName')?$('#acName').value:'').trim()||'New Constituent';
+ const type=$('#acType')?$('#acType').value:'Individual';
+ const email=($('#acEmail')?$('#acEmail').value:'').trim();
+ const city=($('#acCity')?$('#acCity').value:'').trim();
+ const stt=($('#acState')?$('#acState').value:'').trim();
+ const zip=($('#acZip')?$('#acZip').value:'').trim();
+ const cap=$('#acCap')?$('#acCap').value:'$25K';
+ const capMap={'$25K':25000,'$50K':50000,'$100K':100000,'$250K':250000,'$500K+':500000,'$1M+':1000000};
+ const id='c'+Date.now();
+ const obj={
+  id:id,name:name,type:type,cid:'CON-0'+Math.floor(Math.random()*90000+10000),title:'',
+  email:email,city:city,state:stt,zip:zip,
+  roles:['Donor'],capacity:cap,capNum:capMap[cap]||25000,
+  lifetime:0,fy25:0,officer:'Imran Patel',
+  last:{date:'—',amount:0,fund:'—'},
+  relationships:[],rel:0,giving:[],notes:[],voice:[],opportunities:[],
+  events:[],courses:[],books:[],presentations:[]
+ };
+ C.unshift(obj);
+ closeModal();toast('Constituent added · '+name,'user');openRecord(id);
 }
 function openCreateOpp(id){
  const c=byId(id);
@@ -1894,7 +2056,7 @@ function renderGifts(){
   +'<div class="tiles">'+tiles.map(tile).join('')+giftStatesCard()+giftFundCard()+'</div>'+pills+stateBar+zipBar
   +'<div class="card"><div class="card-h"><b>'+head+'</b><span class="muted">'+rows.length+' of '+GIFTS.length+'</span></div><div style="overflow-x:auto">'
   +'<table><thead><tr><th>Donor</th><th>Date</th><th>Fund</th><th>State</th><th>ZIP</th><th class="r">Amount</th><th>Credit</th><th>Status</th><th>Assignment</th></tr></thead><tbody>'
-  +(rows.length?rows.map(g=>'<tr class="clk" onclick="openGift(\''+g.id+'\')"><td class="t-name">'+esc(g.donor)+'</td><td>'+g.date+'</td><td>'+esc(g.fund)+'</td><td>'+esc(g.state||'—')+'</td><td>'+esc(g.zip||'—')+'</td><td class="r tnum">'+usd(g.amount)+'</td><td>'+creditBadge(g.credit)+'</td><td>'+statusBadge(g.status)+'</td><td onclick="event.stopPropagation()">'+giftAssignCell(g)+'</td></tr>').join(''):'<tr><td colspan="9"><div class="t-sub" style="padding:8px">No gifts match these filters.</div></td></tr>')
+  +(rows.length?rows.map(g=>'<tr class="clk" onclick="openGiftDrawer(\''+g.id+'\')"><td class="t-name">'+esc(g.donor)+'</td><td>'+g.date+'</td><td>'+esc(g.fund)+'</td><td>'+esc(g.state||'—')+'</td><td>'+esc(g.zip||'—')+'</td><td class="r tnum">'+usd(g.amount)+'</td><td>'+creditBadge(g.credit)+'</td><td>'+statusBadge(g.status)+'</td><td onclick="event.stopPropagation()">'+giftAssignCell(g)+'</td></tr>').join(''):'<tr><td colspan="9"><div class="t-sub" style="padding:8px">No gifts match these filters.</div></td></tr>')
   +'</tbody></table></div></div>');
 }
 /* ============================ EVENTS (Marketing) ============================ */
@@ -2051,7 +2213,7 @@ function listFiltered(){
  if(L.type!=='all')r=r.filter(c=>c.type===L.type);
  if(L.minLt>0)r=r.filter(c=>c.lifetime>=L.minLt);
  if(L.fund!=='all')r=r.filter(c=>(c.giving||[]).some(g=>g.fund===L.fund)||(c.fundInterest&&c.fundInterest.indexOf(L.fund)>=0));
- if(L.zip)r=r.filter(c=>c.zip.indexOf(L.zip)===0);
+ if(L.zip)r=r.filter(c=>c.zip&&c.zip.indexOf(L.zip)===0);
  if(L.ev)r=r.filter(c=>(c.events||[]).length);
  if(L.books)r=r.filter(c=>(c.books||[]).length);
  if(L.course)r=r.filter(c=>(c.courses||[]).length);
