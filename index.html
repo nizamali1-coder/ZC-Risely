@@ -896,7 +896,7 @@ const REQ={
   summary:'The gift officer\'s field companion — the full donor picture in a phone, built for the 20 minutes before a visit and the 5 minutes after a call. Every field action logs straight to Raiser\'s Edge, no laptop required.',
   workflows:[
    {icon:'user',label:'In-phone donor record',desc:'Tap any constituent to open a real record inside the phone — giving history, retention, open opportunities, contact and notes — not a stripped-down summary.'},
-   {icon:'phone',label:'Call context & voice notes',desc:'Take or place a donor call with the Risely card and live transcript in the phone; capture a voice note that auto-transcribes and attaches to the record. Persistent voice button on every screen.'},
+   {icon:'phone',label:'Call context & voice notes',desc:'Take or place a donor call with the Risely card and live transcript in the phone — call context via a telephony vendor like <b>Dialpad</b> (recommended option: one API for voice + SMS). Capture a voice note that auto-transcribes and attaches to the record; persistent voice button on every screen.'},
    {icon:'target',label:'Opportunities, constituents & pipeline',desc:'Browse opportunities, constituents and the live pipeline as filterable lists; add on the go with the in-list +. The same call flow launches from the bottom tray.'},
    {icon:'list',label:'Everything syncs back',desc:'Every field action — call log, voice note, new opportunity — writes back to Raiser\'s Edge on the same schedule as the desktop app.'}
   ],
@@ -953,7 +953,7 @@ function renderSidebar(){
      h+='<div class="navitem '+(on?'on':'')+'" onclick="go(\''+i.k+'\')">'+ic(i.icon)+'<span>'+i.label+'</span>'+badge+'</div>';
    });
  });
- h+='<div class="navspacer"></div><div class="sb-foot"><div class="navitem '+(state.view==='openq'?'on':'')+'" onclick="go(\'openq\')">'+ic('file')+'<span>Open Questions</span></div><div class="navitem '+(state.view==='summary'?'on':'')+'" onclick="go(\'summary\')">'+ic('list')+'<span>Summary</span></div><div class="navitem" onclick="toast(\'Prototype — sign out is illustrative\')">'+ic('logout')+'<span>Sign out</span></div></div>';
+ h+='<div class="navspacer"></div><div class="sb-foot"><div class="navitem '+(state.view==='openq'?'on':'')+'" onclick="go(\'openq\')">'+ic('file')+'<span>Open Questions</span></div><div class="navitem '+(state.view==='summary'?'on':'')+'" onclick="go(\'summary\')">'+ic('list')+'<span>Requirements</span></div><div class="navitem" onclick="toast(\'Prototype — sign out is illustrative\')">'+ic('logout')+'<span>Sign out</span></div></div>';
  $('#sidebar').innerHTML=h;
 }
 
@@ -1184,7 +1184,7 @@ const DIALPAD_HTML=`<!DOCTYPE html>
 </body>
 </html>`;
 function renderOpenQuestions(){
- var OPEN_Q=['Mobile — app, web-responsive, or PWA?','Voice — are we using Risely\'s own voice capture, or the device\'s native mic (mobile & desktop)? Determines where recording + transcription happen','Hierarchy building','Pre-meeting prep notes','Call context — will need Dialpad, not 8x8. 8x8 virtual numbers are voice-only (no screen-pop, transcription, or call-event API at our tier); Dialpad delivers real-time caller match + native transcript for Risely to render'];
+ var OPEN_Q=['Mobile — app, web-responsive, or PWA?','Voice — are we using Risely\'s own voice capture, or the device\'s native mic (mobile & desktop)? Determines where recording + transcription happen','Hierarchy building','Pre-meeting prep notes','Call context — will need Dialpad, not 8x8. 8x8 virtual numbers are voice-only (no screen-pop, transcription, or call-event API at our tier); Dialpad delivers real-time caller match + native transcript for Risely to render','Table build-out — any challenges standing up all the data tables (constituents, gifts, pledges, opportunities, hierarchies, engagement) in production, vs. the seeded tables in this prototype?'];
  setHTML('#view',header('Open Questions','Running list of open product &amp; design questions to resolve')
   +'<div class="card"><div class="card-b">'
   +OPEN_Q.map(function(q,i){return '<div style="display:flex;gap:12px;align-items:center;padding:13px 2px'+(i<OPEN_Q.length-1?';border-bottom:1px solid var(--line2)':'')+'"><div style="width:26px;height:26px;border-radius:8px;background:var(--blue-l);color:var(--blue-d);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;flex-shrink:0">'+(i+1)+'</div><div style="font-size:14px;color:var(--navy);font-weight:600">'+esc(q)+'</div></div>';}).join('')
@@ -1192,7 +1192,24 @@ function renderOpenQuestions(){
   +'<div class="card" style="overflow:hidden;margin-top:16px"><div class="card-h"><b>'+ic('phone',15)+' Call context — Dialpad vs 8x8</b><span class="muted">one plan vs four services · pricing &amp; capability comparison</span></div><iframe id="dpFrame" title="Dialpad vs 8x8 comparison" style="width:100%;height:1120px;border:none;border-top:1px solid var(--line);display:block;background:#fff"></iframe></div>');
  var f=$('#dpFrame');if(f)f.srcdoc=DIALPAD_HTML;
 }
-function renderSummary(){
+function renderRequirements(){
+ var order=['admin','officer','director','marketing','mobile'];
+ var live=order.filter(function(p){return REQ[p];});
+ var sh=function(label,icon,color){return '<div style="display:flex;align-items:center;gap:8px;margin:16px 0 9px"><div style="width:24px;height:24px;border-radius:7px;background:'+color+'1a;display:flex;align-items:center;justify-content:center;color:'+color+'">'+ic(icon,12)+'</div><span style="font-weight:800;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--slate5)">'+label+'</span></div>';};
+ var wfRow=function(w){return '<div style="display:flex;gap:11px;padding:10px 0;border-bottom:1px solid var(--line2)"><div style="width:30px;height:30px;border-radius:8px;background:var(--bg);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--slate5)">'+ic(w.icon,14)+'</div><div><div style="font-weight:700;font-size:13px;margin-bottom:2px;color:var(--navy)">'+esc(w.label)+'</div><div style="font-size:12.5px;color:var(--slate6);line-height:1.5">'+w.desc+'</div></div></div>';};
+ var aiRow=function(a){return '<div style="padding:10px 12px;border-radius:10px;background:linear-gradient(135deg,#EFF4FF,#EDE9FE33);border:1px solid #BFDBFE;margin-bottom:8px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">'+ic('spark',12)+'<span style="font-weight:700;font-size:12.5px;color:#1D4ED8">'+esc(a.label)+'</span></div><div style="font-size:12.5px;color:var(--slate6);line-height:1.5">'+a.desc+'</div></div>';};
+ var kgRow=function(k){return '<div style="padding:10px 12px;border-radius:10px;background:#F0FDF4;border:1px solid #BBF7D0;margin-bottom:8px"><div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">'+ic('link',12)+'<span style="font-weight:700;font-size:12.5px;color:#15803D">'+esc(k.label)+'</span></div><div style="font-size:12.5px;color:var(--slate6);line-height:1.5">'+k.desc+'</div></div>';};
+ var sections=live.map(function(p){var r=REQ[p];return '<div class="card" style="margin-bottom:16px;border-top:3px solid '+r.color+'"><div class="card-b"><div style="display:flex;align-items:center;gap:10px;margin-bottom:5px"><span style="width:11px;height:11px;border-radius:50%;background:'+r.color+';flex-shrink:0"></span><div style="font-size:18px;font-weight:800;color:var(--navy)">'+esc(r.title)+'</div></div><div style="font-size:13.5px;color:var(--slate6);line-height:1.6;margin-bottom:4px">'+esc(r.summary)+'</div><div class="cols" style="grid-template-columns:1.25fr 1fr;gap:24px;align-items:start"><div>'+sh('Core workflows','grid',r.color)+r.workflows.map(wfRow).join('')+'</div><div>'+sh('AI capabilities','spark',r.color)+r.ai.map(aiRow).join('')+sh('Knowledge graph','link',r.color)+r.kg.map(kgRow).join('')+'</div></div></div></div>';}).join('');
+ var cW=live.reduce(function(n,p){return n+REQ[p].workflows.length;},0);
+ var cA=live.reduce(function(n,p){return n+REQ[p].ai.length;},0);
+ var cK=live.reduce(function(n,p){return n+REQ[p].kg.length;},0);
+ var stat=function(v,l){return '<div><div style="font-size:26px;font-weight:800">'+v+'</div><div style="font-size:11px;color:#BFDBFE;text-transform:uppercase;letter-spacing:.05em">'+l+'</div></div>';};
+ setHTML('#view',header('Requirements','Every capability Risely delivers for Zaytuna — the full spec, by persona, on one page')
+  +'<div style="background:linear-gradient(135deg,#1E3A8A,#2563EB);color:#fff;border-radius:16px;padding:20px 24px;margin-bottom:20px;display:flex;flex-wrap:wrap;gap:24px;align-items:center"><div style="flex:1;min-width:250px"><div style="font-size:18px;font-weight:800;margin-bottom:4px">Full requirements — all personas</div><div style="font-size:13.5px;color:#DBEAFE;line-height:1.55">Workflows, AI capabilities and knowledge-graph feeds for every role. Blackbaud stays the system of record; Risely turns it into daily action.</div></div><div style="display:flex;gap:22px">'+stat(live.length,'Personas')+stat(cW,'Workflows')+stat(cA,'AI agents')+stat(cK,'Data feeds')+'</div></div>'
+  +sections);
+}
+function renderSummary(){return renderRequirements();}
+function _summaryLegacy(){
  const chip='<span style="position:absolute;top:12px;right:12px;font-size:11px;font-weight:800;letter-spacing:.06em;color:var(--purple-t);background:var(--purple-b);border:1px dashed var(--purple-t);border-radius:7px;padding:2px 7px">AI</span>';
  const G='display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin-bottom:22px';
  const CD='background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;position:relative;box-shadow:var(--sh)';
@@ -1262,7 +1279,6 @@ function renderDashboard(){
  if(state.persona==='admin'){
    banner='<div class="banner"><div class="bi">'+ic('spark')+'</div><div class="btext"><b>Blackbaud reverse-sync active.</b> Last constituent sync 6:00 AM PT · 0 conflicts.</div><div class="bx"><button class="btn btn-sec btn-sm" onclick="toast(\'Sync log is illustrative in this prototype\')">View log</button></div></div>';
    const pd=PLEDGES.filter(p=>p.status!=='Scheduled');
-   headBtn='<button class="btn btn-pri" onclick="openGiftModal(null)">'+ic('plus',16)+'New gift</button>';
    tiles=[{seg:'pledgesDue',l:'Pledges due',v:pd.length,d:usd(pd.reduce((s,p)=>s+p.amount,0))+' · next 60d'},
      {seg:'avgGift',l:'Avg gift size',v:usdK(totalRaised()/GIFTS.length),d:'FY26'},
      {seg:'giftsMonth',l:'Gifts this month',v:GIFTS.length,d:'Entered & posted'},
