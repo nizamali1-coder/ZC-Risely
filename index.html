@@ -1055,13 +1055,142 @@ function render(){
 
 /* ---------- Summary (capabilities overview) ---------- */
 var CALLCTX_IMG='data:image/jpeg;base64,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';
+const DIALPAD_HTML=`<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dialpad vs 8x8 — one plan vs four services</title>
+<style>
+  :root{color-scheme:light;
+    --blue:#2563EB;--blued:#1D4ED8;--navy:#0F172A;--slate:#475569;--slate5:#64748B;--slate4:#94A3B8;
+    --bg:#F8FAFC;--line:#E7EBF0;--line2:#EEF2F6;--green:#16A34A;--greenb:#DCFCE7;--greent:#15803D;
+    --red:#DC2626;--redb:#FEF2F2;--redt:#B91C1C;--amber:#B45309;--amberb:#FEF3C7;--teal:#0D9488;--purple:#7C3AED;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:var(--navy);
+    background:radial-gradient(1100px 520px at 12% -10%,#E8EDFF 0,transparent 55%),#EEF1F6;padding:24px 22px 40px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto}
+  h1{font-size:24px;font-weight:800;letter-spacing:-.01em}
+  .sub{color:var(--slate);font-size:14px;margin-top:6px;max-width:780px;line-height:1.55}
+  .sub b{color:var(--navy)}
+  a{color:var(--blued);text-decoration:none;border-bottom:1px dashed #9DBBF5}
+  a:hover{border-bottom-style:solid}
+  .seclbl{font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--slate5);margin:24px 2px 12px}
+  .hero{display:grid;grid-template-columns:1fr 54px 1fr;gap:0;align-items:stretch;margin:8px 0 4px}
+  @media(max-width:760px){.hero{grid-template-columns:1fr;gap:16px}.arrowcol{transform:rotate(90deg);height:40px}}
+  .stack{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px 16px 14px;box-shadow:0 10px 26px rgba(15,23,42,.06);display:flex;flex-direction:column}
+  .stack.eightx{border-color:#FBD5B5}
+  .stack.dp{border-color:#BBD3FF;background:linear-gradient(180deg,#F5F9FF,#fff)}
+  .stack .cap{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--slate5);margin-bottom:11px;display:flex;align-items:center;justify-content:space-between}
+  .pill{font-size:11px;font-weight:800;border-radius:999px;padding:3px 10px}
+  .pill.bad{background:var(--amberb);color:var(--amber)}
+  .pill.good{background:var(--greenb);color:var(--greent)}
+  .svc{display:flex;align-items:center;gap:9px;background:#FFF7ED;border:1px solid #FCE3C7;border-radius:10px;padding:9px 11px;margin-bottom:7px;font-size:13px;font-weight:700;color:#7C4A12}
+  .svc .n{width:20px;height:20px;border-radius:6px;background:#EA8C3A;color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .svc a{color:#7C4A12;border-bottom-color:#E0B487}
+  .svc small{display:block;font-weight:600;color:#9A7B57;font-size:11px;margin-top:1px}
+  .one{display:flex;align-items:center;gap:11px;background:#EFF4FF;border:1px solid #C7D7FE;border-radius:12px;padding:16px 15px}
+  .one .logo{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#2563EB,#1D4ED8);color:#fff;font-weight:800;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .one b{font-size:16px}.one small{display:block;color:var(--slate5);font-size:12.5px;font-weight:600;margin-top:2px}
+  .arrowcol{display:flex;align-items:center;justify-content:center;color:var(--slate4);font-size:26px;font-weight:800}
+  .card{background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 10px 26px rgba(15,23,42,.06)}
+  table{width:100%;border-collapse:collapse}
+  th,td{text-align:left;padding:13px 16px;font-size:13.5px;vertical-align:top;border-bottom:1px solid var(--line2)}
+  thead th{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--slate5);background:#FAFBFD}
+  thead th.dp{color:var(--blued);background:#F3F7FF}
+  thead th.eightx{color:var(--amber);background:#FFF9F1}
+  tbody tr:last-child td{border-bottom:none}
+  td.cap{font-weight:700;color:var(--navy);width:26%}
+  td.cap small{display:block;font-weight:500;color:var(--slate5);font-size:12px;margin-top:3px}
+  .yes{display:inline-flex;align-items:center;gap:6px;font-weight:700;color:var(--greent)}
+  .yes .dot{width:16px;height:16px;border-radius:50%;background:var(--green);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center}
+  .col-dp{background:#F7FAFF}
+  .tag{display:inline-block;font-size:11px;font-weight:800;border-radius:6px;padding:2px 7px;background:#FFF7ED;color:#9A5A16;border:1px solid #FCE3C7;margin-bottom:4px}
+  .mut{color:var(--slate5);font-size:12px;line-height:1.5}
+  .foot-tr td{background:#FAFBFD;font-weight:700}
+  .price-dp{color:var(--blued);font-weight:800}
+  .price-8{color:var(--amber);font-weight:800}
+  .api{display:grid;grid-template-columns:1.15fr 1fr;gap:0;background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:0 10px 26px rgba(15,23,42,.06)}
+  @media(max-width:760px){.api{grid-template-columns:1fr}}
+  .api .l,.api .r{padding:18px 20px}
+  .api .l{border-right:1px solid var(--line2)}
+  .api h3{font-size:14px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+  .api h3 .vb{font-size:10px;font-weight:800;background:var(--greenb);color:var(--greent);border-radius:999px;padding:2px 8px;letter-spacing:.03em}
+  .api .kv{font-size:13px;color:var(--slate);line-height:1.6;margin-bottom:7px}
+  .api .kv b{color:var(--navy)}
+  .lim{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:7px 0;border-bottom:1px dashed var(--line)}
+  .lim:last-child{border-bottom:none}
+  .lim .k{color:var(--slate)}
+  .lim .v{font-weight:800;color:var(--navy);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .headroom{margin-top:10px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:9px 11px;font-size:12px;color:var(--greent);line-height:1.5}
+  .note{margin-top:16px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px 18px;font-size:13px;color:var(--slate);line-height:1.6}
+  .note b{color:var(--navy)}
+  .src{margin-top:14px;font-size:11.5px;color:var(--slate5);line-height:1.8}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Dialpad vs 8x8 — one plan vs four services</h1>
+  <div class="sub">Everything Risely needs on a donor call — the real-time ring event, the caller&rarr;record match, the transcript, and the API to write it all back — ships inside <b>one Dialpad Connect Pro plan</b>. On 8x8 the same four jobs are split across <b>four separately-purchased products</b>, none of which are in Zaytuna's current voice-only 8x8 plan.</div>
+  <div class="hero">
+    <div class="stack eightx">
+      <div class="cap">8x8 — what it takes <span class="pill bad">4 services</span></div>
+      <div class="svc"><span class="n">1</span><div><a href="https://www.8x8.com/products/business-phone">8x8 Work</a> <small>UCaaS — the base phone / dial tone</small></div></div>
+      <div class="svc"><span class="n">2</span><div><a href="https://docs.8x8.com/8x8WebHelp/VCC_Custom_Integration_WebHelp/Content/CustomCRMIntegrationConfiguration/Screen_Pop_for_Inbound_Calls.htm">8x8 Contact Center</a> <small>screen-pop + caller-to-record match</small></div></div>
+      <div class="svc"><span class="n">3</span><div><a href="https://www.8x8.com/products/business-phone/conversation-iq">Conversation IQ add-on</a> <small>call transcription (Speech Analytics)</small></div></div>
+      <div class="svc"><span class="n">4</span><div><a href="https://developer.8x8.com/connect/docs/voice/webhook-guides/webhooks-overview/">8x8 Communications APIs (CPaaS)</a> <small>real-time call-event webhooks + SMS API</small></div></div>
+    </div>
+    <div class="arrowcol">&rarr;</div>
+    <div class="stack dp">
+      <div class="cap">Dialpad — what it takes <span class="pill good">1 plan</span></div>
+      <div class="one"><div class="logo">D</div><div><b>Dialpad Connect · Pro</b><small>Call events, transcripts, screen-pop &amp; SMS — one license, one API, one auth</small></div></div>
+      <div class="mut" style="margin-top:12px">All four capabilities are included in the single per-seat <a href="https://www.dialpad.com/pricing/">Pro plan</a>. Nothing metered, no add-ons required for the core flow.</div>
+    </div>
+  </div>
+  <div class="seclbl">Capability &times; product, side by side</div>
+  <div class="card">
+    <table>
+      <thead><tr><th>Capability Risely needs</th><th class="dp">Dialpad · Connect Pro</th><th class="eightx">8x8 · product required</th></tr></thead>
+      <tbody>
+        <tr><td class="cap">Real-time inbound call event<small>fires the screen-pop the instant the phone rings</small></td><td class="col-dp"><span class="yes"><span class="dot">&check;</span>Included</span><div class="mut">Native <a href="https://developers.dialpad.com/docs/call-events">call-event subscriptions</a> &rarr; your webhook (ring / pickup)</div></td><td><span class="tag">8x8 CPaaS</span><div class="mut"><a href="https://developer.8x8.com/connect/docs/voice/webhook-guides/webhooks-overview/">Voice webhooks</a> (VCA/VCS/VSS) are a separate Communications-APIs product, per subaccount</div></td></tr>
+        <tr><td class="cap">Caller number &rarr; donor record match<small>the screen-pop itself</small></td><td class="col-dp"><span class="yes"><span class="dot">&check;</span>Included</span><div class="mut">Built into the <a href="https://developers.dialpad.com/docs/dialpad-mini-dialer">CTI / Mini-Dialer</a> screen-pop layer</div></td><td><span class="tag">8x8 Contact Center</span><div class="mut"><a href="https://docs.8x8.com/8x8WebHelp/VCC_Custom_Integration_WebHelp/Content/CustomCRMIntegrationConfiguration/Screen_Pop_for_Inbound_Calls.htm">Screen-pop &amp; caller matching</a> live in the VCC agent workspace — not in 8x8 Work</div></td></tr>
+        <tr><td class="cap">Native call transcription<small>of the live phone call, logged to the record</small></td><td class="col-dp"><span class="yes"><span class="dot">&check;</span>Included</span><div class="mut">Real-time <a href="https://www.dialpad.com/features/ai-transcription/">Ai transcription</a> + recap, from the entry plan up</div></td><td><span class="tag">Conversation IQ add-on</span><div class="mut"><a href="https://www.8x8.com/products/business-phone/conversation-iq">Paid add-on</a> (Quality Mgmt + Speech Analytics); the CPaaS plan gets no AI tools</div></td></tr>
+        <tr><td class="cap">Developer API — webhooks, transcripts, SMS<small>write summary + task back to Raiser's Edge, and text donors</small></td><td class="col-dp"><span class="yes"><span class="dot">&check;</span>Included</span><div class="mut">One API surface (dialpad.com/api/v2): <a href="https://developers.dialpad.com/docs/event-subscriptions">events</a> + transcripts + <a href="https://developers.dialpad.com/docs/sms-api">SMS</a>, one OAuth</div></td><td><span class="tag">8x8 CPaaS</span><div class="mut">Programmatic call handling + SMS again in Communications APIs; transcripts from Conversation IQ / Contact Center — stitched together</div></td></tr>
+        <tr class="foot-tr"><td class="cap">What you buy &amp; pay</td><td class="col-dp"><span class="price-dp">1 plan · ~$25 / user / mo</span><div class="mut">annual; ~$900/yr for 3 officers. API/webhooks/transcripts bundled — no per-call fee</div></td><td><span class="price-8">4 line items · quote-only</span><div class="mut">Work seat + Contact Center seat + Conversation IQ add-on + CPaaS usage. 8x8 pulled public pricing in 2025</div></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="seclbl">Dialpad API — access &amp; limits</div>
+  <div class="api">
+    <div class="l">
+      <h3>Access <span class="vb">&check; validated vs Dialpad docs</span></h3>
+      <div class="kv"><b>One API, one auth.</b> Everything Risely needs is on <a href="https://developers.dialpad.com/docs">dialpad.com/api/v2</a>, authenticated by <a href="https://developers.dialpad.com/docs/authentication-basics">API key or OAuth 2.0</a> — <a href="https://developers.dialpad.com/docs/call-events">Call Events</a>, <a href="https://developers.dialpad.com/docs/sms-api">SMS API</a>, transcripts, and <a href="https://developers.dialpad.com/docs/dialpad-mini-dialer">CTI screen-pop</a> on the same surface.</div>
+      <div class="kv"><b>Plan tier.</b> Dialpad's plan comparison places API, webhooks &amp; integrations on <b>Connect Pro</b> and above (Standard excludes them). Dialpad's <i>developer</i> docs are tier-agnostic, so <b>confirm the exact tier on the order/quote</b> — but Pro is the working assumption.</div>
+    </div>
+    <div class="r">
+      <h3>Rate limits <span class="vb">&check; from Dialpad docs</span></h3>
+      <div class="lim"><span class="k">Overall (per company)</span><span class="v">20 req / sec</span></div>
+      <div class="lim"><span class="k">Send SMS</span><span class="v">100 / min</span></div>
+      <div class="lim"><span class="k">Create contacts</span><span class="v">100 / min</span></div>
+      <div class="lim"><span class="k">Initiate calls</span><span class="v">5 / min / user</span></div>
+      <div class="lim"><span class="k">Callback — per number</span><span class="v">5 / min</span></div>
+      <div class="lim"><span class="k">Callback — per company</span><span class="v">1,000 / min</span></div>
+      <div class="headroom">Comfortably above real usage: 3 officers' screen-pops, transcript pulls and texts sit far below these caps (100 SMS/min = 6,000/hr). Source: <a href="https://developers.dialpad.com/docs/rate-limits">Dialpad Rate Limits</a>.</div>
+    </div>
+  </div>
+  <div class="note"><b>The takeaway.</b> This isn't "8x8 can't" — it's that 8x8 spreads the job across four products (8x8 Work + Contact Center + Conversation IQ + Communications APIs), and <b>none of them are in Zaytuna's current voice-only plan</b>. Dialpad delivers the identical outcome in a single Pro seat with one API and one auth, so Risely builds one integration instead of stitching four. <span class="mut">(The Dialpad license is Zaytuna's telephony spend; Risely's build labor is separate.)</span></div>
+  <div class="src"><b>Sources.</b> Dialpad: <a href="https://www.dialpad.com/pricing/">pricing</a> · <a href="https://developers.dialpad.com/docs/rate-limits">rate limits</a> · <a href="https://developers.dialpad.com/docs/call-events">call events</a> · <a href="https://developers.dialpad.com/docs/sms-api">SMS API</a>. 8x8: <a href="https://www.8x8.com/s/computer-telephony-integration">CTI</a> · <a href="https://www.8x8.com/products/business-phone/conversation-iq">Conversation IQ</a> · <a href="https://developer.8x8.com/connect/docs/voice/webhook-guides/webhooks-overview/">CPaaS webhooks</a>. As of July 2026; confirm an 8x8 quote for the dollar delta.</div>
+</div>
+</body>
+</html>`;
 function renderOpenQuestions(){
  var OPEN_Q=['Mobile — app, web-responsive, or PWA?','Voice — are we using Risely\'s own voice capture, or the device\'s native mic (mobile & desktop)? Determines where recording + transcription happen','Hierarchy building','Pre-meeting prep notes','Call context — will need Dialpad, not 8x8. 8x8 virtual numbers are voice-only (no screen-pop, transcription, or call-event API at our tier); Dialpad delivers real-time caller match + native transcript for Risely to render'];
  setHTML('#view',header('Open Questions','Running list of open product &amp; design questions to resolve')
   +'<div class="card"><div class="card-b">'
   +OPEN_Q.map(function(q,i){return '<div style="display:flex;gap:12px;align-items:center;padding:13px 2px'+(i<OPEN_Q.length-1?';border-bottom:1px solid var(--line2)':'')+'"><div style="width:26px;height:26px;border-radius:8px;background:var(--blue-l);color:var(--blue-d);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;flex-shrink:0">'+(i+1)+'</div><div style="font-size:14px;color:var(--navy);font-weight:600">'+esc(q)+'</div></div>';}).join('')
   +'</div></div>'
-  +'<div class="card" style="overflow:hidden;margin-top:16px"><div class="card-h"><b>'+ic('phone',15)+' Call context — Dialpad vs 8x8</b><span class="muted">one plan vs four services · pricing &amp; capability comparison</span></div><iframe src="Dialpad_vs_8x8.html" title="Dialpad vs 8x8 comparison" loading="lazy" style="width:100%;height:1080px;border:none;border-top:1px solid var(--line);display:block;background:#fff"></iframe></div>');
+  +'<div class="card" style="overflow:hidden;margin-top:16px"><div class="card-h"><b>'+ic('phone',15)+' Call context — Dialpad vs 8x8</b><span class="muted">one plan vs four services · pricing &amp; capability comparison</span></div><iframe id="dpFrame" title="Dialpad vs 8x8 comparison" style="width:100%;height:1120px;border:none;border-top:1px solid var(--line);display:block;background:#fff"></iframe></div>');
+ var f=$('#dpFrame');if(f)f.srcdoc=DIALPAD_HTML;
 }
 function renderSummary(){
  const chip='<span style="position:absolute;top:12px;right:12px;font-size:11px;font-weight:800;letter-spacing:.06em;color:var(--purple-t);background:var(--purple-b);border:1px dashed var(--purple-t);border-radius:7px;padding:2px 7px">AI</span>';
